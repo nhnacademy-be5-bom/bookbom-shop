@@ -1,6 +1,5 @@
 package shop.bookbom.shop.order.entity;
 
-import java.awt.print.Book;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.book.entity.Book;
 
 @Entity
 @Table(name = "order_book")
