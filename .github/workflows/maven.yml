@@ -28,10 +28,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-        env:
-          SECURE_MANAGER_APPKEY: ${{ secrets.SECURE_MANAGER_APPKEY }}
-          SECURE_MANAGER_PASSWORD: ${{ secrets.SECURE_MANAGER_PASSWORD }}
-        run: mvn -B package -Dsecure.manager.appkey="${SECURE_MANAGER_APPKEY}" -Dkeystore.password="${SECURE_MANAGER_PASSWORD}" -Dspring.profiles.active=prod --file pom.xml
+        run: mvn -B package -Dsecure.manager.appkey="${{ secrets.SECURE_MANAGER_APPKEY }}" -Dkeystore.password="${{ secrets.SECURE_MANAGER_PASSWORD }}" -Dspring.profiles.active=prod --file pom.xml
 
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
