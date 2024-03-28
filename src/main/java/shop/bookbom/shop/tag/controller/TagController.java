@@ -14,7 +14,7 @@ public class TagController {
     private final TagService tagService;
 
     //태그 등록
-    @PostMapping("/tag")
+    @PostMapping("/shop/tag")
     public ResponseEntity<Integer> saveTag(@RequestBody TagRequest tagRequest) {
         String name = tagRequest.getName();
         Status status = tagRequest.getStatus();
@@ -25,7 +25,7 @@ public class TagController {
     }
 
     //태그 삭제
-    @DeleteMapping("/tag/{tagId}")
+    @DeleteMapping("/shop/tag/{tagId}")
     public ResponseEntity<Integer> deleteTag(@PathVariable long tagId) {
         //태그 삭제 함수 실행
         tagService.deleteTagService(tagId);
