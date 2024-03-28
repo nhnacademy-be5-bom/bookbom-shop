@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.file.entity.File;
+import shop.bookbom.shop.review.entity.Review;
 
 @Entity
 @Table(name = "review_image")

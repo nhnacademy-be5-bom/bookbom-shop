@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.shop.orderbook.entity.OrderBook;
 import shop.bookbom.shop.orderstatus.entity.OrderStatus;
+import shop.bookbom.shop.users.entity.Users;
 
 @Entity
 @Table(name = "orders")
@@ -53,7 +54,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_status_id")
@@ -72,7 +73,7 @@ public class Order {
             String senderPhoneNumber,
             Long totalCost,
             int usedPoint,
-            User user,
+            Users user,
             OrderStatus status
     ) {
         this.orderNumber = orderNumber;
