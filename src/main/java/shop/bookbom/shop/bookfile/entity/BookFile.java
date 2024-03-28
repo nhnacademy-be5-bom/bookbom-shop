@@ -1,4 +1,4 @@
-package shop.bookbom.reviewimage.entity;
+package shop.bookbom.shop.bookfile.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,29 +13,36 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.bookbom.file.entity.File;
+import shop.bookbom.shop.book.entity.Book;
+import shop.bookbom.shop.bookfiletype.entity.BookFileType;
+import shop.bookbom.shop.file.entity.File;
 
 @Entity
-@Table(name = "review_image")
+@Table(name = "book_file")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReviewImage {
+public class BookFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "review_image_id")
+    @Column(name = "book_file_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id")
-    private Review review;
+    @JoinColumn(name = "book_id")
+    private Book book;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_file_type_id")
+    private BookFileType bookFileType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
     private File file;
 
     @Builder
-    public ReviewImage(Review review, File file) {
-        this.review = review;
+    public BookFile(Book book, BookFileType bookFileType, File file) {
+        this.book = book;
+        this.bookFileType = bookFileType;
         this.file = file;
     }
 }

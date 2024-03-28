@@ -1,4 +1,4 @@
-package shop.bookbom.bookfile.entity;
+package shop.bookbom.shop.bookAuthor.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,18 +13,17 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.bookbom.bookfiletype.entity.BookFileType;
-import shop.bookbom.file.entity.File;
+import shop.bookbom.author.entity.Author;
 import shop.bookbom.shop.book.entity.Book;
 
 @Entity
-@Table(name = "book_file")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BookFile {
+@Table(name = "book_author")
+public class BookAuthor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "book_file_id")
+    @Column(name = "book_author_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,17 +31,12 @@ public class BookFile {
     private Book book;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_file_type_id")
-    private BookFileType bookFileType;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "file_id")
-    private File file;
+    @JoinColumn(name = "author_id")
+    private Author author;
 
     @Builder
-    public BookFile(Book book, BookFileType bookFileType, File file) {
+    public BookAuthor(Book book, Author author) {
         this.book = book;
-        this.bookFileType = bookFileType;
-        this.file = file;
+        this.author = author;
     }
 }

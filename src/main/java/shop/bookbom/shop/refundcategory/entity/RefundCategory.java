@@ -12,13 +12,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "return_category")
+@Table(name = "refund_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class RefundCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "return_category_id")
+    @Column(name = "refund_category_id")
     private Long id;
 
     private String name;

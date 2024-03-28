@@ -1,9 +1,7 @@
-package shop.bookbom.shop.book.entity;
+package shop.bookbom.shop.bookfiletype.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,23 +12,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "book_file_type")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "tag")
-public class Tag {
+public class BookFileType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tag_id")
+    @Column(name = "book_file_type_id")
     private Long id;
 
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
-
     @Builder
-    public Tag(String name, Status status) {
+    public BookFileType(String name) {
         this.name = name;
-        this.status = status;
     }
 }

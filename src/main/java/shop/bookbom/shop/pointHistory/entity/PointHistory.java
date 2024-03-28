@@ -1,4 +1,4 @@
-package shop.bookbom.shop.point.entity;
+package shop.bookbom.shop.pointHistory.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;

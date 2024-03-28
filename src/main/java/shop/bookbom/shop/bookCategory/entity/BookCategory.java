@@ -1,4 +1,4 @@
-package shop.bookbom.shop.book.entity;
+package shop.bookbom.shop.bookCategory.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.book.entity.Book;
 import shop.bookbom.shop.category.entity.Category;
 
 @Entity

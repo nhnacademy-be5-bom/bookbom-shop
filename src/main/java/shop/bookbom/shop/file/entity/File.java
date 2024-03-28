@@ -1,5 +1,6 @@
-package shop.bookbom.shop.book.entity;
+package shop.bookbom.shop.file.entity;
 
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,23 +12,26 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "author")
-public class Author {
+@Table(name = "file")
+public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "author_id")
+    @Column(name = "file_id")
     private Long id;
 
-    private String name;
+    private String url;
 
-    private String description;
+    private String extension;
+
+    private LocalDateTime createdAt;
 
     @Builder
-    public Author(String name, String description) {
-        this.name = name;
-        this.description = description;
+    public File(String url, String extension, LocalDateTime createdAt) {
+        this.url = url;
+        this.extension = extension;
+        this.createdAt = createdAt;
     }
 }

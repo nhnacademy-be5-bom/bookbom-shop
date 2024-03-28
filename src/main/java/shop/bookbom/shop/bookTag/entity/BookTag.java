@@ -1,4 +1,4 @@
-package shop.bookbom.shop.book.entity;
+package shop.bookbom.shop.bookTag.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,28 +13,31 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.book.entity.Book;
+import shop.bookbom.shop.tag.entity.Tag;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "book_author")
-public class BookAuthor {
+@Table(name = "book_tag")
+public class BookTag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "book_author_id")
+    @Column(name = "book_tag_id")
     private Long id;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private Book book;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private Author author;
+    @JoinColumn(name = "tag_id")
+    private Tag tag;
 
     @Builder
-    public BookAuthor(Book book, Author author) {
+    public BookTag(Book book, Tag tag) {
         this.book = book;
-        this.author = author;
+        this.tag = tag;
     }
 }

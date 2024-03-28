@@ -18,13 +18,13 @@ import shop.bookbom.shop.orderbook.entity.OrderBook;
 import shop.bookbom.shop.refundcategory.entity.RefundCategory;
 
 @Entity
-@Table(name = "return")
+@Table(name = "refund")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Refund {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "return_id")
+    @Column(name = "refund_id")
     private Long id;
 
     private String reason;
@@ -32,18 +32,18 @@ public class Refund {
     private int quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "return_category_id")
-    private RefundCategory returnCategory;
+    @JoinColumn(name = "refund_category_id")
+    private RefundCategory refundCategory;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_book_id")
     private OrderBook orderBook;
 
     @Builder
-    public Refund(String reason, int quantity, RefundCategory returnCategory, OrderBook orderBook) {
+    public Refund(String reason, int quantity, RefundCategory refundCategory, OrderBook orderBook) {
         this.reason = reason;
         this.quantity = quantity;
-        this.returnCategory = returnCategory;
+        this.refundCategory = refundCategory;
         this.orderBook = orderBook;
     }
 }
