@@ -16,7 +16,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.bookbom.shop.pointRate.entity.PointRate;
+import shop.bookbom.shop.pointrate.entity.PointRate;
 import shop.bookbom.shop.publisher.entity.Publisher;
 
 @Entity

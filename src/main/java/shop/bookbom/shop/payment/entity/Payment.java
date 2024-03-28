@@ -35,7 +35,7 @@ public class Payment {
     @Column(name = "payment_key")
     private String key;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_method_id")
     private PaymentMethod paymentMethod;
 

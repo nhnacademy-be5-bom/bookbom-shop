@@ -1,4 +1,4 @@
-package shop.bookbom.shop.bookAuthor.entity;
+package shop.bookbom.shop.bookauthor.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

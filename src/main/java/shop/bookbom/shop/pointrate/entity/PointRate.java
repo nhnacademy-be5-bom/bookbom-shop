@@ -1,4 +1,4 @@
-package shop.bookbom.shop.pointRate.entity;
+package shop.bookbom.shop.pointrate.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -7,16 +7,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@NoArgsConstructor
 @Table(name = "point_rate")
 public class PointRate {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "point_rate_id")
@@ -25,19 +24,21 @@ public class PointRate {
     private String name;
 
     @Column(name = "earn_type")
-    private EarnType earnType;
+    private EarnPointType earnType;
 
     @Column(name = "earn_point")
-    private Integer earnPoint;
+    private int earnPoint;
 
     @Column(name = "apply_type")
-    private ApplyType applyType;
+    private ApplyPointType applyType;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Builder
-    public PointRate(String name, EarnType earnType, Integer earnPoint, ApplyType applyType,
+    public PointRate(String name,
+                     EarnPointType earnType,
+                     int earnPoint,
+                     ApplyPointType applyType,
                      LocalDateTime createdAt) {
         this.name = name;
         this.earnType = earnType;
