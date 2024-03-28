@@ -13,7 +13,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.bookbom.author.entity.Author;
+import shop.bookbom.shop.author.entity.Author;
 import shop.bookbom.shop.book.entity.Book;
 
 @Entity
