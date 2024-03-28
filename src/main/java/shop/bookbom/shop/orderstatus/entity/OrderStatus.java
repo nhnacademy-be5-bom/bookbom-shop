@@ -1,4 +1,4 @@
-package shop.bookbom.shop.order.entity;
+package shop.bookbom.shop.orderstatus.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,22 +12,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "wrapper")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "order_status")
 @Getter
-public class Wrapper {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class OrderStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "wrapper_id")
+    @Column(name = "order_status_id")
     private Long id;
-
     private String name;
 
-    private int cost;
-
     @Builder
-    public Wrapper(String name, int cost) {
+    public OrderStatus(String name) {
         this.name = name;
-        this.cost = cost;
     }
 }

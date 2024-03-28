@@ -1,4 +1,4 @@
-package shop.bookbom.shop.payment.entity;
+package shop.bookbom.bookfiletype.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,20 +12,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "payment_method")
+@Table(name = "book_file_type")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PaymentMethod {
+public class BookFileType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payment_method_id")
-
+    @Column(name = "book_file_type_id")
     private Long id;
 
     private String name;
 
     @Builder
-    public PaymentMethod(String name) {
+    public BookFileType(String name) {
         this.name = name;
     }
 }

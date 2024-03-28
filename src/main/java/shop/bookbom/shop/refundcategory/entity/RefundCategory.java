@@ -1,4 +1,4 @@
-package shop.bookbom.shop.refund.entity;
+package shop.bookbom.shop.refundcategory.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

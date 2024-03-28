@@ -1,4 +1,4 @@
-package shop.bookbom.shop.coupon.entity;
+package shop.bookbom.shop.couponpolicy.entity;
 
 import java.util.List;
 import javax.persistence.Column;
@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.coupon.entity.Coupon;
 
 @Entity
 @Table(name = "coupon_policy")

@@ -1,4 +1,4 @@
-package shop.bookbom.shop.coupon.entity;
+package shop.bookbom.reviewimage.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,29 +13,29 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.bookbom.shop.category.entity.Category;
+import shop.bookbom.file.entity.File;
 
 @Entity
-@Table(name = "coupon_category")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "review_image")
 @Getter
-public class CouponCategory {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ReviewImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "coupon_category_id")
+    @Column(name = "review_image_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupon_id")
-    private Coupon coupon;
+    @JoinColumn(name = "review_id")
+    private Review review;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @JoinColumn(name = "file_id")
+    private File file;
 
     @Builder
-    public CouponCategory(Coupon coupon, Category category) {
-        this.coupon = coupon;
-        this.category = category;
+    public ReviewImage(Review review, File file) {
+        this.review = review;
+        this.file = file;
     }
 }

@@ -1,4 +1,4 @@
-package shop.bookbom.shop.order.entity;
+package shop.bookbom.shop.paymentmethod.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,18 +12,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "order_status")
+@Table(name = "payment_method")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderStatus {
+public class PaymentMethod {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_status_id")
+    @Column(name = "payment_method_id")
+
     private Long id;
+
     private String name;
 
     @Builder
-    public OrderStatus(String name) {
+    public PaymentMethod(String name) {
         this.name = name;
     }
 }

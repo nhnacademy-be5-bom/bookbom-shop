@@ -15,7 +15,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.bookbom.shop.order.entity.OrderCoupon;
+import shop.bookbom.shop.couponbook.entity.CouponBook;
+import shop.bookbom.shop.couponpolicy.entity.CouponPolicy;
+import shop.bookbom.shop.membercoupon.entity.MemberCoupon;
+import shop.bookbom.shop.ordercoupon.entity.OrderCoupon;
 
 @Entity
 @Table(name = "coupon")

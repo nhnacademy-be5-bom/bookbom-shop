@@ -1,4 +1,4 @@
-package shop.bookbom.shop.order.entity;
+package shop.bookbom.shop.orderbook.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +16,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.shop.book.entity.Book;
+import shop.bookbom.shop.order.entity.Order;
+import shop.bookbom.shop.wrapper.entity.Wrapper;
 
 @Entity
 @Table(name = "order_book")

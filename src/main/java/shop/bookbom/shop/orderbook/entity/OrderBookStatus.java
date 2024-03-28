@@ -1,4 +1,4 @@
-package shop.bookbom.shop.order.entity;
+package shop.bookbom.shop.orderbook.entity;
 
 import lombok.Getter;
 
