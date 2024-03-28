@@ -19,7 +19,7 @@ public class PointRate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "point_rate_id")
-    private Long pointRateId;
+    private Long id;
 
     private String name;
 
