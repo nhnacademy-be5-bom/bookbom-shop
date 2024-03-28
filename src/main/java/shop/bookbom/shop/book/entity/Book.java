@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,7 +26,8 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "book_id")
-    private Long Id;
+
+    private Long id;
 
     private String title;
 
@@ -45,7 +47,8 @@ public class Book {
 
     private Integer cost;
 
-    private Integer discount;
+
+    private Integer discountCost;
 
     private Boolean packagable;
 
@@ -56,19 +59,33 @@ public class Book {
 
     private Integer stock;
 
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id")
     private Publisher publisher;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "point_rate_id")
     private PointRate pointRate;
 
     @Builder
-    public Book(String title, String description, String index, LocalDate pubDate, String isbn10,
-                String isbn13,
-                Integer cost, Integer discount, Boolean packagable, Long views, BookStatus status, Integer stock,
-                Publisher publisher, PointRate pointRate) {
+
+    public Book(
+            String title,
+            String description,
+            String index,
+            LocalDate pubDate,
+            String isbn10,
+            String isbn13,
+            Integer cost,
+            Integer discountCost,
+            Boolean packagable,
+            Long views,
+            BookStatus status,
+            Integer stock,
+            Publisher publisher,
+            PointRate pointRate
+    ) {
         this.title = title;
         this.description = description;
         this.index = index;
@@ -76,7 +93,8 @@ public class Book {
         this.isbn10 = isbn10;
         this.isbn13 = isbn13;
         this.cost = cost;
-        this.discount = discount;
+
+        this.discountCost = discountCost;
         this.packagable = packagable;
         this.views = views;
         this.status = status;

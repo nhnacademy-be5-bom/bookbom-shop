@@ -1,4 +1,4 @@
-package shop.bookbom.shop.book.entity;
+package shop.bookbom.shop.coupon.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,28 +13,29 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.category.entity.Category;
 
 @Entity
-@Getter
+@Table(name = "coupon_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "book_author")
-public class BookAuthor {
+@Getter
+public class CouponCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "book_author_id")
+    @Column(name = "coupon_category_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id")
-    private Book book;
+    @JoinColumn(name = "coupon_id")
+    private Coupon coupon;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private Author author;
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Builder
-    public BookAuthor(Book book, Author author) {
-        this.book = book;
-        this.author = author;
+    public CouponCategory(Coupon coupon, Category category) {
+        this.coupon = coupon;
+        this.category = category;
     }
 }

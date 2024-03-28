@@ -2,17 +2,18 @@ package shop.bookbom.shop.payment.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.order.entity.Order;
 
 @Entity
 @Table(name = "payment")
@@ -20,30 +21,31 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_id", insertable = false, updatable = false)
-    private Long orderId;
+    private Long id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @Column(name = "payment_cost")
-    private Integer paymentCost;
+    private int cost;
 
     @Column(name = "payment_key")
-    private String paymentKey;
+    private String key;
 
     @ManyToOne
     @JoinColumn(name = "payment_method_id")
     private PaymentMethod paymentMethod;
 
-    @OneToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
 
     @Builder
-    public Payment(Integer paymentCost, String paymentKey, PaymentMethod paymentMethod,
-                   Order order) {
-        this.paymentCost = paymentCost;
-        this.paymentKey = paymentKey;
-        this.paymentMethod = paymentMethod;
+    public Payment(Order order, int cost, String key, PaymentMethod paymentMethod) {
+        this.id = order.getId();
         this.order = order;
+        this.cost = cost;
+        this.key = key;
+        this.paymentMethod = paymentMethod;
     }
+
 }
