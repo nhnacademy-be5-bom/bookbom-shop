@@ -6,6 +6,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
@@ -27,10 +28,10 @@ public class bookCart {
     private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "cart_id")
+    @JoinColumn(name = "cart_id")
     private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "book_id")
+    @JoinColumn(name = "book_id")
     private Book book;
 }
