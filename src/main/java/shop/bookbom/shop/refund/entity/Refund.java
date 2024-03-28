@@ -14,7 +14,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.bookbom.shop.order.entity.OrderBook;
+import shop.bookbom.shop.orderbook.entity.OrderBook;
+import shop.bookbom.shop.refundcategory.entity.RefundCategory;
 
 @Entity
 @Table(name = "return")

@@ -17,6 +17,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.orderbook.entity.OrderBook;
+import shop.bookbom.shop.orderstatus.entity.OrderStatus;
 
 @Entity
 @Table(name = "orders")

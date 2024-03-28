@@ -1,6 +1,5 @@
-package shop.bookbom.shop.coupon.entity;
+package shop.bookbom.shop.couponbook.entity;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,40 +11,32 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.book.entity.Book;
+import shop.bookbom.shop.coupon.entity.Coupon;
 
 @Entity
-@Table(name = "member_coupon")
+@Table(name = "coupon_book")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberCoupon {
+@Getter
+public class CouponBook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_coupon_id")
+    @Column(name = "coupon_book_id")
     private Long id;
-
-    @Column(name = "status")
-    private CouponStatus status;
-
-    @Column(name = "issue_date")
-    private Date issueDate;
-
-    @Column(name = "expire_date")
-    private Date expireDate;
-
-    @Column(name = "use_date")
-    private Date useDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id")
+    private Book book;
+
     @Builder
-    public MemberCoupon(CouponStatus status, Date issueDate, Date expireDate, Date useDate,
-                        Coupon coupon) {
-        this.status = status;
-        this.issueDate = issueDate;
-        this.expireDate = expireDate;
-        this.useDate = useDate;
+    public CouponBook(Coupon coupon, Book book) {
         this.coupon = coupon;
+        this.book = book;
     }
 }

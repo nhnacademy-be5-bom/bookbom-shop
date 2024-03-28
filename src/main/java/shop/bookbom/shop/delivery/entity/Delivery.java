@@ -1,4 +1,4 @@
-package shop.bookbom.shop.order.entity;
+package shop.bookbom.shop.delivery.entity;
 
 import java.time.LocalDate;
 import javax.persistence.Column;
@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.order.entity.Order;
 
 @Entity
 @Table(name = "delivery")

@@ -1,4 +1,4 @@
-package shop.bookbom.shop.refund.entity;
+package shop.bookbom.bookfiletype.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,19 +12,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "return_category")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "book_file_type")
 @Getter
-public class RefundCategory {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class BookFileType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "return_category_id")
+    @Column(name = "book_file_type_id")
     private Long id;
 
     private String name;
 
     @Builder
-    public RefundCategory(String name) {
+    public BookFileType(String name) {
         this.name = name;
     }
 }

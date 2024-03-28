@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.shop.order.entity.Order;
+import shop.bookbom.shop.paymentmethod.entity.PaymentMethod;
 
 @Entity
 @Table(name = "payment")

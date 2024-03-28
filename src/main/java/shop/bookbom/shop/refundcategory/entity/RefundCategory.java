@@ -1,4 +1,4 @@
-package shop.bookbom.shop.order.entity;
+package shop.bookbom.shop.refundcategory.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,18 +12,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "order_status")
-@Getter
+@Table(name = "return_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderStatus {
+@Getter
+public class RefundCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_status_id")
+    @Column(name = "return_category_id")
     private Long id;
+
     private String name;
 
     @Builder
-    public OrderStatus(String name) {
+    public RefundCategory(String name) {
         this.name = name;
     }
 }

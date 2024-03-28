@@ -1,4 +1,4 @@
-package shop.bookbom.shop.payment.entity;
+package shop.bookbom.shop.paymentmethod.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
