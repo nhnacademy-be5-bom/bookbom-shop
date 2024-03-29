@@ -47,14 +47,17 @@ jobs:
 
       - name: execute shell script
         uses: appleboy/ssh-action@master
+        env:
+          SECURE_MANAGER_APPKEY: ${{ secrets.SECURE_MANAGER_APPKEY }}
+          KEYSTORE_PASSWORD: ${{ secrets.SECURE_MANAGER_PASSWORD }}
         with:
           host: ${{ secrets.SSH_IP }}
           username: ${{ secrets.SSH_ID }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          secure_manager_appkey: ${{ secrets.SECURE_MANAGER_APPKEY }}
-          keystore_password: ${{ secrets.SECURE_MANAGER_PASSWORD }}
+          envs: SECURE_MANAGER_APPKEY, KEYSTORE_PASSWORD
           script_stop: true
           script: "./startup.sh"
-      - name : Run SonarQube
-        run : mvn sonar:sonar -Dsonar.projectKey=bookbom-shop-server -Dsonar.host.url=${{secrets.SONAR_HOST}} -Dsonar.login=${{secrets.SONAR_TOKEN}}
+
+      - name: Run SonarQube
+        run: mvn sonar:sonar -Dsonar.projectKey=bookbom-shop-server -Dsonar.host.url=${{secrets.SONAR_HOST}} -Dsonar.login=${{secrets.SONAR_TOKEN}}
