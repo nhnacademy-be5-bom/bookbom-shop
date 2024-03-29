@@ -14,10 +14,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  secure_manager_appkey: ${{ secrets.SECURE_MANAGER_APPKEY }}
-  keystore_password: ${{ secrets.SECURE_MANAGER_PASSWORD }}
-
 jobs:
   build:
 
@@ -56,5 +52,7 @@ jobs:
           username: ${{ secrets.SSH_ID }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          secure_manager_appkey: ${{ secrets.SECURE_MANAGER_APPKEY }}
+          keystore_password: ${{ secrets.SECURE_MANAGER_PASSWORD }}
           script_stop: true
           script: "./startup.sh"
