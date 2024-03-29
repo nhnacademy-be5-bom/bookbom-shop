@@ -14,6 +14,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  secure_manager_appkey: ${{ secrets.SECURE_MANAGER_APPKEY }}
+  keystore_password: ${{ secrets.SECURE_MANAGER_PASSWORD }}
+
 jobs:
   build:
 
