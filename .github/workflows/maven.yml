@@ -57,4 +57,4 @@ jobs:
           script_stop: true
           script: "./startup.sh"
       - name : Run SonarQube
-        run : mvn sonar:sonar -Dsonar.projectKey=github-action -Dsonar.host.url=${{secrets.SONAR_HOST}} -Dsonar.login=${{secrets.SONAR_TOKEN}}
+        run : mvn sonar:sonar -Dsonar.projectKey=bookbom-shop-server -Dsonar.host.url=${{secrets.SONAR_HOST}} -Dsonar.login=${{secrets.SONAR_TOKEN}}
