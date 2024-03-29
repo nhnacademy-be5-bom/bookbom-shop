@@ -1,15 +1,25 @@
 package shop.bookbom.shop.users.entity;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import shop.bookbom.shop.cart.entity.Cart;
 import shop.bookbom.shop.wish.entity.Wish;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -17,12 +27,12 @@ import java.util.List;
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 @SuperBuilder
-public class Users {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long userId;
+    private Long id;
 
     private String email;
 
@@ -37,10 +47,10 @@ public class Users {
     @OneToMany(mappedBy = "member")
     private List<Wish> wishList = new ArrayList<>();
 
-    public Users(String email,
-                 String password,
-                 Boolean registered,
-                 Cart cart) {
+    public User(String email,
+                String password,
+                Boolean registered,
+                Cart cart) {
         this.email = email;
         this.password = password;
         this.registered = registered;

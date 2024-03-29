@@ -12,12 +12,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.shop.coupon.entity.Coupon;
 
 @Entity
 @Table(name = "member_coupon")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class MemberCoupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

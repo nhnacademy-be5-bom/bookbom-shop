@@ -35,23 +35,18 @@ public class PointHistory {
     @Column(name = "change_date")
     private LocalDateTime changeDate;
 
-    @Column(name = "user_id")
-    private Long userId;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id")
     private Member member;
 
     @Builder
     public PointHistory(int changePoint,
                         String changeReason,
                         LocalDateTime changeDate,
-                        Long userId,
                         Member member) {
         this.changePoint = changePoint;
         this.changeReason = changeReason;
         this.changeDate = changeDate;
-        this.userId = userId;
         this.member = member;
     }
 }

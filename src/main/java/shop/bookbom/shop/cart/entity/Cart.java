@@ -1,11 +1,17 @@
 package shop.bookbom.shop.cart.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.bookbom.shop.users.entity.Users;
-
-import javax.persistence.*;
+import shop.bookbom.shop.users.entity.User;
 
 @Entity
 @Getter
@@ -18,15 +24,12 @@ public class Cart {
     @Column(name = "cart_id")
     private Long cartId;
 
-    @Column(name = "user_id")
-    private Long userId;
-
     @OneToOne(mappedBy = "cart")
-    private Users user;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Builder
-    public Cart(Long userId, Users user) {
-        this.userId = userId;
+    public Cart(User user) {
         this.user = user;
     }
 }

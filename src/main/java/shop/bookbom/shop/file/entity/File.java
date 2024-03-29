@@ -26,6 +26,7 @@ public class File {
 
     private String extension;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Builder
