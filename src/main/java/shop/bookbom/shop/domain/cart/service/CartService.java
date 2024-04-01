@@ -3,6 +3,7 @@ package shop.bookbom.shop.domain.cart.service;
 
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,7 @@ import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.cart.dto.request.CartAddRequest;
 import shop.bookbom.shop.domain.cart.entity.Cart;
 import shop.bookbom.shop.domain.cartitem.entity.CartItem;
+import shop.bookbom.shop.domain.cartitem.repository.CartItemRepository;
 import shop.bookbom.shop.domain.member.entity.Member;
 
 @Service
@@ -18,6 +20,7 @@ import shop.bookbom.shop.domain.member.entity.Member;
 @Transactional(readOnly = true)
 public class CartService {
     private final CartFindService cartFindService;
+    private final CartItemRepository cartItemRepository;
     private final BookRepository bookRepository;
 
     @Transactional
@@ -42,5 +45,20 @@ public class CartService {
             }
         });
         return cart;
+    }
+
+    @Transactional
+    public int updateQuantity(Long id, int quantity) {
+        CartItem cartItem = cartItemRepository.findById(id)
+                .orElseThrow();
+        cartItem.addQuantity(quantity);
+        return cartItem.getQuantity();
+    }
+
+    @Transactional
+    public void deleteItem(Long id) {
+        CartItem cartItem = cartItemRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
+        cartItemRepository.delete(cartItem);
     }
 }

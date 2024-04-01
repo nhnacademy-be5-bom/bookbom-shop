@@ -34,7 +34,7 @@ public class Cart {
     @JoinColumn(name = "user_id", nullable = false)
     private Member member;
 
-    @OneToMany
+    @OneToMany(mappedBy = "cart")
     private List<CartItem> cartItems = new ArrayList<>();
 
     @Builder

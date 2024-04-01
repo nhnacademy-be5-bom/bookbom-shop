@@ -40,7 +40,7 @@ class CartFindServiceTest {
                 .book(book)
                 .quantity(3)
                 .build());
-        when(cartRepository.getCartByMemberFetch(any())).thenReturn(Optional.of(cart));
+        when(cartRepository.getCartFetchItems(any())).thenReturn(Optional.of(cart));
 
 
         //when
@@ -59,7 +59,7 @@ class CartFindServiceTest {
     void getCart() {
         //given
         Member member = CartTestUtils.getMember();
-        when(cartRepository.getCartByMemberFetch(any())).thenReturn(Optional.empty());
+        when(cartRepository.getCartFetchItems(any())).thenReturn(Optional.empty());
         when(cartRepository.save(any())).thenReturn(Cart.builder().member(member).build());
 
 

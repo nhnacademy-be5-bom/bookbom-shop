@@ -16,7 +16,7 @@ public class CartFindService {
 
     @Transactional
     public Cart getCart(Member member) {
-        return cartRepository.getCartByMemberFetch(member)
+        return cartRepository.getCartFetchItems(member)
                 .orElseGet(() -> cartRepository.save(Cart.builder()
                         .member(member)
                         .build()));
