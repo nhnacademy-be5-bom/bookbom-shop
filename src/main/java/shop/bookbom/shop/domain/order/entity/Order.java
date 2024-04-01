@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
-import shop.bookbom.shop.domain.user.entity.User;
+import shop.bookbom.shop.domain.users.entity.User;
 
 @Entity
 @Table(name = "orders")

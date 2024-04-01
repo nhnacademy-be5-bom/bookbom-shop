@@ -1,4 +1,4 @@
-package shop.bookbom.shop.order.service;
+package shop.bookbom.shop.domain.order.service;
 
 import org.springframework.stereotype.Service;
 
