@@ -26,6 +26,9 @@ public class BookAuthor {
     @Column(name = "book_author_id", nullable = false)
     private Long id;
 
+    @Column(length = 100, nullable = false)
+    private String role;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
