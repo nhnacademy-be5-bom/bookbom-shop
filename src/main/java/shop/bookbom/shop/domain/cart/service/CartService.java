@@ -3,15 +3,16 @@ package shop.bookbom.shop.domain.cart.service;
 
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.book.entity.Book;
+import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.cart.dto.request.CartAddRequest;
 import shop.bookbom.shop.domain.cart.entity.Cart;
 import shop.bookbom.shop.domain.cartitem.entity.CartItem;
+import shop.bookbom.shop.domain.cartitem.exception.CartItemNotFoundException;
 import shop.bookbom.shop.domain.cartitem.repository.CartItemRepository;
 import shop.bookbom.shop.domain.member.entity.Member;
 
@@ -28,7 +29,8 @@ public class CartService {
         Cart cart = cartFindService.getCart(member);
         List<CartItem> cartItems = cart.getCartItems();
         addItems.forEach(c -> {
-            Book book = bookRepository.findById(c.getBookId()).orElseThrow();
+            Book book = bookRepository.findById(c.getBookId())
+                    .orElseThrow(BookNotFoundException::new);
             int quantity = c.getQuantity();
             Optional<CartItem> cartItemOptional = cartItems.stream()
                     .filter(cartitem -> cartitem.getBook().equals(book))
@@ -41,6 +43,7 @@ public class CartService {
                         .cart(cart)
                         .quantity(quantity)
                         .build();
+                cartItemRepository.save(cartItem);
                 cart.addItem(cartItem);
             }
         });
@@ -50,7 +53,7 @@ public class CartService {
     @Transactional
     public int updateQuantity(Long id, int quantity) {
         CartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(CartItemNotFoundException::new);
         cartItem.addQuantity(quantity);
         return cartItem.getQuantity();
     }
@@ -58,7 +61,7 @@ public class CartService {
     @Transactional
     public void deleteItem(Long id) {
         CartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(CartItemNotFoundException::new);
         cartItemRepository.delete(cartItem);
     }
 }

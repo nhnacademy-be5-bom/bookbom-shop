@@ -11,7 +11,6 @@ import static shop.bookbom.shop.domain.cart.service.CartTestUtils.getCart;
 import static shop.bookbom.shop.domain.cart.service.CartTestUtils.getMember;
 
 import java.util.Optional;
-import javax.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +22,7 @@ import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.cart.entity.Cart;
 import shop.bookbom.shop.domain.cartitem.entity.CartItem;
+import shop.bookbom.shop.domain.cartitem.exception.CartItemNotFoundException;
 import shop.bookbom.shop.domain.cartitem.repository.CartItemRepository;
 import shop.bookbom.shop.domain.member.entity.Member;
 
@@ -116,7 +116,7 @@ class CartServiceTest {
 
         //when & then
         assertThatThrownBy(() -> cartService.deleteItem(1L))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(CartItemNotFoundException.class);
     }
 
 
