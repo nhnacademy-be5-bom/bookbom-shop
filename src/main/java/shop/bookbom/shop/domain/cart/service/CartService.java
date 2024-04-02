@@ -37,7 +37,7 @@ public interface CartService {
     /**
      * 장바구니 상품을 삭제하는 메서드입니다.
      *
-     * @param id
+     * @param id 장바구니 상품 ID
      */
     void deleteItem(Long id);
 }
