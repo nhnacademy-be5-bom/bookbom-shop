@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.cart.entity.Cart;
+import shop.bookbom.shop.domain.cartitem.exception.CartItemInvalidQuantityException;
 
 @Entity
 @Getter
@@ -49,8 +50,12 @@ public class CartItem {
     public void addQuantity(int quantity) {
         int update = this.quantity + quantity;
         if (update < 1) {
-            // todo 예외처리
+            throw new CartItemInvalidQuantityException();
         }
         this.quantity = update;
+    }
+
+    public void updateQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

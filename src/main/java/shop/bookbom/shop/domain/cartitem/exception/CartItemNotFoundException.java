@@ -5,7 +5,7 @@ import shop.bookbom.shop.common.exception.ErrorCode;
 
 public class CartItemNotFoundException extends BaseException {
     public CartItemNotFoundException() {
-        super(ErrorCode.CARTITEM_NOT_FOUND);
+        super(ErrorCode.CART_ITEM_NOT_FOUND);
     }
 
     public CartItemNotFoundException(ErrorCode errorCode) {

@@ -1,67 +1,43 @@
 package shop.bookbom.shop.domain.cart.service;
 
-
 import java.util.List;
-import java.util.Optional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import shop.bookbom.shop.domain.book.entity.Book;
-import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
-import shop.bookbom.shop.domain.book.repository.BookRepository;
+import shop.bookbom.shop.domain.cart.dto.repsonse.CartInfoResponse;
+import shop.bookbom.shop.domain.cart.dto.repsonse.CartUpdateResponse;
 import shop.bookbom.shop.domain.cart.dto.request.CartAddRequest;
-import shop.bookbom.shop.domain.cart.entity.Cart;
-import shop.bookbom.shop.domain.cartitem.entity.CartItem;
-import shop.bookbom.shop.domain.cartitem.exception.CartItemNotFoundException;
-import shop.bookbom.shop.domain.cartitem.repository.CartItemRepository;
-import shop.bookbom.shop.domain.member.entity.Member;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class CartService {
-    private final CartFindService cartFindService;
-    private final CartItemRepository cartItemRepository;
-    private final BookRepository bookRepository;
+public interface CartService {
 
-    @Transactional
-    public Cart addCart(List<CartAddRequest> addItems, Member member) {
-        Cart cart = cartFindService.getCart(member);
-        List<CartItem> cartItems = cart.getCartItems();
-        addItems.forEach(c -> {
-            Book book = bookRepository.findById(c.getBookId())
-                    .orElseThrow(BookNotFoundException::new);
-            int quantity = c.getQuantity();
-            Optional<CartItem> cartItemOptional = cartItems.stream()
-                    .filter(cartitem -> cartitem.getBook().equals(book))
-                    .findFirst();
-            if (cartItemOptional.isPresent()) {
-                cartItemOptional.get().addQuantity(quantity);
-            } else {
-                CartItem cartItem = CartItem.builder()
-                        .book(book)
-                        .cart(cart)
-                        .quantity(quantity)
-                        .build();
-                cartItemRepository.save(cartItem);
-                cart.addItem(cartItem);
-            }
-        });
-        return cart;
-    }
+    /**
+     * 장바구니 상품 추가
+     *
+     * @param addItems 추가할 상품 정보 (상품 ID, 수량)
+     * @param userId   회원 Id
+     * @return 장바구니 ID, 장바구니 상품 정보 리스트 (상품 ID, 수량)
+     */
+    CartInfoResponse addCart(List<CartAddRequest> addItems, Long userId);
 
-    @Transactional
-    public int updateQuantity(Long id, int quantity) {
-        CartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(CartItemNotFoundException::new);
-        cartItem.addQuantity(quantity);
-        return cartItem.getQuantity();
-    }
+    /**
+     * 장바구니에 담긴 상품 목록을 반환하는 메서드입니다.
+     *
+     * @param userId 회원 ID
+     * @return 장바구니 ID, 장바구니 상품 정보 리스트 (상품 ID, 수량)
+     */
 
-    @Transactional
-    public void deleteItem(Long id) {
-        CartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(CartItemNotFoundException::new);
-        cartItemRepository.delete(cartItem);
-    }
+    CartInfoResponse getCartInfo(Long userId);
+
+    /**
+     * 장바구니 상품 수량을 변경하는 메서드입니다.
+     *
+     * @param id       장바구니 상품 ID
+     * @param quantity 변경할 수량
+     * @return 변경 완료된 수량
+     */
+    CartUpdateResponse updateQuantity(Long id, int quantity);
+
+    /**
+     * 장바구니 상품을 삭제하는 메서드입니다.
+     *
+     * @param id
+     */
+    void deleteItem(Long id);
 }

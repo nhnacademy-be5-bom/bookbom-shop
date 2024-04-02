@@ -14,9 +14,13 @@ public enum ErrorCode {
     COMMON_ILLEGAL_STATUS(400, "잘못된 상태값입니다."),
     // book
     BOOK_NOT_FOUND(400, "해당 책이 존재하지 않습니다."),
+    // cart
+    CART_INVALID_ADD_REQUEST(400, "요청한 상품 ID와 수량이 올바르지 않습니다."),
     // cart_item
-    CARTITEM_NOT_FOUND(400, "해당 장바구니 상품이 존재하지 않습니다."),
-    ;
+    CART_ITEM_NOT_FOUND(400, "해당 장바구니 상품이 존재하지 않습니다."),
+    CART_ITEM_INVALID_QUANTITY(400, "장바구니 상품 수량이 올바르지 않습니다."),
+    // member
+    MEMBER_NOT_FOUND(400, "해당 회원이 존재하지 않습니다.");
     private final int code;
     private final String message;
 }
