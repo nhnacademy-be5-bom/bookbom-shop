@@ -7,12 +7,4 @@ public class CartItemNotFoundException extends BaseException {
     public CartItemNotFoundException() {
         super(ErrorCode.CART_ITEM_NOT_FOUND);
     }
-
-    public CartItemNotFoundException(ErrorCode errorCode) {
-        super(errorCode);
-    }
-
-    public CartItemNotFoundException(ErrorCode errorCode, String message) {
-        super(errorCode, message);
-    }
 }

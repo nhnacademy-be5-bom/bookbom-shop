@@ -3,9 +3,9 @@ package shop.bookbom.shop.domain.cart.dto.repsonse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class CartInfoResponse {
     @JsonProperty(value = "cart_id")
     private Long cartId;
@@ -18,7 +18,7 @@ public class CartInfoResponse {
         this.cartItems = cartItems;
     }
 
-    @Data
+    @Getter
     public static class CartItemInfo {
         private Long bookId;
         private int quantity;

@@ -1,9 +1,9 @@
 package shop.bookbom.shop.domain.cart.dto.repsonse;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class CartUpdateResponse {
     private int quantity;
 
