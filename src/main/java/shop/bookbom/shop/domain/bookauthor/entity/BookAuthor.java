@@ -38,7 +38,8 @@ public class BookAuthor {
     private Author author;
 
     @Builder
-    public BookAuthor(Book book, Author author) {
+    public BookAuthor(String role, Book book, Author author) {
+        this.role = role;
         this.book = book;
         this.author = author;
     }
