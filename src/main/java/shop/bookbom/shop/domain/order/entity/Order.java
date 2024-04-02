@@ -47,7 +47,7 @@ public class Order {
     private String senderPhoneNumber;
 
     @Column(name = "total_cost", nullable = false)
-    private Long totalCost;
+    private Integer totalCost;
 
     @Column(name = "used_point", nullable = false)
     private int usedPoint;
@@ -71,7 +71,7 @@ public class Order {
             LocalDateTime orderDate,
             String senderName,
             String senderPhoneNumber,
-            Long totalCost,
+            Integer totalCost,
             int usedPoint,
             User user,
             OrderStatus status
