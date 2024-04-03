@@ -1,17 +1,17 @@
-package shop.bookbom.shop.booktag.service;
+package shop.bookbom.shop.domain.booktag.service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import shop.bookbom.shop.book.entity.Book;
-import shop.bookbom.shop.book.repository.BookRepository;
-import shop.bookbom.shop.booktag.dto.BookTagResponse;
-import shop.bookbom.shop.booktag.entity.BookTag;
-import shop.bookbom.shop.booktag.repository.BookTagRepository;
-import shop.bookbom.shop.tag.entity.Tag;
-import shop.bookbom.shop.tag.repository.TagRepository;
+import shop.bookbom.shop.domain.book.entity.Book;
+import shop.bookbom.shop.domain.book.repository.BookRepository;
+import shop.bookbom.shop.domain.booktag.dto.BookTagResponse;
+import shop.bookbom.shop.domain.booktag.entity.BookTag;
+import shop.bookbom.shop.domain.booktag.repository.BookTagRepository;
+import shop.bookbom.shop.domain.tag.entity.Tag;
+import shop.bookbom.shop.domain.tag.repository.TagRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +20,7 @@ public class BookTagService {
     private final TagRepository tagRepository;
     private final BookRepository bookRepository;
 
-    //책 태그 조회
-// 책 태그 조회
+    // 책 태그 조회
     public List<BookTagResponse> getBookTagInformation(long bookId) {
         // 주어진 bookId에 해당하는 BookTag 목록을 가져옴
         List<BookTag> bookTags = bookTagRepository.findAllByBookId(bookId);

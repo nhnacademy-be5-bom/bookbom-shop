@@ -1,4 +1,4 @@
-package shop.bookbom.shop.booktag.controller;
+package shop.bookbom.shop.domain.booktag.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import shop.bookbom.shop.booktag.dto.BookTagRequest;
-import shop.bookbom.shop.booktag.dto.BookTagResponse;
-import shop.bookbom.shop.booktag.service.BookTagService;
+import shop.bookbom.shop.domain.booktag.dto.BookTagRequest;
+import shop.bookbom.shop.domain.booktag.dto.BookTagResponse;
+import shop.bookbom.shop.domain.booktag.service.BookTagService;
 
 @RestController
 @RequiredArgsConstructor

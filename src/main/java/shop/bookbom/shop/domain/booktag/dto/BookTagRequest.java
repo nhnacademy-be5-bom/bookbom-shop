@@ -1,4 +1,4 @@
-package shop.bookbom.shop.booktag.dto;
+package shop.bookbom.shop.domain.booktag.dto;
 
 import lombok.Getter;
 
