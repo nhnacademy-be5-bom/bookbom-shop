@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
-import shop.bookbom.shop.domain.user.entity.User;
+import shop.bookbom.shop.domain.users.entity.User;
 
 @Entity
 @Table(name = "orders")
@@ -47,7 +47,7 @@ public class Order {
     private String senderPhoneNumber;
 
     @Column(name = "total_cost", nullable = false)
-    private Long totalCost;
+    private Integer totalCost;
 
     @Column(name = "used_point", nullable = false)
     private int usedPoint;
@@ -71,7 +71,7 @@ public class Order {
             LocalDateTime orderDate,
             String senderName,
             String senderPhoneNumber,
-            Long totalCost,
+            Integer totalCost,
             int usedPoint,
             User user,
             OrderStatus status
