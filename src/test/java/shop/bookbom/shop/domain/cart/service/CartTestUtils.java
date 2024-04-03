@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.test.util.ReflectionTestUtils;
 import shop.bookbom.shop.domain.book.entity.Book;
+import shop.bookbom.shop.domain.cart.dto.repsonse.CartInfoResponse;
+import shop.bookbom.shop.domain.cart.dto.repsonse.CartUpdateResponse;
 import shop.bookbom.shop.domain.cart.dto.request.CartAddRequest;
+import shop.bookbom.shop.domain.cart.dto.request.CartUpdateRequest;
 import shop.bookbom.shop.domain.cart.entity.Cart;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.role.entity.Role;
@@ -57,5 +60,33 @@ public class CartTestUtils {
             requests.add(cartAddRequest);
         }
         return requests;
+    }
+
+    public static CartInfoResponse getCartInfoResponse() {
+        List<CartInfoResponse.CartItemInfo> cartItems = new ArrayList<>();
+        for (int i = 1; i <= 3; i++) {
+            CartInfoResponse.CartItemInfo cartItemInfo = CartInfoResponse.CartItemInfo.builder()
+                    .bookId((long) i)
+                    .quantity(i)
+                    .build();
+            cartItems.add(cartItemInfo);
+        }
+
+        return CartInfoResponse.builder()
+                .cartId(1L)
+                .cartItems(cartItems)
+                .build();
+    }
+
+    public static CartUpdateRequest getCartUpdateRequest() {
+        CartUpdateRequest request = new CartUpdateRequest();
+        request.setQuantity(5);
+        return request;
+    }
+
+    public static CartUpdateResponse getCartUpdateResponse() {
+        return CartUpdateResponse.builder()
+                .quantity(10)
+                .build();
     }
 }

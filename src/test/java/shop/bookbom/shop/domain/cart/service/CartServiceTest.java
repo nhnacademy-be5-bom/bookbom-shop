@@ -28,6 +28,7 @@ import shop.bookbom.shop.domain.cart.dto.repsonse.CartUpdateResponse;
 import shop.bookbom.shop.domain.cart.entity.Cart;
 import shop.bookbom.shop.domain.cart.service.impl.CartServiceImpl;
 import shop.bookbom.shop.domain.cartitem.entity.CartItem;
+import shop.bookbom.shop.domain.cartitem.exception.CartItemInvalidQuantityException;
 import shop.bookbom.shop.domain.cartitem.exception.CartItemNotFoundException;
 import shop.bookbom.shop.domain.cartitem.repository.CartItemRepository;
 import shop.bookbom.shop.domain.member.entity.Member;
@@ -160,6 +161,22 @@ class CartServiceTest {
 
         //then
         assertThat(response.getQuantity()).isEqualTo(20);
+    }
+
+    @Test
+    @DisplayName("장바구니 도서 수량 수정 예외")
+    void updateQuantityException() throws Exception {
+        // given
+        CartItem cartItem = CartItem.builder()
+                .cart(getCart(getMember(1L, "test@email.com"), 1L))
+                .book(getBook(1L, "title1"))
+                .build();
+        ReflectionTestUtils.setField(cartItem, "id", 1L);
+        when(cartItemRepository.findById(1L)).thenReturn(Optional.of(cartItem));
+
+        // when & then
+        assertThatThrownBy(() -> cartService.updateQuantity(1L, 0))
+                .isInstanceOf(CartItemInvalidQuantityException.class);
     }
 
     @Test
