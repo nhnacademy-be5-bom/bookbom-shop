@@ -1,0 +1,11 @@
+### stop 1
+POST http://localhost:8010/actuator/status/stop
+
+### start 1
+POST http://localhost:8010/actuator/status/start
+
+### stop 2
+POST http://localhost:8011/actuator/status/stop
+
+### start 2
+POST http://localhost:8011/actuator/status/start
