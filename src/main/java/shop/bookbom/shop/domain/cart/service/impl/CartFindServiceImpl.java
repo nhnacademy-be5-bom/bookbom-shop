@@ -13,7 +13,6 @@ import shop.bookbom.shop.domain.member.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class CartFindServiceImpl implements CartFindService {
     private final CartRepository cartRepository;
     private final MemberRepository memberRepository;

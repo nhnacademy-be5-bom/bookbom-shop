@@ -21,7 +21,6 @@ import shop.bookbom.shop.domain.cartitem.repository.CartItemRepository;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class CartServiceImpl implements CartService {
     private final CartFindService cartFindService;
     private final BookRepository bookRepository;
