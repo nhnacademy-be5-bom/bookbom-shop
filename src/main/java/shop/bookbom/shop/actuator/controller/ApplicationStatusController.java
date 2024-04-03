@@ -11,7 +11,7 @@ import shop.bookbom.shop.actuator.ApplicationStatus;
 
 
 @RestController
-@RequestMapping("/shop")
+@RequestMapping("/actuator")
 public class ApplicationStatusController {
 
     private final ApplicationInfoManager applicationInfoManager;
@@ -23,14 +23,14 @@ public class ApplicationStatusController {
         this.applicationStatus = applicationStatus;
     }
 
-    @PostMapping("/actuator/status/stop")
+    @PostMapping("/status/stop")
     @ResponseStatus(value = HttpStatus.OK)
     public void stopServer() {
         applicationInfoManager.setInstanceStatus(InstanceInfo.InstanceStatus.DOWN);
         applicationStatus.stopService();
     }
 
-    @PostMapping("/actuator/status/start")
+    @PostMapping("/status/start")
     @ResponseStatus(value = HttpStatus.OK)
     public void startServer() {
         applicationInfoManager.setInstanceStatus(InstanceInfo.InstanceStatus.UP);
