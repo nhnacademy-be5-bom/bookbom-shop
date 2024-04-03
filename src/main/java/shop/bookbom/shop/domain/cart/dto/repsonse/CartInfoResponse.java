@@ -17,11 +17,13 @@ public class CartInfoResponse {
 
     @Getter
     public static class CartItemInfo {
+        private Long cartItemId;
         private Long bookId;
         private int quantity;
 
         @Builder
-        public CartItemInfo(Long bookId, int quantity) {
+        public CartItemInfo(Long cartItemId, Long bookId, int quantity) {
+            this.cartItemId = cartItemId;
             this.bookId = bookId;
             this.quantity = quantity;
         }

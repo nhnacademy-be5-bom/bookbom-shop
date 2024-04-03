@@ -82,6 +82,7 @@ public class CartServiceImpl implements CartService {
     private CartInfoResponse cartToCartInfoResponse(Cart cart) {
         List<CartInfoResponse.CartItemInfo> cartItems = cart.getCartItems().stream()
                 .map(ci -> CartInfoResponse.CartItemInfo.builder()
+                        .cartItemId(ci.getId())
                         .bookId(ci.getBook().getId())
                         .quantity(ci.getQuantity())
                         .build())

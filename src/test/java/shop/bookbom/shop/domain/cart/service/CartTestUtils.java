@@ -66,6 +66,7 @@ public class CartTestUtils {
         List<CartInfoResponse.CartItemInfo> cartItems = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
             CartInfoResponse.CartItemInfo cartItemInfo = CartInfoResponse.CartItemInfo.builder()
+                    .cartItemId((long) i)
                     .bookId((long) i)
                     .quantity(i)
                     .build();
