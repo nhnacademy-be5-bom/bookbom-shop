@@ -48,14 +48,13 @@ public class CartItem {
     }
 
     public void addQuantity(int quantity) {
-        int update = this.quantity + quantity;
-        if (update < 1) {
-            throw new CartItemInvalidQuantityException();
-        }
-        this.quantity = update;
+        this.quantity += quantity;
     }
 
     public void updateQuantity(int quantity) {
+        if (quantity < 1) {
+            throw new CartItemInvalidQuantityException();
+        }
         this.quantity = quantity;
     }
 }
