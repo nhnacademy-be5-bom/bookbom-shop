@@ -2,6 +2,7 @@ package shop.bookbom.shop.actuator.controller;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.InstanceInfo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,16 +13,11 @@ import shop.bookbom.shop.actuator.ApplicationStatus;
 
 @RestController
 @RequestMapping("/actuator")
+@RequiredArgsConstructor
 public class ApplicationStatusController {
 
     private final ApplicationInfoManager applicationInfoManager;
     private final ApplicationStatus applicationStatus;
-
-    public ApplicationStatusController(ApplicationInfoManager applicationInfoManager,
-                                       ApplicationStatus applicationStatus) {
-        this.applicationInfoManager = applicationInfoManager;
-        this.applicationStatus = applicationStatus;
-    }
 
     @PostMapping("/status/stop")
     @ResponseStatus(value = HttpStatus.OK)
