@@ -60,10 +60,10 @@ class CartControllerTest {
                 .andExpect(jsonPath("$.header.resultCode").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
                 .andExpect(jsonPath("$.header.successful").value(true))
-                .andExpect(jsonPath("$.result.cart_id").value(1))
-                .andExpect(jsonPath("$.result.cart_items.length()").value(3))
-                .andExpect(jsonPath("$.result.cart_items[0].bookId").value(1))
-                .andExpect(jsonPath("$.result.cart_items[0].quantity").value(1));
+                .andExpect(jsonPath("$.result.cartId").value(1))
+                .andExpect(jsonPath("$.result.cartItems.length()").value(3))
+                .andExpect(jsonPath("$.result.cartItems[0].bookId").value(1))
+                .andExpect(jsonPath("$.result.cartItems[0].quantity").value(1));
     }
 
     @Test
@@ -78,10 +78,10 @@ class CartControllerTest {
                 .andExpect(jsonPath("$.header.resultCode").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
                 .andExpect(jsonPath("$.header.successful").value(true))
-                .andExpect(jsonPath("$.result.cart_id").value(1))
-                .andExpect(jsonPath("$.result.cart_items.length()").value(3))
-                .andExpect(jsonPath("$.result.cart_items[0].bookId").value(1))
-                .andExpect(jsonPath("$.result.cart_items[0].quantity").value(1));
+                .andExpect(jsonPath("$.result.cartId").value(1))
+                .andExpect(jsonPath("$.result.cartItems.length()").value(3))
+                .andExpect(jsonPath("$.result.cartItems[0].bookId").value(1))
+                .andExpect(jsonPath("$.result.cartItems[0].quantity").value(1));
     }
 
     @Test
