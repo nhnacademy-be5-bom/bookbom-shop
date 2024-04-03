@@ -13,8 +13,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.cart.entity.Cart;
+import shop.bookbom.shop.domain.cartitem.exception.CartItemInvalidQuantityException;
 
 @Entity
 @Getter
@@ -29,6 +31,7 @@ public class CartItem {
     @Column(nullable = false)
     private int quantity;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
@@ -42,5 +45,16 @@ public class CartItem {
         this.quantity = quantity;
         this.cart = cart;
         this.book = book;
+    }
+
+    public void addQuantity(int quantity) {
+        this.quantity += quantity;
+    }
+
+    public void updateQuantity(int quantity) {
+        if (quantity < 1) {
+            throw new CartItemInvalidQuantityException();
+        }
+        this.quantity = quantity;
     }
 }
