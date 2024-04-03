@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import shop.bookbom.shop.domain.rank.entity.Rank;
 import shop.bookbom.shop.domain.role.entity.Role;
-import shop.bookbom.shop.domain.user.entity.User;
+import shop.bookbom.shop.domain.users.entity.User;
 import shop.bookbom.shop.domain.wish.entity.Wish;
 
 @Entity

@@ -26,6 +26,9 @@ public class BookAuthor {
     @Column(name = "book_author_id", nullable = false)
     private Long id;
 
+    @Column(length = 100, nullable = false)
+    private String role;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
@@ -35,7 +38,8 @@ public class BookAuthor {
     private Author author;
 
     @Builder
-    public BookAuthor(Book book, Author author) {
+    public BookAuthor(String role, Book book, Author author) {
+        this.role = role;
         this.book = book;
         this.author = author;
     }
