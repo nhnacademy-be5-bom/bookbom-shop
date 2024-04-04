@@ -9,5 +9,5 @@ public class BeforeOrderBookResponse {
     private String imageUrl;
     private String title;
     private Integer quantity;
-    private Long cost;
+    private Integer cost;
 }
