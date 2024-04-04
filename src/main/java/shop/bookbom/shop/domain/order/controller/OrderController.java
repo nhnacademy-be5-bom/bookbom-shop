@@ -6,7 +6,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
@@ -14,10 +13,8 @@ import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.service.BookService;
 import shop.bookbom.shop.domain.bookfile.service.BookFileService;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequest;
-import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
-import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.service.OrderService;
 import shop.bookbom.shop.domain.orderbook.service.OrderBookService;
 import shop.bookbom.shop.domain.users.service.UserService;
@@ -81,10 +78,10 @@ public class OrderController {
         return CommonResponse.successWithData(beforeOrderResponse);
     }
 
-    @PostMapping("/shop/{userId}/beforeOrder")
-    public CommonResponse<WrapperSelectResponse> setSelectWrapper(@PathVariable(required = false) Long userId,
-                                                                  @RequestBody
-                                                                  List<WrapperSelectRequest> wrapperSelectRequestList) {
-
-    }
+//    @PostMapping("/shop/{userId}/beforeOrder")
+//    public CommonResponse<WrapperSelectResponse> setSelectWrapper(@PathVariable(required = false) Long userId,
+//                                                                  @RequestBody
+//                                                                  List<WrapperSelectRequest> wrapperSelectRequestList) {
+//
+//    }
 }

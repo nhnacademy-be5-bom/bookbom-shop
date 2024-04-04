@@ -38,7 +38,7 @@ public class Delivery {
     private String address;
 
     @Column(name = "delivery_cost", nullable = false)
-    private long cost;
+    private Integer cost;
 
     @Column(name = "estimated_date", nullable = false)
     private LocalDate estimatedDate;
@@ -52,7 +52,7 @@ public class Delivery {
             String name,
             String phoneNumber,
             String address,
-            long cost,
+            Integer cost,
             LocalDate estimatedDate
     ) {
         this.id = order.getId();

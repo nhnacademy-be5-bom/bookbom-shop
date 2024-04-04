@@ -5,6 +5,14 @@ import shop.bookbom.shop.common.exception.ErrorCode;
 
 public class BookNotFoundException extends BaseException {
     public BookNotFoundException() {
-        super(ErrorCode.COMMON_BOOK_NOT_FOUND);
+        super(ErrorCode.BOOK_NOT_FOUND);
+    }
+
+    public BookNotFoundException(ErrorCode errorCode) {
+        super(errorCode);
+    }
+
+    public BookNotFoundException(ErrorCode errorCode, String message) {
+        super(errorCode, message);
     }
 }

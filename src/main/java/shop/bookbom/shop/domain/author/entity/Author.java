@@ -24,12 +24,8 @@ public class Author {
     @Column(length = 30, nullable = false)
     private String name;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String description;
-
     @Builder
-    public Author(String name, String description) {
+    public Author(String name) {
         this.name = name;
-        this.description = description;
     }
 }
