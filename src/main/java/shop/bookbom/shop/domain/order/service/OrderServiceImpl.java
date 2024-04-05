@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
@@ -27,6 +28,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
+    @Transactional
     public BeforeOrderResponse getOrderBookInfo(List<BeforeOrderRequest> beforeOrderRequestList) {
         int TotalOrderCount = 0;
         List<BeforeOrderBookResponse> beforeOrderBookResponseList = new ArrayList<>();
@@ -36,8 +38,6 @@ public class OrderServiceImpl implements OrderService {
             Optional<Book> book = bookRepository.findById(bookRequest.getBookId());
             //책 정보가 존재하면
             if (book.isPresent()) {
-
-
                 //책 정보를 가져와서 응답 객체에 넣음
                 String title = book.get().getTitle();
                 Integer cost = book.get().getCost();
@@ -58,8 +58,6 @@ public class OrderServiceImpl implements OrderService {
             } else {
                 throw new BookNotFoundException();
             }
-
-
         }
         //모든 포장지 list 가져옴
         List<Wrapper> wrapperList = wrapperRepository.findAll();
@@ -74,6 +72,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public WrapperSelectResponse selectWrapper(Long userId, WrapperSelectRequest wrapperSelectRequest) {
         int totalOrderCount = wrapperSelectRequest.getTotalOrderCount();
         List<WrapperSelectBookRequest> wrapperSelectBookRequestList =
