@@ -13,6 +13,7 @@ public class BookFileRepositoryCustomImpl extends QuerydslRepositorySupport impl
         super(BookFile.class);
     }
 
+
     @Override
     public String getBookImageUrl(Long bookId) {
 

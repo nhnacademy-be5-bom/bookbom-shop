@@ -1,10 +1,15 @@
 package shop.bookbom.shop.domain.order.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.List;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class WrapperSelectRequest {
-//    private List<WrapperBookRequest>
+    private List<WrapperSelectBookRequest> wrapperSelectBookRequestList;
+    private int TotalOrderCount;
+
+    public WrapperSelectRequest(List<WrapperSelectBookRequest> wrapperSelectBookRequestList, int totalOrderCount) {
+        this.wrapperSelectBookRequestList = wrapperSelectBookRequestList;
+        TotalOrderCount = totalOrderCount;
+    }
 }

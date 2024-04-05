@@ -7,5 +7,5 @@ import shop.bookbom.shop.domain.order.entity.Order;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    Integer countById(Long id);
+    
 }
