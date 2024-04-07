@@ -1,9 +1,11 @@
 package shop.bookbom.shop.domain.tag.service;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.bookbom.shop.domain.category.entity.Status;
 import shop.bookbom.shop.domain.tag.entity.Tag;
+import shop.bookbom.shop.domain.tag.exception.TagNotFoundException;
 import shop.bookbom.shop.domain.tag.repository.TagRepository;
 
 @Service
@@ -22,6 +24,10 @@ public class TagService {
     //태그 삭제
     public void deleteTagService(long tagId) {
         //레포지토리에 접근해 삭제 실행
+        Optional<Tag> tag = tagRepository.findById(tagId);
+        if (tag.isEmpty()) {
+            throw new TagNotFoundException();
+        }
         tagRepository.deleteById(tagId);
     }
 }

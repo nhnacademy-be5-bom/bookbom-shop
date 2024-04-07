@@ -8,4 +8,15 @@ import shop.bookbom.shop.domain.category.entity.Status;
 public class TagRequest {
     String name;
     Status status;
+
+    public TagRequest(String name, Status status) {
+        if (name == null) {
+            throw new IllegalArgumentException("Invalid name");
+        }
+        if (status != Status.USED && status != Status.DEL) {
+            throw new IllegalArgumentException("Invalid status");
+        }
+        this.name = name;
+        this.status = status;
+    }
 }
