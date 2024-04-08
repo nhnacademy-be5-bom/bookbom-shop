@@ -50,10 +50,6 @@ public class Member extends User {
     @JoinColumn(name = "rank_id", nullable = false)
     private Rank rank;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
-
     @OneToMany(mappedBy = "member")
     private List<Wish> wishList = new ArrayList<>();
 
@@ -61,16 +57,16 @@ public class Member extends User {
             String email,
             String password,
             Boolean registered,
+            Role role,
             String name,
             String phoneNumber,
             LocalDate birthDate,
             String nickname,
             int point,
             MemberStatus status,
-            Rank rank,
-            Role role
+            Rank rank
     ) {
-        super(email, password, registered);
+        super(email, password, registered, role);
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
@@ -78,7 +74,6 @@ public class Member extends User {
         this.point = point;
         this.status = status;
         this.rank = rank;
-        this.role = role;
     }
 
     public void addWish(Wish wish) {
