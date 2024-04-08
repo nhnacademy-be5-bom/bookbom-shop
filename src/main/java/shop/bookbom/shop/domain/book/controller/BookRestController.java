@@ -1,9 +1,11 @@
 package shop.bookbom.shop.domain.book.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +18,7 @@ import shop.bookbom.shop.domain.book.service.BookService;
 @RestController
 @RequestMapping("/shop")
 @RequiredArgsConstructor
+@Slf4j
 public class BookRestController {
 
     private final BookService bookService;
@@ -28,7 +31,9 @@ public class BookRestController {
     }
 
     @PutMapping("/book/update")
-    public CommonResponse<Void> putBook(@RequestParam BookAddRequest bookAddRequest) {
+    public CommonResponse<Void> putBook(@RequestBody BookAddRequest bookAddRequest) {
+        log.debug("{}", bookAddRequest);
+
         bookService.putBook(bookAddRequest);
 
         return CommonResponse.success();

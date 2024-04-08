@@ -95,22 +95,21 @@ public class Book {
     private List<BookFile> bookFiles = new ArrayList<>();
 
     @Builder
-    public Book(
-            String title,
-            String description,
-            String index,
-            LocalDate pubDate,
-            String isbn10,
-            String isbn13,
-            Integer cost,
-            Integer discountCost,
-            Boolean packagable,
-            Long views,
-            BookStatus status,
-            Integer stock,
-            Publisher publisher,
-            PointRate pointRate
-    ) {
+    public Book(String title,
+                String description,
+                String index,
+                LocalDate pubDate,
+                String isbn10,
+                String isbn13,
+                Integer cost,
+                Integer discountCost,
+                Boolean packagable,
+                Long views,
+                BookStatus status,
+                Integer stock,
+                Publisher publisher,
+                PointRate pointRate) {
+
         this.title = title;
         this.description = description;
         this.index = index;

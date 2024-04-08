@@ -31,7 +31,8 @@ public class BookTag {
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // 책-태그는 조회할 때 대부분 태그를 조회하고 싶기 때문에 EAGER 로 설정
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 
