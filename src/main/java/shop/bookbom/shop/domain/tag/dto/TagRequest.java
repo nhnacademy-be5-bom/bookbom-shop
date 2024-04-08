@@ -10,6 +10,7 @@ public class TagRequest {
     Status status;
 
     public TagRequest(String name, Status status) {
+        //이름과 상태의 유효성 검증
         if (name == null) {
             throw new IllegalArgumentException("Invalid name");
         }
