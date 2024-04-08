@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
 import shop.bookbom.shop.domain.bookcategory.entity.BookCategory;
+import shop.bookbom.shop.domain.bookfile.entity.BookFile;
 import shop.bookbom.shop.domain.booktag.entity.BookTag;
 import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 import shop.bookbom.shop.domain.publisher.entity.Publisher;
@@ -89,6 +90,9 @@ public class Book {
 
     @OneToMany(mappedBy = "category")
     private List<BookCategory> categories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book")
+    private List<BookFile> bookFiles = new ArrayList<>();
 
     @Builder
     public Book(
