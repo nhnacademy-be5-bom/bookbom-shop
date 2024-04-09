@@ -18,7 +18,9 @@ public class TagService {
     @Transactional
     public void saveTagService(String name, Status status) {
         //받아온 새로운 Tag 엔티티 생성
-        Tag tag = new Tag(name, status);
+        Tag tag = Tag.builder()
+                .name(name)
+                .status(status).build();
         //레포지토리에 접근해 저장 실행
         tagRepository.save(tag);
     }
@@ -27,10 +29,8 @@ public class TagService {
     @Transactional
     public void deleteTagService(long tagId) {
         //레포지토리에 접근해 삭제 실행
-        Optional<Tag> tag = tagRepository.findById(tagId);
-        if (tag.isEmpty()) {
-            throw new TagNotFoundException();
-        }
+        Optional<Tag> tagOptional = tagRepository.findById(tagId);
+        tagOptional.orElseThrow(TagNotFoundException::new);
         tagRepository.deleteById(tagId);
     }
 }

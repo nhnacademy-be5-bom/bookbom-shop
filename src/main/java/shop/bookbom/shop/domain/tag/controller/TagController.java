@@ -2,6 +2,7 @@ package shop.bookbom.shop.domain.tag.controller;
 
 import static shop.bookbom.shop.common.CommonResponse.success;
 
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,7 @@ public class TagController {
 
     //태그 등록
     @PostMapping("/tag")
-    public CommonResponse<Void> saveTag(@RequestBody TagRequest tagRequest) {
+    public CommonResponse<Void> saveTag(final @Valid @RequestBody TagRequest tagRequest) {
         String name = tagRequest.getName();
         Status status = tagRequest.getStatus();
         //태그 등록함수 실행
