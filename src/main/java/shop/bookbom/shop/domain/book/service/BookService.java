@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import shop.bookbom.shop.domain.author.entity.Author;
 import shop.bookbom.shop.domain.author.repository.AuthorRepository;
 import shop.bookbom.shop.domain.book.dto.request.BookAddRequest;
@@ -16,6 +17,7 @@ import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
 import shop.bookbom.shop.domain.bookauthor.repository.BookAuthorRepository;
+import shop.bookbom.shop.domain.bookcategory.entity.BookCategory;
 import shop.bookbom.shop.domain.bookcategory.repository.BookCategoryRepository;
 import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
 import shop.bookbom.shop.domain.booktag.entity.BookTag;
@@ -103,12 +105,13 @@ public class BookService {
                 .build();
         authorRepository.save(author);
 
-        // 태그 저장
+        // 카테고리는 저장하지 않음: 카테고리 저장 페이지에서만 가능
+
+        // #todo 태그 저장
         List<String> requestTags = bookAddRequest.getTags();
 
-        // 카테고리 저장
-
-        // 파일 저장
+        // #todo 파일 저장
+        MultipartFile thumbnail = bookAddRequest.getThumbnail();
 
         //책 저장
         Book book = Book.builder()
@@ -148,7 +151,7 @@ public class BookService {
             }
         }
 
-        // 책-작가 처리
+        // 책-작가 저장
         BookAuthor bookAuthor = BookAuthor.builder()
                 .role("작가")
                 .book(book)
@@ -157,6 +160,24 @@ public class BookService {
         bookAuthorRepository.save(bookAuthor);
 
         // 책-카테고리 저장
+        BookCategory category_depth1 = BookCategory.builder()
+                .book(book)
+                .category(categoryRepository.findByName(bookAddRequest.getCategory_depth1()).get())
+                .build();
+        bookCategoryRepository.save(category_depth1);
+
+        BookCategory category_depth2 = BookCategory.builder()
+                .book(book)
+                .category(categoryRepository.findByName(bookAddRequest.getCategory_depth2()).get())
+                .build();
+        bookCategoryRepository.save(category_depth2);
+
+        BookCategory category_depth3 = BookCategory.builder()
+                .book(book)
+                .category(categoryRepository.findByName(bookAddRequest.getCategory_depth3()).get())
+                .build();
+        bookCategoryRepository.save(category_depth3);
+
         // 책-파일 저장
     }
 
