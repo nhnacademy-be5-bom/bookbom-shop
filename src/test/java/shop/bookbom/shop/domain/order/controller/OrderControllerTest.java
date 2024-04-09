@@ -28,7 +28,7 @@ import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.service.OrderService;
-import shop.bookbom.shop.domain.wrapper.entity.Wrapper;
+import shop.bookbom.shop.domain.wrapper.dto.response.WrapperResponse;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(OrderController.class)
@@ -52,13 +52,13 @@ public class OrderControllerTest {
         List<BeforeOrderBookResponse> beforeOrderBookResponseList = new ArrayList<>();
         beforeOrderBookResponseList.add(new BeforeOrderBookResponse("http://img.jpg", "testBook", 5, 15000));
 
-        List<Wrapper> wrapperList = new ArrayList<>();
-        wrapperList.add(new Wrapper("포장지 1", 1000));
+        List<WrapperResponse> wrapperList = new ArrayList<>();
+        wrapperList.add(WrapperResponse.builder().id(1L).name("포장지 1").cost(1000).build());
 
         BeforeOrderResponse response = new BeforeOrderResponse(5, beforeOrderBookResponseList, wrapperList);
         when(orderService.getOrderBookInfo(request)).thenReturn(response);
         //when
-        ResultActions perform = mockMvc.perform(post("/shop/beforeOrder")
+        ResultActions perform = mockMvc.perform(post("/shop/orders/before-order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
@@ -91,7 +91,7 @@ public class OrderControllerTest {
         WrapperSelectResponse response = new WrapperSelectResponse(3, userId, wrapperSelectRequestList);
         when(orderService.selectWrapper(userId, request)).thenReturn(response);
         //when
-        ResultActions perform = mockMvc.perform(post("/shop/wrapper")
+        ResultActions perform = mockMvc.perform(post("/shop/orders/wrapper")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .param("userId", userId.toString()));
@@ -101,7 +101,7 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.header.resultCode").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
                 .andExpect(jsonPath("$.header.successful").value(true))
-                .andExpect(jsonPath("$.result.totalCount").value(3))
+                .andExpect(jsonPath("$.result.totalOrderCount").value(3))
                 .andExpect(jsonPath("$.result.userId").value(20L))
                 .andExpect(jsonPath("$.result.wrapperSelectRequestList.length()").value(1))
                 .andExpect(jsonPath("$.result.wrapperSelectRequestList[0].bookTitle").value("test book"))
@@ -123,7 +123,7 @@ public class OrderControllerTest {
         WrapperSelectResponse response = new WrapperSelectResponse(7, userId, wrapperSelectRequestList);
         when(orderService.selectWrapper(userId, request)).thenReturn(response);
         //when
-        ResultActions perform = mockMvc.perform(post("/shop/wrapper")
+        ResultActions perform = mockMvc.perform(post("/shop/orders/wrapper")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
@@ -132,7 +132,7 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.header.resultCode").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
                 .andExpect(jsonPath("$.header.successful").value(true))
-                .andExpect(jsonPath("$.result.totalCount").value(7))
+                .andExpect(jsonPath("$.result.totalOrderCount").value(7))
                 .andExpect(jsonPath("$.result.userId").doesNotExist())
                 .andExpect(jsonPath("$.result.wrapperSelectRequestList.length()").value(2))
                 .andExpect(jsonPath("$.result.wrapperSelectRequestList[0].bookTitle").value("test book1"))

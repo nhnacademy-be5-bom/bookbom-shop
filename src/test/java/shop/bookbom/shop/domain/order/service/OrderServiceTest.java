@@ -5,14 +5,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequest;
@@ -20,6 +18,7 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.BookTitleAndCostResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.wrapper.entity.Wrapper;
 import shop.bookbom.shop.domain.wrapper.repository.WrapperRepository;
@@ -45,16 +44,8 @@ public class OrderServiceTest {
         beforeOrderRequestList.add(new BeforeOrderRequest(1L, 2));
         beforeOrderRequestList.add(new BeforeOrderRequest(2L, 3));
 
-        Book testBook1 = Book.builder()
-                .title("test book1")
-                .cost(1000)
-                .build();
-        Book testBook2 = Book.builder()
-                .title("test book2")
-                .cost(2000)
-                .build();
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(testBook1));
-        when(bookRepository.findById(2L)).thenReturn(Optional.of(testBook2));
+        when(bookRepository.getTitleAndCostById(1L)).thenReturn(new BookTitleAndCostResponse("test book1", 1000));
+        when(bookRepository.getTitleAndCostById(2L)).thenReturn(new BookTitleAndCostResponse("test book2", 2000));
         when(bookFileRepository.getBookImageUrl(1L)).thenReturn("http://img1.jpg");
         when(bookFileRepository.getBookImageUrl(2L)).thenReturn("http://img2.jpg");
 
@@ -94,7 +85,7 @@ public class OrderServiceTest {
         WrapperSelectResponse response = orderService.selectWrapper(1L, wrapperSelectRequest);
 
         //then
-        assertEquals(3, response.getTotalCount());
+        assertEquals(3, response.getTotalOrderCount());
         assertEquals(1L, response.getUserId());
         WrapperSelectBookRequest selectBookRequest = response.getWrapperSelectRequestList().get(0);
         assertEquals(bookRequest, selectBookRequest);
@@ -116,7 +107,7 @@ public class OrderServiceTest {
         WrapperSelectResponse response = orderService.selectWrapper(null, wrapperSelectRequest);
 
         //then
-        assertEquals(3, response.getTotalCount());
+        assertEquals(3, response.getTotalOrderCount());
         assertEquals(null, response.getUserId());
         WrapperSelectBookRequest selectBookRequest = response.getWrapperSelectRequestList().get(0);
         assertEquals(bookRequest, selectBookRequest);

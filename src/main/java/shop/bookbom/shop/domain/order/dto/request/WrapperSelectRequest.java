@@ -14,6 +14,6 @@ public class WrapperSelectRequest {
 
     public WrapperSelectRequest(List<WrapperSelectBookRequest> wrapperSelectBookRequestList, int totalOrderCount) {
         this.wrapperSelectBookRequestList = wrapperSelectBookRequestList;
-        totalOrderCount = totalOrderCount;
+        this.totalOrderCount = totalOrderCount;
     }
 }

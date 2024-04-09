@@ -23,7 +23,13 @@ import shop.bookbom.shop.domain.order.service.OrderService;
 public class OrderController {
     private final OrderService orderService;
 
-
+    /**
+     * 장바구니에서 넘어온 정보로 포장지 선택 페이지 구성을 위한 책 , 포장지 정보를 불러오는 api
+     *
+     * @param beforeOrderRequestList(책id와 수량의 리스트)
+     * @param bindingResult(for validation check)
+     * @return BeforeOrderResponse(총 주문 수, 포장지 전체 리스트, 책의 수량, 이미지, 가격, 제목)
+     */
     @PostMapping("/orders/before-order")
     public CommonResponse<BeforeOrderResponse> beforeOrder(@Valid @RequestBody
                                                            List<BeforeOrderRequest> beforeOrderRequestList,
@@ -39,6 +45,14 @@ public class OrderController {
         return CommonResponse.successWithData(beforeOrderResponse);
     }
 
+    /**
+     * 포장지 선택 값을 받아서 주문으로 넘겨주기 위한 api
+     *
+     * @param userId
+     * @param wrapperSelectRequest(포장지 선택한 값들)
+     * @param bindingResult(for validation check)
+     * @return WrapperSelectResponse(포장지 선택한 값들 + 총 주문 수 + userId)
+     */
     @PostMapping("/orders/wrapper")
     //requestparam으로 userId가 오면 회원, 안 오면 비회원(null값 들어감)
     public CommonResponse<WrapperSelectResponse> selectWrapper(

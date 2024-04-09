@@ -2,11 +2,10 @@ package shop.bookbom.shop.domain.order.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
@@ -15,7 +14,9 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.BookTitleAndCostResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
+import shop.bookbom.shop.domain.wrapper.dto.response.WrapperResponse;
 import shop.bookbom.shop.domain.wrapper.entity.Wrapper;
 import shop.bookbom.shop.domain.wrapper.repository.WrapperRepository;
 
@@ -28,19 +29,19 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public BeforeOrderResponse getOrderBookInfo(List<BeforeOrderRequest> beforeOrderRequestList) {
         int TotalOrderCount = 0;
         List<BeforeOrderBookResponse> beforeOrderBookResponseList = new ArrayList<>();
         //각 책에 대한 정보를 list로부터 가져와서 foreach문 돌림
         for (BeforeOrderRequest bookRequest : beforeOrderRequestList) {
             //bookId로 책 가져옴
-            Optional<Book> book = bookRepository.findById(bookRequest.getBookId());
+            BookTitleAndCostResponse titleAndCostById = bookRepository.getTitleAndCostById(bookRequest.getBookId());
             //책 정보가 존재하면
-            if (book.isPresent()) {
+            if (Objects.nonNull(titleAndCostById)) {
                 //책 정보를 가져와서 응답 객체에 넣음
-                String title = book.get().getTitle();
-                Integer cost = book.get().getCost();
+                String title = titleAndCostById.getTitle();
+                Integer cost = titleAndCostById.getCost();
                 Integer quantity = bookRequest.getQuantity();
                 String imageUrl = bookFileRepository.getBookImageUrl(bookRequest.getBookId());
 
@@ -61,12 +62,19 @@ public class OrderServiceImpl implements OrderService {
         }
         //모든 포장지 list 가져옴
         List<Wrapper> wrapperList = wrapperRepository.findAll();
+        List<WrapperResponse> wrapperResponseList = new ArrayList<>();
+        for (Wrapper wrapper : wrapperList) {
+            WrapperResponse wrapperResponse = WrapperResponse.builder().id(wrapper.getId())
+                    .name(wrapper.getName())
+                    .cost(wrapper.getCost()).build();
+            wrapperResponseList.add(wrapperResponse);
 
+        }
         //주문 응답 객체 생성 후 정보 저장
         return BeforeOrderResponse.builder()
                 .beforeOrderBookResponseList(beforeOrderBookResponseList)
                 .totalOrderCount(TotalOrderCount)
-                .wrapperList(wrapperList)
+                .wrapperList(wrapperResponseList)
                 .build();
 
     }
@@ -80,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
 
         return WrapperSelectResponse.builder()
                 .userId(userId)
-                .totalCount(totalOrderCount)
+                .totalOrderCount(totalOrderCount)
                 .wrapperSelectRequestList(wrapperSelectBookRequestList)
                 .build();
 

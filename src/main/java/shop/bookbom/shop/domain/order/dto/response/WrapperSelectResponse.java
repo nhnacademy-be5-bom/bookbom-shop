@@ -7,15 +7,15 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 
 @Getter
 public class WrapperSelectResponse {
-    private int totalCount;
+    private int totalOrderCount;
     private Long userId;
     private List<WrapperSelectBookRequest> wrapperSelectRequestList;
 
     @Builder
 
-    public WrapperSelectResponse(int totalCount, Long userId,
+    public WrapperSelectResponse(int totalOrderCount, Long userId,
                                  List<WrapperSelectBookRequest> wrapperSelectRequestList) {
-        this.totalCount = totalCount;
+        this.totalOrderCount = totalOrderCount;
         this.userId = userId;
         this.wrapperSelectRequestList = wrapperSelectRequestList;
     }
