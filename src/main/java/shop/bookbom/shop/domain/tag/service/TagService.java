@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.category.entity.Status;
 import shop.bookbom.shop.domain.tag.entity.Tag;
+import shop.bookbom.shop.domain.tag.exception.TagAlreadyExistException;
 import shop.bookbom.shop.domain.tag.exception.TagNotFoundException;
 import shop.bookbom.shop.domain.tag.repository.TagRepository;
 
@@ -17,6 +18,11 @@ public class TagService {
     //태그 등록
     @Transactional
     public void saveTagService(String name, Status status) {
+        //이미 존재한다면 오류 발생
+        Optional<Tag> tagOptional = tagRepository.findByName(name);
+        if(tagOptional.isPresent()){
+            throw new TagAlreadyExistException();
+        }
         //받아온 새로운 Tag 엔티티 생성
         Tag tag = Tag.builder()
                 .name(name)
