@@ -23,7 +23,7 @@ public class UserController {
 
     // #1 CREATE USER
     // request : String email, String password, String roleName
-    @PostMapping("/")
+    @PostMapping("")
     public CommonResponse<Long> registerUser(@RequestBody UserRequestDto userRequestDto) {
         Long userId = userService.save(userRequestDto);
         return CommonResponse.successWithData(userId);
