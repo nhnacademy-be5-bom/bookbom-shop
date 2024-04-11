@@ -65,4 +65,14 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         }
     }
+
+    @Override
+    public boolean isRegistered(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException();
+        } else {
+            return optionalUser.get().isRegistered();
+        }
+    }
 }

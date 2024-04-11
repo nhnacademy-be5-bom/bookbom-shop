@@ -1,7 +1,9 @@
 package shop.bookbom.shop.domain.users.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,5 +44,13 @@ public class UserController {
         userService.changeRegistered(changeRegisteredRequestDto);
         return CommonResponse.success();
     }
+
+    // #3-1 READ USER - Id로 registered 읽어옴
+    @GetMapping("/{id}/registered")
+    public CommonResponse<Boolean> getRegistered(@PathVariable Long id) {
+        boolean registered = userService.isRegistered(id);
+        return CommonResponse.successWithData(Boolean.valueOf(registered));
+    }
+
 
 }

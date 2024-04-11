@@ -12,4 +12,6 @@ public interface UserService {
 
     void resetPassword(ResetPasswordRequestDto resetPasswordRequestDto);
 
+    boolean isRegistered(Long id);
+
 }
