@@ -24,9 +24,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long save(UserRequestDto userRequestDto) {
         Optional<Role> optionalRole = roleRepository.findByName(userRequestDto.getRoleName());
-        if (optionalRole.isEmpty()) {
-            throw new RoleNotFoundException();
-        }
+        optionalRole.orElseThrow(RoleNotFoundException::new);
         if (checkEmailCanUse(userRequestDto.getEmail())) {
             // 오류로 인해 요청이 여러번 왔을 때를 대비, 아이디 중복 검증
             User user = userRepository.save(
@@ -50,34 +48,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changeRegistered(ChangeRegisteredRequestDto changeRegisteredRequestDto) {
         Optional<User> optionalUser = userRepository.findById(changeRegisteredRequestDto.getId());
-        if (optionalUser.isEmpty()) {
-            throw new UserNotFoundException();
-        } else {
-            User user = optionalUser.get();
-            user.changeRegistered(changeRegisteredRequestDto.isRegistered());
-            userRepository.save(user);
-        }
+        optionalUser.orElseThrow(UserNotFoundException::new);
+
+        User user = optionalUser.get();
+        user.changeRegistered(changeRegisteredRequestDto.isRegistered());
+        userRepository.save(user);
     }
 
     @Override
     public void resetPassword(ResetPasswordRequestDto resetPasswordRequestDto) {
         Optional<User> optionalUser = userRepository.findById(resetPasswordRequestDto.getId());
-        if (optionalUser.isEmpty()) {
-            throw new UserNotFoundException();
-        } else {
-            User user = optionalUser.get();
-            user.resetPassword(resetPasswordRequestDto.getPassword());
-            userRepository.save(user);
-        }
+        optionalUser.orElseThrow(UserNotFoundException::new);
+        User user = optionalUser.get();
+        user.resetPassword(resetPasswordRequestDto.getPassword());
+        userRepository.save(user);
     }
 
     @Override
     public boolean isRegistered(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty()) {
-            throw new UserNotFoundException();
-        } else {
-            return optionalUser.get().isRegistered();
-        }
+        optionalUser.orElseThrow(UserNotFoundException::new);
+        return optionalUser.get().isRegistered();
     }
 }
