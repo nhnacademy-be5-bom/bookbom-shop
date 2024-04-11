@@ -10,4 +10,5 @@ import shop.bookbom.shop.domain.users.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findById(Long userId);
 
+    boolean existsUserByEmail(String email);
 }

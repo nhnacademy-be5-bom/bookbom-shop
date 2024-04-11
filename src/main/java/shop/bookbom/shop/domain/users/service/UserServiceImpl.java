@@ -5,9 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.role.repository.RoleRepository;
+import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.entity.User;
+import shop.bookbom.shop.domain.users.exception.RoleNotFoundException;
+import shop.bookbom.shop.domain.users.exception.UserAlreadyExistException;
+import shop.bookbom.shop.domain.users.exception.UserNotFoundException;
 import shop.bookbom.shop.domain.users.repository.UserRepository;
+
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -32,6 +38,18 @@ public class UserServiceImpl implements UserService {
             return user.getId();
         } else {
             throw new UserAlreadyExistException();
+        }
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordRequestDto resetPasswordRequestDto) {
+        Optional<User> optionalUser = userRepository.findById(resetPasswordRequestDto.getId());
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException();
+        } else {
+            User user = optionalUser.get();
+            user.resetPassword(resetPasswordRequestDto.getPassword());
+            userRepository.save(user);
         }
     }
 }
