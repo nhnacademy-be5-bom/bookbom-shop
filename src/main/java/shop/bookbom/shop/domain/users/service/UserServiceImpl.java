@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.role.repository.RoleRepository;
+import shop.bookbom.shop.domain.users.dto.request.ChangeRegisteredRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.entity.User;
@@ -38,6 +39,18 @@ public class UserServiceImpl implements UserService {
             return user.getId();
         } else {
             throw new UserAlreadyExistException();
+        }
+    }
+
+    @Override
+    public void changeRegistered(ChangeRegisteredRequestDto changeRegisteredRequestDto) {
+        Optional<User> optionalUser = userRepository.findById(changeRegisteredRequestDto.getId());
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException();
+        } else {
+            User user = optionalUser.get();
+            user.changeRegistered(changeRegisteredRequestDto.isRegistered());
+            userRepository.save(user);
         }
     }
 
