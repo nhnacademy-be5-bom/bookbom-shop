@@ -15,7 +15,7 @@ import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.service.UserService;
 
 @RestController
-@RequestMapping("/shop")
+@RequestMapping("/shop/user")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -23,7 +23,7 @@ public class UserController {
 
     // #1 CREATE USER
     // request : String email, String password, String roleName
-    @PostMapping("/user")
+    @PostMapping("/")
     public CommonResponse<Long> registerUser(@RequestBody UserRequestDto userRequestDto) {
         Long userId = userService.save(userRequestDto);
         return CommonResponse.successWithData(userId);

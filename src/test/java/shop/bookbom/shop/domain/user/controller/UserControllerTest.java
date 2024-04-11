@@ -86,7 +86,7 @@ public class UserControllerTest {
 
         when(userService.save(any(UserRequestDto.class))).thenReturn(1L);
 
-        mockMvc.perform(patch("/shop/1/password").content(objectMapper.writeValueAsString(resetPasswordRequestDto))
+        mockMvc.perform(patch("/shop/user/1/password").content(objectMapper.writeValueAsString(resetPasswordRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.header.successful").value(true));
     }
@@ -98,7 +98,7 @@ public class UserControllerTest {
                 ResetPasswordRequestDto.builder().id(1L).password("123").build();
         doThrow(new UserNotFoundException()).when(userService).resetPassword(any(ResetPasswordRequestDto.class));
 
-        mockMvc.perform(patch("/shop/1/password").content(objectMapper.writeValueAsString(resetPasswordRequestDto))
+        mockMvc.perform(patch("/shop/user/1/password").content(objectMapper.writeValueAsString(resetPasswordRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
@@ -109,8 +109,9 @@ public class UserControllerTest {
         ChangeRegisteredRequestDto changeRegisteredRequestDto =
                 ChangeRegisteredRequestDto.builder().id(1L).registered(true).build();
 
-        mockMvc.perform(patch("/shop/1/registered").content(objectMapper.writeValueAsString(changeRegisteredRequestDto))
-                        .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(200))
+        mockMvc.perform(
+                        patch("/shop/user/1/registered").content(objectMapper.writeValueAsString(changeRegisteredRequestDto))
+                                .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.header.successful").value(true));
     }
 
@@ -123,7 +124,7 @@ public class UserControllerTest {
         doThrow(new UserNotFoundException()).when(userService).changeRegistered(any(ChangeRegisteredRequestDto.class));
 
         mockMvc.perform(
-                        patch("/shop/-4/registered").content(objectMapper.writeValueAsString(changeRegisteredRequestDto))
+                        patch("/shop/user/-4/registered").content(objectMapper.writeValueAsString(changeRegisteredRequestDto))
                                 .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
@@ -133,7 +134,7 @@ public class UserControllerTest {
     void getRegisteredTest() throws Exception {
         when(userService.isRegistered(any(Long.class))).thenReturn(true);
 
-        mockMvc.perform(get("/shop/1/registered").param("id", "1").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/shop/user/1/registered").param("id", "1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.result").value(Boolean.TRUE));
     }
@@ -143,7 +144,7 @@ public class UserControllerTest {
     void getRegisteredWithNoUserTest() throws Exception {
         doThrow(new UserNotFoundException()).when(userService).isRegistered(any(Long.class));
 
-        mockMvc.perform(get("/shop/-4/registered").param("id", "-4").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/shop/user/-4/registered").param("id", "-4").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
@@ -153,14 +154,14 @@ public class UserControllerTest {
     void checkEmailCanUseTest() throws Exception {
         when(userService.checkEmailCanUse(any(String.class))).thenReturn(true);
 
-        mockMvc.perform(get("/shop/hi@email").param("email", "hi@email").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/shop/user/hi@email").param("email", "hi@email").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.result").value(Boolean.TRUE));
 
 
         when(userService.checkEmailCanUse(any(String.class))).thenReturn(false);
 
-        mockMvc.perform(get("/shop/hi@email").param("email", "hi@email").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/shop/user/hi@email").param("email", "hi@email").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.result").value(Boolean.FALSE));
     }
