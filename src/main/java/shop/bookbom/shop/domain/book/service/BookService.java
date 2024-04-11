@@ -61,25 +61,6 @@ public class BookService {
     public BookDetailResponse getBook(Long bookId) {
         Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
 
-//        BookDetailResponse.builder()
-//                .id(book.getId())
-//                .title(book.getTitle())
-//                .description(book.getDescription())
-//                .index(book.getIndex())
-//                .pubDate(book.getPubDate())
-//                .isbn10(book.getIsbn10())
-//                .isbn13(book.getIsbn13())
-//                .cost(book.getCost())
-//                .discountCost(book.getDiscountCost())
-//                .packagable(book.getPackagable())
-//                .stock(book.getStock())
-//                .publisher(book.getPublisher())
-//                .pointRate(book.getPointRate())
-//                .authors(book.getAuthors())
-//                .tags(book.getTags())
-//                .categories(book.getCategories())
-//                .build();
-
         return mapper.convertValue(book, BookDetailResponse.class);
     }
 

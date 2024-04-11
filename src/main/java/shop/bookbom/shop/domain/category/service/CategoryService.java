@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.category.dto.CategoryDTO;
 import shop.bookbom.shop.domain.category.dto.response.CategoryDepthResponse;
 import shop.bookbom.shop.domain.category.entity.Category;
-import shop.bookbom.shop.domain.category.entity.Status;
 import shop.bookbom.shop.domain.category.exception.NoSuchCategoryNameException;
 import shop.bookbom.shop.domain.category.repository.CategoryRepository;
 
@@ -39,36 +38,15 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public CategoryDepthResponse getAllDepthOneCategories() {
+    public List<CategoryDTO> getAllDepthOneCategories() {
         // 상태 사용중, 부모 카테고리 없음(깊이1) 인 카테고리
-        List<Category> categories = categoryRepository.findAllByStatusAndParentNull(Status.USED);
-
-        // List<category> -> List<CategoryDTO>
-        List<CategoryDTO> categoriesDto = mapper.convertValue(
-                categories, mapper.getTypeFactory().constructCollectionType(List.class, CategoryDTO.class));
-
-//        for (Category category : categories) {
-//            categoriesDto.add(mapper.convertValue(category, CategoryDTO.class));
-//        }
-
-        return CategoryDepthResponse.builder()
-                .categories(categoriesDto)
-                .build();
+        return categoryRepository.findAllAtDepthOne();
     }
 
     @Transactional(readOnly = true)
-    public CategoryDepthResponse getChildCategoriesByCategoryId(Long parentId) {
+    public List<CategoryDTO> getChildCategoriesByCategoryId(Long parentId) {
         // 상태 사용중, 부모 카테고리 id를 가지는 카테고리(깊이 2~3)
-        List<Category> categories =
-                categoryRepository.findAllByStatusAndParent_Id(Status.USED, parentId);
-
-        return CategoryDepthResponse.builder()
-                .categories(
-                        // jackson list-to-list 변환:
-                        // List<category> -> List<CategoryDTO>
-                        mapper.convertValue(categories,
-                                mapper.getTypeFactory().constructCollectionType(List.class, CategoryDTO.class)))
-                .build();
+        return categoryRepository.findAllByParentId(parentId);
     }
 
 }

@@ -1,6 +1,5 @@
 package shop.bookbom.shop.domain.category.dto;
 
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,12 +9,10 @@ import lombok.NoArgsConstructor;
 public class CategoryDTO {
     private Long id;
     private String name;
-    private List<CategoryDTO> child;
 
     @Builder
-    public CategoryDTO(Long id, String name, List<CategoryDTO> child) {
+    public CategoryDTO(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.child = child;
     }
 }
