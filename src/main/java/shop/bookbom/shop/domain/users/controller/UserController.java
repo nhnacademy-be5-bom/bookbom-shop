@@ -53,4 +53,14 @@ public class UserController {
     }
 
 
+    // #3-2 READ USER - Email이 사용 가능한지 확인
+    @GetMapping("/{email}")
+    public CommonResponse<Boolean> checkEmailCanUse(@PathVariable String email) {
+        if (userService.checkEmailCanUse(email)) {
+            return CommonResponse.successWithData(Boolean.TRUE);
+        } else {
+            return CommonResponse.successWithData(Boolean.FALSE);
+        }
+    }
+
 }

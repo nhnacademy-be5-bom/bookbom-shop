@@ -14,4 +14,5 @@ public interface UserService {
 
     boolean isRegistered(Long id);
 
+    boolean checkEmailCanUse(String email);
 }

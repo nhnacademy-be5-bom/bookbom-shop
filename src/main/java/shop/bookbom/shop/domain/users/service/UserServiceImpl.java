@@ -43,6 +43,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean checkEmailCanUse(String email) {
+        return !userRepository.existsUserByEmail(email);
+    }
+
+    @Override
     public void changeRegistered(ChangeRegisteredRequestDto changeRegisteredRequestDto) {
         Optional<User> optionalUser = userRepository.findById(changeRegisteredRequestDto.getId());
         if (optionalUser.isEmpty()) {
