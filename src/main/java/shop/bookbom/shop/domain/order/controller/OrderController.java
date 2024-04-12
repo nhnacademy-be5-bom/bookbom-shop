@@ -33,7 +33,8 @@ public class OrderController {
     @PostMapping("/orders/before-order")
     public CommonResponse<BeforeOrderResponse> beforeOrder(@Valid @RequestBody
                                                            List<BeforeOrderRequest> beforeOrderRequestList,
-                                                           BindingResult bindingResult) {
+                                                           BindingResult bindingResult)
+            throws OrderInfoInvalidException {
         //요청의 유효성 검사
         if (bindingResult.hasErrors()) {
             throw new OrderInfoInvalidException();

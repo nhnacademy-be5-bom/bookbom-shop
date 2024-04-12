@@ -15,8 +15,9 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.BookTitleAndCostResponse;
+import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
-import shop.bookbom.shop.domain.wrapper.dto.response.WrapperResponse;
+import shop.bookbom.shop.domain.wrapper.dto.WrapperDto;
 import shop.bookbom.shop.domain.wrapper.entity.Wrapper;
 import shop.bookbom.shop.domain.wrapper.repository.WrapperRepository;
 
@@ -62,19 +63,17 @@ public class OrderServiceImpl implements OrderService {
         }
         //모든 포장지 list 가져옴
         List<Wrapper> wrapperList = wrapperRepository.findAll();
-        List<WrapperResponse> wrapperResponseList = new ArrayList<>();
+        List<WrapperDto> wrapperDtoList = new ArrayList<>();
         for (Wrapper wrapper : wrapperList) {
-            WrapperResponse wrapperResponse = WrapperResponse.builder().id(wrapper.getId())
-                    .name(wrapper.getName())
-                    .cost(wrapper.getCost()).build();
-            wrapperResponseList.add(wrapperResponse);
+            WrapperDto wrapperDto = new WrapperDto(wrapper.getId(), wrapper.getName(), wrapper.getCost());
+            wrapperDtoList.add(wrapperDto);
 
         }
         //주문 응답 객체 생성 후 정보 저장
         return BeforeOrderResponse.builder()
                 .beforeOrderBookResponseList(beforeOrderBookResponseList)
                 .totalOrderCount(TotalOrderCount)
-                .wrapperList(wrapperResponseList)
+                .wrapperList(wrapperDtoList)
                 .build();
 
     }
@@ -82,14 +81,29 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public WrapperSelectResponse selectWrapper(Long userId, WrapperSelectRequest wrapperSelectRequest) {
+        //request을 가져와서 총 주문 갯수와 포장지 선택 리스트를 받아옴
         int totalOrderCount = wrapperSelectRequest.getTotalOrderCount();
         List<WrapperSelectBookRequest> wrapperSelectBookRequestList =
                 wrapperSelectRequest.getWrapperSelectBookRequestList();
+        //포장지 셀렉 응답 리스트를 만듬
+        List<WrapperSelectBookResponse> wrapperSelectBookResponseList = new ArrayList<>();
+        for (WrapperSelectBookRequest selectBookRequest : wrapperSelectBookRequestList) {
+            WrapperSelectBookResponse wrapperSelectBookResponse =
+                    WrapperSelectBookResponse.builder().bookTitle(selectBookRequest.getBookTitle())
+                            .wrapperName(selectBookRequest.getWrapperName())
+                            .imgUrl(selectBookRequest.getImgUrl())
+                            .quantity(selectBookRequest.getQuantity())
+                            .cost(selectBookRequest.getCost())
+                            .build();
+            wrapperSelectBookResponseList.add(wrapperSelectBookResponse);
 
+        }
+
+        //응답 반환
         return WrapperSelectResponse.builder()
                 .userId(userId)
                 .totalOrderCount(totalOrderCount)
-                .wrapperSelectRequestList(wrapperSelectBookRequestList)
+                .wrapperSelectResponseList(wrapperSelectBookResponseList)
                 .build();
 
     }

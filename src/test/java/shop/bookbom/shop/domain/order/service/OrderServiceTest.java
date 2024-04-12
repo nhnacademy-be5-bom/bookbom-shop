@@ -19,6 +19,7 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.BookTitleAndCostResponse;
+import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.wrapper.entity.Wrapper;
 import shop.bookbom.shop.domain.wrapper.repository.WrapperRepository;
@@ -87,8 +88,11 @@ public class OrderServiceTest {
         //then
         assertEquals(3, response.getTotalOrderCount());
         assertEquals(1L, response.getUserId());
-        WrapperSelectBookRequest selectBookRequest = response.getWrapperSelectRequestList().get(0);
-        assertEquals(bookRequest, selectBookRequest);
+        WrapperSelectBookResponse wrapperSelectBookResponse = response.getWrapperSelectResponseList().get(0);
+        assertEquals(bookRequest.getBookTitle(), wrapperSelectBookResponse.getBookTitle());
+        assertEquals(bookRequest.getCost(), wrapperSelectBookResponse.getCost());
+        assertEquals(bookRequest.getWrapperName(), wrapperSelectBookResponse.getWrapperName());
+
 
     }
 
@@ -109,8 +113,10 @@ public class OrderServiceTest {
         //then
         assertEquals(3, response.getTotalOrderCount());
         assertEquals(null, response.getUserId());
-        WrapperSelectBookRequest selectBookRequest = response.getWrapperSelectRequestList().get(0);
-        assertEquals(bookRequest, selectBookRequest);
+        WrapperSelectBookResponse wrapperSelectBookResponse = response.getWrapperSelectResponseList().get(0);
+        assertEquals(bookRequest.getBookTitle(), wrapperSelectBookResponse.getBookTitle());
+        assertEquals(bookRequest.getCost(), wrapperSelectBookResponse.getCost());
+        assertEquals(bookRequest.getWrapperName(), wrapperSelectBookResponse.getWrapperName());
 
     }
 

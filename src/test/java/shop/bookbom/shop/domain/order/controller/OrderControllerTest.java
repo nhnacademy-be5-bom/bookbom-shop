@@ -26,9 +26,10 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.service.OrderService;
-import shop.bookbom.shop.domain.wrapper.dto.response.WrapperResponse;
+import shop.bookbom.shop.domain.wrapper.dto.WrapperDto;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(OrderController.class)
@@ -52,8 +53,8 @@ public class OrderControllerTest {
         List<BeforeOrderBookResponse> beforeOrderBookResponseList = new ArrayList<>();
         beforeOrderBookResponseList.add(new BeforeOrderBookResponse("http://img.jpg", "testBook", 5, 15000));
 
-        List<WrapperResponse> wrapperList = new ArrayList<>();
-        wrapperList.add(WrapperResponse.builder().id(1L).name("포장지 1").cost(1000).build());
+        List<WrapperDto> wrapperList = new ArrayList<>();
+        wrapperList.add(new WrapperDto(1L, "포장지 1", 1000));
 
         BeforeOrderResponse response = new BeforeOrderResponse(5, beforeOrderBookResponseList, wrapperList);
         when(orderService.getOrderBookInfo(request)).thenReturn(response);
@@ -84,11 +85,16 @@ public class OrderControllerTest {
     void selectWrapper_member() throws Exception {
         //given
         List<WrapperSelectBookRequest> wrapperSelectRequestList = new ArrayList<>();
-        wrapperSelectRequestList.add(new WrapperSelectBookRequest("test book", "http://img.jpg", "포장지 3", 3, 5000));
+        wrapperSelectRequestList.add(new WrapperSelectBookRequest("test book", "http://img.jpg", "포장지 3"
+                , 3, 5000));
 
         WrapperSelectRequest request = new WrapperSelectRequest(wrapperSelectRequestList, 3);
         Long userId = 20L;
-        WrapperSelectResponse response = new WrapperSelectResponse(3, userId, wrapperSelectRequestList);
+        List<WrapperSelectBookResponse> wrapperSelectBookResponseList = new ArrayList<>();
+        wrapperSelectBookResponseList.add(
+                WrapperSelectBookResponse.builder().bookTitle("test book").imgUrl("http://img.jpg").wrapperName("포장지 3")
+                        .quantity(3).cost(5000).build());
+        WrapperSelectResponse response = new WrapperSelectResponse(3, userId, wrapperSelectBookResponseList);
         when(orderService.selectWrapper(userId, request)).thenReturn(response);
         //when
         ResultActions perform = mockMvc.perform(post("/shop/orders/wrapper")
@@ -103,9 +109,9 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.header.successful").value(true))
                 .andExpect(jsonPath("$.result.totalOrderCount").value(3))
                 .andExpect(jsonPath("$.result.userId").value(20L))
-                .andExpect(jsonPath("$.result.wrapperSelectRequestList.length()").value(1))
-                .andExpect(jsonPath("$.result.wrapperSelectRequestList[0].bookTitle").value("test book"))
-                .andExpect(jsonPath("$.result.wrapperSelectRequestList[0].wrapperName").value("포장지 3"));
+                .andExpect(jsonPath("$.result.wrapperSelectResponseList.length()").value(1))
+                .andExpect(jsonPath("$.result.wrapperSelectResponseList[0].bookTitle").value("test book"))
+                .andExpect(jsonPath("$.result.wrapperSelectResponseList[0].wrapperName").value("포장지 3"));
 
 
     }
@@ -120,7 +126,16 @@ public class OrderControllerTest {
 
         WrapperSelectRequest request = new WrapperSelectRequest(wrapperSelectRequestList, 7);
         Long userId = null;
-        WrapperSelectResponse response = new WrapperSelectResponse(7, userId, wrapperSelectRequestList);
+        List<WrapperSelectBookResponse> wrapperSelectBookResponseList = new ArrayList<>();
+        wrapperSelectBookResponseList.add(
+                WrapperSelectBookResponse.builder().bookTitle("test book1").imgUrl("http://img1.jpg")
+                        .wrapperName("포장지 3")
+                        .quantity(3).cost(5000).build());
+        wrapperSelectBookResponseList.add(
+                WrapperSelectBookResponse.builder().bookTitle("test book2").imgUrl("http://img2.jpg")
+                        .wrapperName("포장지 3")
+                        .quantity(4).cost(6000).build());
+        WrapperSelectResponse response = new WrapperSelectResponse(7, userId, wrapperSelectBookResponseList);
         when(orderService.selectWrapper(userId, request)).thenReturn(response);
         //when
         ResultActions perform = mockMvc.perform(post("/shop/orders/wrapper")
@@ -134,12 +149,12 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.header.successful").value(true))
                 .andExpect(jsonPath("$.result.totalOrderCount").value(7))
                 .andExpect(jsonPath("$.result.userId").doesNotExist())
-                .andExpect(jsonPath("$.result.wrapperSelectRequestList.length()").value(2))
-                .andExpect(jsonPath("$.result.wrapperSelectRequestList[0].bookTitle").value("test book1"))
-                .andExpect(jsonPath("$.result.wrapperSelectRequestList[0].wrapperName").value("포장지 3"))
-                .andExpect(jsonPath("$.result.wrapperSelectRequestList[1].wrapperName").value("포장지 3"))
-                .andExpect(jsonPath("$.result.wrapperSelectRequestList[1].quantity").value(4))
-                .andExpect(jsonPath("$.result.wrapperSelectRequestList[1].cost").value(6000));
+                .andExpect(jsonPath("$.result.wrapperSelectResponseList.length()").value(2))
+                .andExpect(jsonPath("$.result.wrapperSelectResponseList[0].bookTitle").value("test book1"))
+                .andExpect(jsonPath("$.result.wrapperSelectResponseList[0].wrapperName").value("포장지 3"))
+                .andExpect(jsonPath("$.result.wrapperSelectResponseList[1].wrapperName").value("포장지 3"))
+                .andExpect(jsonPath("$.result.wrapperSelectResponseList[1].quantity").value(4))
+                .andExpect(jsonPath("$.result.wrapperSelectResponseList[1].cost").value(6000));
 
 
     }
