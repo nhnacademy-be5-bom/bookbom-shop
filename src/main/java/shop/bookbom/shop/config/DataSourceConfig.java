@@ -8,12 +8,10 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.client.RestTemplate;
 import shop.bookbom.shop.config.dto.KeystoreResponse;
 
 @Configuration
-@Profile("prod")
 @Import({SecureManagerConfig.class})
 @RequiredArgsConstructor
 public class DataSourceConfig {
@@ -38,6 +36,9 @@ public class DataSourceConfig {
     @Value("${secure.manager.port}")
     private String port;
 
+    @Value("${secure.manager.schema}")
+    private String schema;
+
     @Value("${secure.manager.username}")
     private String username;
 
@@ -45,7 +46,7 @@ public class DataSourceConfig {
     @Bean
     public DataSource dataSource() {
         return DataSourceBuilder.create()
-                .url(MYSQL_URL_PREFIX + getValue(ip) + ":" + getValue(port) + "/bom")
+                .url(MYSQL_URL_PREFIX + getValue(ip) + ":" + getValue(port) + getValue(schema))
                 .username(getValue(username))
                 .password(getValue(password))
                 .driverClassName(MYSQL_DRIVER_NAME)
