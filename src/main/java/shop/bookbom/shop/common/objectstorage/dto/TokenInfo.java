@@ -1,13 +1,13 @@
 package shop.bookbom.shop.common.objectstorage.dto;
 
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Getter
 @NoArgsConstructor
-@ToString
+@AllArgsConstructor
 public class TokenInfo {
     private String id;
     private LocalDateTime expires;

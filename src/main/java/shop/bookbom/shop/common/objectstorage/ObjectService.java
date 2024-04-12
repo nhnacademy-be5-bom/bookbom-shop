@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import lombok.NonNull;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class ObjectService {
      */
     public void uploadObject(MultipartFile file, String containerName, String objectName) {
         String url = this.getUrl(containerName, objectName);
-        if (token.getExpires().isBefore(LocalDateTime.now())) {
+        if (Objects.isNull(token) || token.getExpires().isBefore(LocalDateTime.now())) {
             token = tokenService.requestToken();
         }
         try {
@@ -65,8 +66,7 @@ public class ObjectService {
             SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
             requestFactory.setBufferRequestBody(false);
             HttpMessageConverterExtractor<String> responseExtractor
-                    = new HttpMessageConverterExtractor<>(String.class,
-                    new RestTemplate(requestFactory).getMessageConverters());
+                    = new HttpMessageConverterExtractor<>(String.class, new RestTemplate(requestFactory).getMessageConverters());
             restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor);
         } catch (IOException e) {
             throw new FileNotFoundException();
@@ -82,7 +82,7 @@ public class ObjectService {
      */
     public byte[] downloadObject(String containerName, String objectName) {
         String url = this.getUrl(containerName, objectName);
-        if (token.getExpires().isBefore(LocalDateTime.now())) {
+        if (Objects.isNull(token) || token.getExpires().isBefore(LocalDateTime.now())) {
             token = tokenService.requestToken();
         }
         HttpHeaders headers = new HttpHeaders();
