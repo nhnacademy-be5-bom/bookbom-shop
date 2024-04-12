@@ -10,6 +10,10 @@ public final class ApplicationStatus {
         this.status = false;
     }
 
+    public void startService() {
+        this.status = true;
+    }
+
     public boolean getStatus() {
         return status;
     }
