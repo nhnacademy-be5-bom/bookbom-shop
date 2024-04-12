@@ -1,6 +1,7 @@
 package shop.bookbom.shop.domain.order.controller;
 
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -57,7 +58,7 @@ public class OrderControllerTest {
         wrapperList.add(new WrapperDto(1L, "포장지 1", 1000));
 
         BeforeOrderResponse response = new BeforeOrderResponse(5, beforeOrderBookResponseList, wrapperList);
-        when(orderService.getOrderBookInfo(request)).thenReturn(response);
+        when(orderService.getOrderBookInfo(any())).thenReturn(response);
         //when
         ResultActions perform = mockMvc.perform(post("/shop/orders/before-order")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -95,7 +96,7 @@ public class OrderControllerTest {
                 WrapperSelectBookResponse.builder().bookTitle("test book").imgUrl("http://img.jpg").wrapperName("포장지 3")
                         .quantity(3).cost(5000).build());
         WrapperSelectResponse response = new WrapperSelectResponse(3, userId, wrapperSelectBookResponseList);
-        when(orderService.selectWrapper(userId, request)).thenReturn(response);
+        when(orderService.selectWrapper(any(), any())).thenReturn(response);
         //when
         ResultActions perform = mockMvc.perform(post("/shop/orders/wrapper")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -136,7 +137,7 @@ public class OrderControllerTest {
                         .wrapperName("포장지 3")
                         .quantity(4).cost(6000).build());
         WrapperSelectResponse response = new WrapperSelectResponse(7, userId, wrapperSelectBookResponseList);
-        when(orderService.selectWrapper(userId, request)).thenReturn(response);
+        when(orderService.selectWrapper(any(), any())).thenReturn(response);
         //when
         ResultActions perform = mockMvc.perform(post("/shop/orders/wrapper")
                 .contentType(MediaType.APPLICATION_JSON)

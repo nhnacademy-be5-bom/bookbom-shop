@@ -4,9 +4,11 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class WrapperSelectBookRequest {
     @NotBlank
     private String bookTitle;
