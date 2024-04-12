@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class BookTagResponse {
     //get요청을 통해 tag의 이름을 넘겨주는 dto
-    String tagName;
+    private String tagName;
 }
