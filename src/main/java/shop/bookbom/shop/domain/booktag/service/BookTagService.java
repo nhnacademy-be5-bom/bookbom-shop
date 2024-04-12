@@ -14,6 +14,7 @@ import shop.bookbom.shop.domain.booktag.exception.BookTagAlreadyExistException;
 import shop.bookbom.shop.domain.booktag.exception.BookTagNotFoundException;
 import shop.bookbom.shop.domain.booktag.repository.BookTagRepository;
 import shop.bookbom.shop.domain.tag.entity.Tag;
+import shop.bookbom.shop.domain.tag.exception.TagNotFoundException;
 import shop.bookbom.shop.domain.tag.repository.TagRepository;
 
 @Service
@@ -50,7 +51,7 @@ public class BookTagService {
         //Book 정보를 가져옴, 정보가 없을 시엔 예외 처리
         Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
         //Tag 정보를 가져옴, 정보가 없을 시엔 예외 처리
-        Tag tag = tagRepository.findById(tagId).orElseThrow(BookTagNotFoundException::new);
+        Tag tag = tagRepository.findById(tagId).orElseThrow(TagNotFoundException::new);
         //이미 해당 책 태그가 존재할 경우 예외처리
         bookTagRepository.findByBookIdAndTagId(bookId, tagId)
                 .ifPresent(booktag -> {
