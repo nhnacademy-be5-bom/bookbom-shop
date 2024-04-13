@@ -18,7 +18,6 @@ public class ElasticSearchConfig extends ElasticsearchConfiguration {
     @Value("${secure.manager.elastic.port}")
     private String port;
 
-
     @Override
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()

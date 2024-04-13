@@ -1,6 +1,7 @@
 package shop.bookbom.shop.domain.book.document;
 
 
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,14 +31,20 @@ public class BookDocument {
     @Field(name = "book_index", type = FieldType.Text)
     private String bookIndex;
 
-    @Field(type = FieldType.Long)
-    private Long cost;
+    @Field(type = FieldType.Integer)
+    private Integer cost;
 
-    @Field(name = "discount_cost", type = FieldType.Long)
-    private Long discountCost;
+    @Field(name = "discount_cost", type = FieldType.Integer)
+    private Integer discountCost;
+
+    @Field(name = "pub_date", type = FieldType.Date)
+    private LocalDate pubDate;
 
     @Field(name = "author_ids", type = FieldType.Text)
     private String authorIds;
+
+    @Field(name = "author_roles", type = FieldType.Text)
+    private String authorRoles;
 
     @Field(name = "author_names", type = FieldType.Text)
     private String authorNames;
@@ -47,4 +54,16 @@ public class BookDocument {
 
     @Field(name = "publisher_name", type = FieldType.Text)
     private String publisherName;
+
+    @Field(name = "views", type = FieldType.Integer)
+    private Integer views;
+
+    @Field(name = "file_id", type = FieldType.Long)
+    private Long fileId;
+
+    @Field(name = "url", type = FieldType.Text)
+    private String url;
+
+    @Field(name = "extension", type = FieldType.Text)
+    private String extension;
 }
