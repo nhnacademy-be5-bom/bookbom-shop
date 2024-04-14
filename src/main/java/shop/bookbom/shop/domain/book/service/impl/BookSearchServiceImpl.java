@@ -27,34 +27,12 @@ public class BookSearchServiceImpl implements BookSearchService {
     private final ReviewRepository reviewRepository;
 
     /**
-     * 검색 결과에서 작가 정보를 추출하는 메서드입니다.
-     *
-     * @param content 검색 결과
-     * @return 작가 정보 리스트
-     */
-    private static List<AuthorResponse> getAuthors(BookDocument content) {
-        String[] authorNames = content.getAuthorNames().split(",");
-        String[] authorIds = content.getAuthorIds().split(",");
-        String[] authorRoles = content.getAuthorRoles().split(",");
-        List<AuthorResponse> authors = new ArrayList<>();
-        for (int i = 0; i < authorNames.length; i++) {
-            AuthorResponse author = AuthorResponse.builder()
-                    .id(Long.parseLong(authorIds[i].trim()))
-                    .name(authorNames[i].trim())
-                    .role(authorRoles[i].trim())
-                    .build();
-            authors.add(author);
-        }
-        return authors;
-    }
-
-    /**
      * 키워드 검색 쿼리를 만들어 주는 메서드입니다.
      *
      * @param pageable   페이지 정보
      * @param keyword    검색 키워드
      * @param firstValue 우선 검색 키워드
-     * @return
+     * @return 검색 쿼리
      */
     private static Query createQuery(
             Pageable pageable,
@@ -85,7 +63,7 @@ public class BookSearchServiceImpl implements BookSearchService {
      * @param firstValue   우선 검색 키워드
      * @param firstBoost   우선 검색 키워드 가중치
      * @param defaultBoost 해당 필드의 기본 가중치
-     * @return
+     * @return 검색 쿼리
      */
     private static co.elastic.clients.elasticsearch._types.query_dsl.Query buildMatchQuery(
             String keyword,
@@ -101,10 +79,33 @@ public class BookSearchServiceImpl implements BookSearchService {
         );
     }
 
+    /**
+     * 검색 결과에서 작가 정보를 추출하는 메서드입니다.
+     *
+     * @param content 검색 결과
+     * @return 작가 정보 리스트
+     */
+    private static List<AuthorResponse> getAuthors(BookDocument content) {
+        String[] authorNames = content.getAuthorNames().split(",");
+        String[] authorIds = content.getAuthorIds().split(",");
+        String[] authorRoles = content.getAuthorRoles().split(",");
+        List<AuthorResponse> authors = new ArrayList<>();
+        for (int i = 0; i < authorNames.length; i++) {
+            AuthorResponse author = AuthorResponse.builder()
+                    .id(Long.parseLong(authorIds[i].trim()))
+                    .name(authorNames[i].trim())
+                    .role(authorRoles[i].trim())
+                    .build();
+            authors.add(author);
+        }
+        return authors;
+    }
+
     @Override
     @Transactional(readOnly = true)
     public Page<BookSearchResponse> search(Pageable pageable, String keyword, String firstValue) {
         Query query = createQuery(pageable, keyword, firstValue);
+
         SearchHits<BookDocument> searchHits = operations.search(query, BookDocument.class);
         List<BookSearchResponse> content = searchHits.stream()
                 .map(s -> documentToResponse(s.getContent()))
@@ -114,6 +115,26 @@ public class BookSearchServiceImpl implements BookSearchService {
         return new PageImpl<>(content, pageable, totalHits);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public long getReviewCount(Long bookId) {
+        return reviewRepository.countByBookId(bookId)
+                .orElse(0L);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public double getReviewRating(Long bookId) {
+        return reviewRepository.avgRateByBookId(bookId)
+                .orElse(0.0);
+    }
+
+    /**
+     * 검색 결과를 DTO 객체로 변환하는 메서드입니다.
+     *
+     * @param content elasticsearch 검색 결과
+     * @return 검색 결과 DTO
+     */
     private BookSearchResponse documentToResponse(BookDocument content) {
         List<AuthorResponse> authors = getAuthors(content);
 
@@ -130,19 +151,5 @@ public class BookSearchServiceImpl implements BookSearchService {
                 .reviewRating(getReviewRating(content.getBookId()))
                 .reviewCount(getReviewCount(content.getBookId()))
                 .build();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public long getReviewCount(Long bookId) {
-        return reviewRepository.countByBookId(bookId)
-                .orElse(0L);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public double getReviewRating(Long bookId) {
-        return reviewRepository.avgRateByBookId(bookId)
-                .orElse(0.0);
     }
 }
