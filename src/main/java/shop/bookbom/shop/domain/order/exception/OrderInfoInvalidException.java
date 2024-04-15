@@ -8,7 +8,6 @@ public class OrderInfoInvalidException extends BaseException {
         super(ErrorCode.COMMON_INVALID_PARAMETER);
 
     }
-
     public OrderInfoInvalidException(ErrorCode errorCode) {
         super(errorCode);
     }

@@ -28,7 +28,6 @@ public class WishServiceImpl implements WishService {
     private final MemberRepository memberRepository;
 
     /**
-     *
      * 찜 목록에 도서를 추가합니다
      *
      * @param items
@@ -48,9 +47,9 @@ public class WishServiceImpl implements WishService {
                             .build();
 
                     boolean isExistWish = wishRepository.existsByBookIdAndMemberId(book.getId(), member.getId());
-                    if(isExistWish){
+                    if (isExistWish) {
                         throw new WishDuplicateValueException();
-                    }else{
+                    } else {
                         wishRepository.save(wish);
                     }
                 }
@@ -58,7 +57,6 @@ public class WishServiceImpl implements WishService {
     }
 
     /**
-     *
      * 찜 목록에 있는 도서를 삭제합니다
      *
      * @param items
@@ -75,7 +73,6 @@ public class WishServiceImpl implements WishService {
     }
 
     /**
-     *
      * 회원의 찜 목록을 조회합니다
      *
      * @param userId
@@ -88,7 +85,7 @@ public class WishServiceImpl implements WishService {
         List<WishInfoResponse> wishInfoResponseList = new ArrayList<>();
         for (Wish wish : wishBookList) {
             Book book = wish.getBook();
-            if(book != null){
+            if (book != null) {
                 wishInfoResponseList.add(new WishInfoResponse(
                         book.getTitle(),
                         book.getPublisher().getName(),
@@ -101,7 +98,6 @@ public class WishServiceImpl implements WishService {
     }
 
     /**
-     *
      * 회원의 모든 찜 개수를 조회합니다
      *
      * @param userId
