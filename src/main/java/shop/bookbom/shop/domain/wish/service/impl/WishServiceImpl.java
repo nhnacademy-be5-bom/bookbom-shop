@@ -62,7 +62,7 @@ public class WishServiceImpl implements WishService {
     @Transactional
     public void deleteWish(List<WishAddDeleteRequest> items, Long userId) {
         items.forEach(item -> {
-                    Wish wish = wishRepository.findByBookIdAndMemerId(item.getBookId(), userId);
+                    Wish wish = wishRepository.findByBookIdAndMemberId(item.getBookId(), userId);
                     wishRepository.delete(wish);
                 }
         );
