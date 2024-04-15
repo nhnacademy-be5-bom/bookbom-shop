@@ -48,5 +48,17 @@ class TagControllerTest {
         // Then
         verify(tagService, times(1)).deleteTagService(tagId);
     }
+    
+    @Test
+    @DisplayName("태그 등록 - 유효성 검사 실패")
+    void addTag_ValidationFailed() throws Exception {
+        // Given
+        String requestBody = "{\"name\": \"\", \"status\": \"USED\"}"; // 빈 이름
+        // When & Then
+        mockMvc.perform(post("/shop/tag")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
 
 }
