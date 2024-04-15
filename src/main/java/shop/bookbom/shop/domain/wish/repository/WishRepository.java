@@ -7,4 +7,5 @@ import shop.bookbom.shop.domain.wish.entity.Wish;
 public interface WishRepository extends JpaRepository<Wish, Long> {
     List<Wish> getBookIdByMemberId(Long userId);
     Long countByMemberId(Long userId);
+    Wish findByBookIdAndMemerId(Long bookId, Long userId);
 }

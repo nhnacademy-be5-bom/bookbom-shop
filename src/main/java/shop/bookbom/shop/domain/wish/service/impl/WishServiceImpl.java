@@ -11,7 +11,7 @@ import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.exception.MemberNotFoundException;
 import shop.bookbom.shop.domain.member.repository.MemberRepository;
-import shop.bookbom.shop.domain.wish.dto.request.WishAddRequest;
+import shop.bookbom.shop.domain.wish.dto.request.WishAddDeleteRequest;
 import shop.bookbom.shop.domain.wish.dto.response.WishInfoResponse;
 import shop.bookbom.shop.domain.wish.dto.response.WishTotalCountResponse;
 import shop.bookbom.shop.domain.wish.entity.Wish;
@@ -27,6 +27,7 @@ public class WishServiceImpl implements WishService {
     private final MemberRepository memberRepository;
 
     /**
+     *
      * 찜 목록에 도서를 추가합니다
      *
      * @param items
@@ -34,7 +35,7 @@ public class WishServiceImpl implements WishService {
      */
     @Override
     @Transactional
-    public void addWish(List<WishAddRequest> items, Long userId) {
+    public void addWish(List<WishAddDeleteRequest> items, Long userId) {
         items.forEach(item -> {
                     Book book = bookRepository.findById(item.getBookId())
                             .orElseThrow(BookNotFoundException::new);
@@ -52,19 +53,23 @@ public class WishServiceImpl implements WishService {
 
     /**
      *
-     * 찜 목록에서 도서를 삭제합니다
+     * 찜 목록에 있는 도서를 삭제합니다
      *
+     * @param items
      * @param userId
      */
     @Override
     @Transactional
-    public void deleteWish(Long userId) {
-        Wish wish = wishRepository.findById(userId)
-                .orElseThrow(WishNotFoundException::new);
-        wishRepository.delete(wish);
+    public void deleteWish(List<WishAddDeleteRequest> items, Long userId) {
+        items.forEach(item -> {
+                    Wish wish = wishRepository.findByBookIdAndMemerId(item.getBookId(), userId);
+                    wishRepository.delete(wish);
+                }
+        );
     }
 
     /**
+     *
      * 회원의 찜 목록을 조회합니다
      *
      * @param userId
