@@ -24,7 +24,7 @@ public class BookTagService {
     private final TagRepository tagRepository;
     private final BookRepository bookRepository;
 
-    // 책 태그 조회
+    // 책 ID로 태그 조회
     @Transactional(readOnly = true)
     public List<BookTagInfoResponse> getBookTagInformation(long bookId) {
         // 주어진 bookId에 해당하는 BookTag 목록을 가져옴
@@ -33,7 +33,9 @@ public class BookTagService {
         List<BookTagInfoResponse> bookTagResponses = new ArrayList<>();
         for (BookTag bookTag : bookTags) {
             BookTagInfoResponse bookTagResponse = BookTagInfoResponse.builder()
+                    .tagId(bookTag.getTag().getId())
                     .tagName(bookTag.getTag().getName())
+                    .status(bookTag.getTag().getStatus())
                     .build();
             // 리스트에 추가
             bookTagResponses.add(bookTagResponse);
