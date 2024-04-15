@@ -15,6 +15,7 @@ import shop.bookbom.shop.domain.wish.dto.request.WishAddDeleteRequest;
 import shop.bookbom.shop.domain.wish.dto.response.WishInfoResponse;
 import shop.bookbom.shop.domain.wish.dto.response.WishTotalCountResponse;
 import shop.bookbom.shop.domain.wish.entity.Wish;
+import shop.bookbom.shop.domain.wish.exception.WishDuplicateValueException;
 import shop.bookbom.shop.domain.wish.exception.WishNotFoundException;
 import shop.bookbom.shop.domain.wish.repository.WishRepository;
 import shop.bookbom.shop.domain.wish.service.WishService;
@@ -46,7 +47,12 @@ public class WishServiceImpl implements WishService {
                             .member(member)
                             .build();
 
-                    wishRepository.save(wish);
+                    boolean isExistWish = wishRepository.existsByBookIdAndMemberId(book.getId(), member.getId());
+                    if(isExistWish){
+                        throw new WishDuplicateValueException();
+                    }else{
+                        wishRepository.save(wish);
+                    }
                 }
         );
     }

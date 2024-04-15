@@ -22,7 +22,8 @@ public enum ErrorCode {
     // member
     MEMBER_NOT_FOUND(400, "해당 회원이 존재하지 않습니다."),
     //wish
-    WISH_NOT_FOUND(400, "해당 찜 상품이 존재하지 않습니다.");
+    WISH_NOT_FOUND(400, "해당 찜 상품이 존재하지 않습니다."),
+    WISH_DUPLICATE_VALUE(400, "이미 찜한 상품입니다.");
 
     private final int code;
     private final String message;
