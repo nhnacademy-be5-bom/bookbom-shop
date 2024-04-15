@@ -3,10 +3,9 @@ package shop.bookbom.shop.domain.book.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static shop.bookbom.shop.domain.book.utils.BookTestUtils.getBookDocument;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -16,101 +15,37 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.elasticsearch.core.AggregationsContainer;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.TotalHitsRelation;
-import org.springframework.data.elasticsearch.core.query.Query;
-import org.springframework.data.elasticsearch.core.suggest.response.Suggest;
 import shop.bookbom.shop.domain.book.document.BookDocument;
 import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
+import shop.bookbom.shop.domain.book.repository.BookSearchRepository;
 import shop.bookbom.shop.domain.review.repository.ReviewRepository;
 
 @ExtendWith(MockitoExtension.class)
 class BookSearchServiceTest {
 
     @Mock
-    ElasticsearchOperations operations;
+    ReviewRepository reviewRepository;
 
     @Mock
-    ReviewRepository reviewRepository;
+    BookSearchRepository bookSearchRepository;
 
     @InjectMocks
     BookSearchServiceImpl bookSearchService;
 
-    private static SearchHits<BookDocument> getSearchHits(BookDocument bookDocument) {
-        SearchHit<BookDocument> documentSearchHit =
-                new SearchHit<>(null, null, null, 1.0f, null, null, null, null, null, null, bookDocument);
-        return new SearchHits<>() {
-            @Override
-            public AggregationsContainer<?> getAggregations() {
-                return null;
-            }
-
-            @Override
-            public float getMaxScore() {
-                return 0;
-            }
-
-            @Override
-            public SearchHit<BookDocument> getSearchHit(int index) {
-                return documentSearchHit;
-            }
-
-            @Override
-            public List<SearchHit<BookDocument>> getSearchHits() {
-                return List.of(documentSearchHit);
-            }
-
-            @Override
-            public long getTotalHits() {
-                return 1;
-            }
-
-            @Override
-            public TotalHitsRelation getTotalHitsRelation() {
-                return null;
-            }
-
-            @Override
-            public Suggest getSuggest() {
-                return null;
-            }
-        };
-    }
-
-    private static BookDocument getBookDocument() {
-        return new BookDocument(
-                1L,
-                "title",
-                "description",
-                "index",
-                10000,
-                9000,
-                LocalDate.now(),
-                "1",
-                "role",
-                "name",
-                1L,
-                "publisher",
-                0,
-                1L,
-                "thumbnail",
-                "jpg");
-    }
 
     @Test
-    @DisplayName("도서 검색")
+    @DisplayName("도서 검색 후 검색 결과 DTO 반환")
     void search() {
         // given
         PageRequest pageable = PageRequest.of(0, 5);
         String keyword = "title";
         String firstValue = "book_title";
         BookDocument bookDocument = getBookDocument();
-        SearchHits<BookDocument> searchHits = getSearchHits(bookDocument);
-        when(operations.search(any(Query.class), eq(BookDocument.class))).thenReturn(searchHits);
+        List<BookDocument> searchResult = List.of(bookDocument);
+        PageImpl<BookDocument> searchResponse = new PageImpl<>(searchResult, pageable, searchResult.size());
+        when(bookSearchRepository.search(any(), any(), any())).thenReturn(searchResponse);
         when(reviewRepository.avgRateByBookId(anyLong())).thenReturn(Optional.of(4.5));
         when(reviewRepository.countByBookId(anyLong())).thenReturn(Optional.of(10L));
         // when
@@ -124,4 +59,5 @@ class BookSearchServiceTest {
         assertThat(response.getReviewCount()).isEqualTo(10L);
         assertThat(response.getReviewRating()).isEqualTo(4.5);
     }
+
 }
