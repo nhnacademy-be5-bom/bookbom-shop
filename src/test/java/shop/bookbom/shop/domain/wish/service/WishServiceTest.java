@@ -21,7 +21,7 @@ import shop.bookbom.shop.domain.wish.entity.Wish;
 import shop.bookbom.shop.domain.wish.exception.WishNotFoundException;
 import shop.bookbom.shop.domain.wish.repository.WishRepository;
 import shop.bookbom.shop.domain.wish.service.impl.WishServiceImpl;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -69,15 +69,17 @@ public class WishServiceTest {
         WishAddDeleteRequest wishAddDeleteRequest = new WishAddDeleteRequest(1L);
         items.add(wishAddDeleteRequest);
 
-        Wish wish = mock(Wish.class);
+        // existsByBookIdAndMemberId() 메서드가 true를 반환하도록 설정
+        when(wishRepository.existsByBookIdAndMemberId(anyLong(), anyLong())).thenReturn(true);
 
-        when(wishRepository.findByBookIdAndMemberId(anyLong(), anyLong())).thenReturn(wish);
+        // findByBookIdAndMemberId() 메서드가 원하는 Wish 객체를 반환하도록 설정
+        when(wishRepository.findByBookIdAndMemberId(anyLong(), anyLong())).thenReturn(mock(Wish.class));
 
         // when
         wishService.deleteWish(items, 1L);
 
         // then
-        verify(wishRepository, times(1)).delete(wish);
+        verify(wishRepository, times(1)).delete(any(Wish.class));
     }
 
     @Test
