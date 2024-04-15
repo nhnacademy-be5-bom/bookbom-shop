@@ -42,7 +42,7 @@ public class BookTagController {
     }
 
     //책 태그 삭제
-    @DeleteMapping("/booktag/{id}")
+    @DeleteMapping("/book/tag/{id}")
     public CommonResponse<Void> deleteBookTag(@PathVariable long id) {
         bookTagService.deleteBookTagService(id);
         return success();

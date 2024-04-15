@@ -39,7 +39,7 @@ class BookTagControllerTest {
         when(bookTagService.getBookTagInformation(bookId)).thenReturn(Collections.singletonList(response));
 
         // When & Then
-        mockMvc.perform(get("/shop/booktag/{id}", bookId))
+        mockMvc.perform(get("/shop/book/tag/{id}", bookId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
@@ -55,7 +55,7 @@ class BookTagControllerTest {
         long bookId = 2L;
 
         // When
-        mockMvc.perform(post("/shop/booktag")
+        mockMvc.perform(post("/shop/book/tag")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"tagId\":1,\"bookId\":2}"))
                 .andExpect(status().isOk());
@@ -71,7 +71,7 @@ class BookTagControllerTest {
         doNothing().when(bookTagService).deleteBookTagService(bookTagId);
 
         // When & Then
-        mockMvc.perform(delete("/shop/booktag/{id}", bookTagId))
+        mockMvc.perform(delete("/shop/book/tag/{id}", bookTagId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
@@ -84,7 +84,7 @@ class BookTagControllerTest {
         // Given
         String requestBody = "{\"tagId\":0,\"bookId\":0}"; // 유효하지 않은 값
         // When & Then
-        mockMvc.perform(post("/shop/booktag")
+        mockMvc.perform(post("/shop/book/tag")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isBadRequest());
