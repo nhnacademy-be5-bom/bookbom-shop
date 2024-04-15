@@ -2,4 +2,10 @@
 GET http://localhost:8011/shop/book/detail/1006
 
 ### get/simple
-GET http://localhost:8011/shop/book/simple/1
+GET http://localhost:8011/shop/book/simple/1006
+
+### get/medium
+GET http://localhost:8011/shop/book/medium/1
+
+### get/medium/pageable
+GET http://localhost:8011/shop/book/medium?pageable=asd

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.book.dto.request.BookAddRequest;
 import shop.bookbom.shop.domain.book.dto.request.BookUpdateRequest;
-import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.service.BookService;
 
@@ -39,10 +38,26 @@ public class BookRestController {
 
     @GetMapping("/book/simple/{id}")
     @CrossOrigin(origins = "*")
-    public CommonResponse<BookDetailResponse> getBookSimple(@PathVariable("id") Long bookId) {
-        bookService.exists(bookId);
+    public CommonResponse<?> getBookSimple(@PathVariable("id") Long bookId) {
+        try {
+            bookService.exists(bookId);
+            return CommonResponse.successWithData(bookService.getBookSimpleInformation(bookId));
 
-        return CommonResponse.successWithData(bookService.getBookSimpleInformation(bookId));
+        } catch (BookNotFoundException e) {
+            return CommonResponse.fail(e.getErrorCode());
+        }
+    }
+
+    @GetMapping("/book/medium/{id}")
+    @CrossOrigin(origins = "*")
+    public CommonResponse<?> getBookMedium(@PathVariable("id") Long bookId) {
+        try {
+            bookService.exists(bookId);
+            return CommonResponse.successWithData(bookService.getBookMediumInformation(bookId));
+
+        } catch (BookNotFoundException e) {
+            return CommonResponse.fail(e.getErrorCode());
+        }
     }
 
     @PutMapping("/book/update")

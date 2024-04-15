@@ -2,7 +2,6 @@ package shop.bookbom.shop.domain.publisher.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import shop.bookbom.shop.domain.publisher.entity.Publisher;
 
 /**
  * packageName    : shop.bookbom.shop.domain.publisher.dto
@@ -19,9 +18,8 @@ import shop.bookbom.shop.domain.publisher.entity.Publisher;
 public class PublisherSimpleInformation {
     private String name;
 
-    
     @Builder
-    public PublisherSimpleInformation(Publisher publisher) {
-        this.name = publisher.getName();
+    public PublisherSimpleInformation(String name) {
+        this.name = name;
     }
 }

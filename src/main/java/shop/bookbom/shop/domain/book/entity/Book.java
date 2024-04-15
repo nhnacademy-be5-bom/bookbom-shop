@@ -94,6 +94,9 @@ public class Book {
     @OneToMany(mappedBy = "book")
     private List<BookFile> bookFiles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "review")
+    private List<BookFile> reviews = new ArrayList<>();
+
     @Builder
     public Book(String title,
                 String description,

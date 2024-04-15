@@ -12,6 +12,8 @@ import shop.bookbom.shop.domain.author.repository.AuthorRepository;
 import shop.bookbom.shop.domain.book.dto.request.BookAddRequest;
 import shop.bookbom.shop.domain.book.dto.request.BookUpdateRequest;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
+import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
+import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
@@ -52,7 +54,7 @@ public class BookService {
     private final CategoryRepository categoryRepository;
     private final BookCategoryRepository bookCategoryRepository;
 
-    // private final FileRepository fileRepository;
+    //private final FileRepository fileRepository;
     private final BookFileRepository bookFileRepository;
 
     private final ObjectMapper mapper;
@@ -70,18 +72,28 @@ public class BookService {
     @Transactional(readOnly = true)
     public BookDetailResponse getBookDetailInformation(Long bookId) {
         if (exists(bookId)) {
-            Publisher publisher = bookRepository.findById(bookId).get().getPublisher();
-            return bookRepository.getBookDetailById(bookId).get(0);
+            return bookRepository.getBookDetailInfoById(bookId);
         } else {
             throw new BookNotFoundException();
         }
     }
 
     @Transactional(readOnly = true)
-    public BookDetailResponse getBookSimpleInformation(Long bookId) {
-        Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+    public BookSimpleResponse getBookSimpleInformation(Long bookId) {
+        if (exists(bookId)) {
+            return bookRepository.getBookSimpleInfoById(bookId);
+        } else {
+            throw new BookNotFoundException();
+        }
+    }
 
-        return mapper.convertValue(book, BookDetailResponse.class);
+    @Transactional(readOnly = true)
+    public BookMediumResponse getBookMediumInformation(Long bookId) {
+        if (exists(bookId)) {
+            return bookRepository.getBookMediumInfoById(bookId);
+        } else {
+            throw new BookNotFoundException();
+        }
     }
 
     @Transactional

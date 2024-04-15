@@ -2,7 +2,6 @@ package shop.bookbom.shop.domain.pointrate.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 
 /**
  * packageName    : shop.bookbom.shop.domain.pointrate.dto
@@ -18,11 +17,11 @@ import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 @Getter
 public class PointRateSimpleInformation {
     private String earnType;
-    private int earnPoint;
+    private Integer earnPoint;
 
     @Builder
-    public PointRateSimpleInformation(PointRate pointRate) {
-        this.earnType = pointRate.getEarnType().getValue();
-        this.earnPoint = pointRate.getEarnPoint();
+    public PointRateSimpleInformation(String earnType, Integer earnPoint) {
+        this.earnType = earnType;
+        this.earnPoint = earnPoint;
     }
 }
