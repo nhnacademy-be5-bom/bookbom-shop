@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class DeliveryAddress {
     @Id
+    @Column(name = "delivery_address_id")
     private Long id;
 
     @Column(name = "zip_code", nullable = false, length = 5)
