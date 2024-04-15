@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
-import shop.bookbom.shop.domain.booktag.dto.BookTagRequest;
-import shop.bookbom.shop.domain.booktag.dto.BookTagResponse;
+import shop.bookbom.shop.domain.booktag.dto.request.BookTagCreateRequest;
+import shop.bookbom.shop.domain.booktag.dto.response.BookTagInfoResponse;
 import shop.bookbom.shop.domain.booktag.service.BookTagService;
 
 @RestController
@@ -25,16 +25,16 @@ public class BookTagController {
     private final BookTagService bookTagService;
 
     // 책 태그 정보
-    @GetMapping("/booktag/{id}")
-    public CommonResponse<List<BookTagResponse>> getBookTag(@PathVariable long id) {
-        List<BookTagResponse> bookTagResponses = bookTagService.getBookTagInformation(id);
+    @GetMapping("/book/tag/{id}")
+    public CommonResponse<List<BookTagInfoResponse>> getBookTag(@PathVariable long id) {
+        List<BookTagInfoResponse> bookTagResponses = bookTagService.getBookTagInformation(id);
         // 응답을 200으로 설정하고 본문으로 리스트를 넘겨줌
         return successWithData(bookTagResponses);
     }
 
     // 책 태그 등록
-    @PostMapping("/booktag")
-    public CommonResponse<Void> saveBookTag(final @Valid @RequestBody BookTagRequest bookTagRequest) {
+    @PostMapping("/book/tag")
+    public CommonResponse<Void> saveBookTag(final @Valid @RequestBody BookTagCreateRequest bookTagRequest) {
         long bookId = bookTagRequest.getBookId();
         long tagId = bookTagRequest.getTagId();
         bookTagService.saveTagService(tagId, bookId);

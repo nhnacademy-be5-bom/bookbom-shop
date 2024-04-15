@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
-import shop.bookbom.shop.domain.booktag.dto.BookTagResponse;
+import shop.bookbom.shop.domain.booktag.dto.response.BookTagInfoResponse;
 import shop.bookbom.shop.domain.booktag.entity.BookTag;
 import shop.bookbom.shop.domain.booktag.exception.BookTagAlreadyExistException;
 import shop.bookbom.shop.domain.booktag.exception.BookTagNotFoundException;
@@ -56,23 +56,12 @@ class BookTagServiceTest {
         when(bookTagRepository.findAllByBookId(bookId)).thenReturn(Collections.singletonList(bookTag));
 
         // When
-        List<BookTagResponse> result = bookTagService.getBookTagInformation(bookId);
+        List<BookTagInfoResponse> result = bookTagService.getBookTagInformation(bookId);
 
         // Then
         assertFalse(result.isEmpty());
         assertEquals(1, result.size());
         assertEquals("tagName", result.get(0).getTagName());
-    }
-
-    @Test
-    @DisplayName("책 태그 정보 조회 - 실패: 해당하는 책 태그가 없는 경우")
-    void getBookTagInformation_NotFound() {
-        // Given
-        long bookId = 1L;
-        when(bookTagRepository.findAllByBookId(bookId)).thenReturn(Collections.emptyList());
-
-        // When & Then
-        assertThrows(BookTagNotFoundException.class, () -> bookTagService.getBookTagInformation(bookId));
     }
 
     @Test

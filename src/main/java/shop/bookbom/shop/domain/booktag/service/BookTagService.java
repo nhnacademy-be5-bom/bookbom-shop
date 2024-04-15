@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
-import shop.bookbom.shop.domain.booktag.dto.BookTagResponse;
+import shop.bookbom.shop.domain.booktag.dto.response.BookTagInfoResponse;
 import shop.bookbom.shop.domain.booktag.entity.BookTag;
 import shop.bookbom.shop.domain.booktag.exception.BookTagAlreadyExistException;
 import shop.bookbom.shop.domain.booktag.exception.BookTagNotFoundException;
@@ -26,17 +26,15 @@ public class BookTagService {
 
     // 책 태그 조회
     @Transactional(readOnly = true)
-    public List<BookTagResponse> getBookTagInformation(long bookId) {
+    public List<BookTagInfoResponse> getBookTagInformation(long bookId) {
         // 주어진 bookId에 해당하는 BookTag 목록을 가져옴
         List<BookTag> bookTags = bookTagRepository.findAllByBookId(bookId);
-        if (bookTags.isEmpty()) {
-            throw new BookTagNotFoundException();
-        }
         // BookTagResponse 형태의 리스트 생성
-        List<BookTagResponse> bookTagResponses = new ArrayList<>();
+        List<BookTagInfoResponse> bookTagResponses = new ArrayList<>();
         for (BookTag bookTag : bookTags) {
-            BookTagResponse bookTagResponse = new BookTagResponse();
-            bookTagResponse.setTagName(bookTag.getTag().getName());
+            BookTagInfoResponse bookTagResponse = BookTagInfoResponse.builder()
+                    .tagName(bookTag.getTag().getName())
+                    .build();
             // 리스트에 추가
             bookTagResponses.add(bookTagResponse);
         }

@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import shop.bookbom.shop.domain.booktag.dto.BookTagResponse;
+import shop.bookbom.shop.domain.booktag.dto.response.BookTagInfoResponse;
 import shop.bookbom.shop.domain.booktag.service.BookTagService;
 
 import java.util.Collections;
@@ -33,8 +33,9 @@ class BookTagControllerTest {
     void getBookTag_Success() throws Exception {
         // Given
         long bookId = 1L;
-        BookTagResponse response = new BookTagResponse();
-        response.setTagName("tagName");
+        BookTagInfoResponse response = BookTagInfoResponse.builder()
+                .tagName("tagName")
+                .build();
         when(bookTagService.getBookTagInformation(bookId)).thenReturn(Collections.singletonList(response));
 
         // When & Then
@@ -75,5 +76,17 @@ class BookTagControllerTest {
                 .andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
                 .andExpect(jsonPath("$.header.successful").value(true));
+    }
+
+    @Test
+    @DisplayName("책 태그 등록 - 유효성 검사 실패")
+    void saveBookTag_ValidationFailed() throws Exception {
+        // Given
+        String requestBody = "{\"tagId\":0,\"bookId\":0}"; // 유효하지 않은 값
+        // When & Then
+        mockMvc.perform(post("/shop/booktag")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
     }
 }
