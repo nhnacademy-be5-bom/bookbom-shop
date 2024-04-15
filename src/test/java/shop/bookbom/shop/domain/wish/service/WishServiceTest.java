@@ -1,9 +1,6 @@
 package shop.bookbom.shop.domain.wish.service;
 
-
-import java.lang.reflect.Executable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +14,7 @@ import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.repository.MemberRepository;
 import shop.bookbom.shop.domain.publisher.entity.Publisher;
-import shop.bookbom.shop.domain.wish.dto.request.WishAddRequest;
+import shop.bookbom.shop.domain.wish.dto.request.WishAddDeleteRequest;
 import shop.bookbom.shop.domain.wish.dto.response.WishInfoResponse;
 import shop.bookbom.shop.domain.wish.dto.response.WishTotalCountResponse;
 import shop.bookbom.shop.domain.wish.entity.Wish;
@@ -47,10 +44,9 @@ public class WishServiceTest {
     @DisplayName("찜 도서 추가")
     void testAddWish() {
         // given
-        List<WishAddRequest> items = new ArrayList<>();
-        WishAddRequest wishAddRequest = new WishAddRequest();
-        wishAddRequest.setBookId(1L);
-        items.add(wishAddRequest);
+        List<WishAddDeleteRequest> items = new ArrayList<>();
+        WishAddDeleteRequest wishAddDeleteRequest = new WishAddDeleteRequest(1L);
+        items.add(wishAddDeleteRequest);
 
         Book book = mock(Book.class);
         Member member = mock(Member.class);
@@ -69,15 +65,19 @@ public class WishServiceTest {
     @DisplayName("찜 목록에서 도서 삭제")
     void testDeleteWish() {
         // given
+        List<WishAddDeleteRequest> items = new ArrayList<>();
+        WishAddDeleteRequest wishAddDeleteRequest = new WishAddDeleteRequest(1L);
+        items.add(wishAddDeleteRequest);
+
         Wish wish = mock(Wish.class);
 
-        when(wishRepository.findById(anyLong())).thenReturn(Optional.of(wish));
+        when(wishRepository.findByBookIdAndMemberId(anyLong(), anyLong())).thenReturn(wish);
 
         // when
-        wishService.deleteWish(1L);
+        wishService.deleteWish(items, 1L);
 
         // then
-        verify(wishRepository, times(1)).delete(any(Wish.class));
+        verify(wishRepository, times(1)).delete(wish);
     }
 
     @Test
@@ -125,12 +125,16 @@ public class WishServiceTest {
 
     @Test
     @DisplayName("찜 목록에서 삭제 null 예외")
-    void testDeleteNotExistsWish() throws Exception {
-        //given
-        when(wishRepository.findById(any())).thenReturn(Optional.empty());
+    void testDeleteNotExistsWish() {
+        // given
+        List<WishAddDeleteRequest> items = new ArrayList<>();
+        WishAddDeleteRequest wishAddDeleteRequest = new WishAddDeleteRequest(2000L);
+        items.add(wishAddDeleteRequest);
 
-        //when & then
-        assertThatThrownBy(() -> wishService.deleteWish(1L))
-                .isInstanceOf(WishNotFoundException.class);
+        // 존재하지 않는 wish일때
+        when(wishRepository.existsByBookIdAndMemberId(eq(2000L), anyLong())).thenReturn(false);
+
+        // when & then
+        assertThrows(WishNotFoundException.class, () -> wishService.deleteWish(items, 1L));
     }
 }

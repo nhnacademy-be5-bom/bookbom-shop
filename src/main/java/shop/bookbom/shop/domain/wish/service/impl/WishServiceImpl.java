@@ -66,8 +66,13 @@ public class WishServiceImpl implements WishService {
     @Transactional
     public void deleteWish(List<WishAddDeleteRequest> items, Long userId) {
         items.forEach(item -> {
-                    Wish wish = wishRepository.findByBookIdAndMemberId(item.getBookId(), userId);
-                    wishRepository.delete(wish);
+                    boolean isExistWish = wishRepository.existsByBookIdAndMemberId(item.getBookId(), userId);
+                    if(!isExistWish){
+                        throw new WishNotFoundException();
+                    } else{
+                        Wish wish = wishRepository.findByBookIdAndMemberId(item.getBookId(), userId);
+                        wishRepository.delete(wish);
+                    }
                 }
         );
     }
