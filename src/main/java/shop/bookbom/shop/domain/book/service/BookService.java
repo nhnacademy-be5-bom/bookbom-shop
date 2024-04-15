@@ -21,7 +21,7 @@ import shop.bookbom.shop.domain.bookcategory.entity.BookCategory;
 import shop.bookbom.shop.domain.bookcategory.repository.BookCategoryRepository;
 import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
 import shop.bookbom.shop.domain.booktag.entity.BookTag;
-import shop.bookbom.shop.domain.booktag.repository.BooktagRepository;
+import shop.bookbom.shop.domain.booktag.repository.BookTagRepository;
 import shop.bookbom.shop.domain.category.entity.Status;
 import shop.bookbom.shop.domain.category.repository.CategoryRepository;
 import shop.bookbom.shop.domain.pointrate.entity.ApplyPointType;
@@ -47,7 +47,7 @@ public class BookService {
     private final BookAuthorRepository bookAuthorRepository;
 
     private final TagRepository tagRepository;
-    private final BooktagRepository booktagRepository;
+    private final BookTagRepository booktagRepository;
 
     private final CategoryRepository categoryRepository;
     private final BookCategoryRepository bookCategoryRepository;
