@@ -1,0 +1,5 @@
+### get/detail
+GET http://localhost:8011/shop/book/detail/1006
+
+### get/simple
+GET http://localhost:8011/shop/book/simple/1

@@ -57,8 +57,28 @@ public class BookService {
 
     private final ObjectMapper mapper;
 
+    public boolean exists(Long bookId) {
+        try {
+            bookRepository.getReferenceById(bookId);
+            return true;
+
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
     @Transactional(readOnly = true)
-    public BookDetailResponse getBook(Long bookId) {
+    public BookDetailResponse getBookDetailInformation(Long bookId) {
+        if (exists(bookId)) {
+            Publisher publisher = bookRepository.findById(bookId).get().getPublisher();
+            return bookRepository.getBookDetailById(bookId).get(0);
+        } else {
+            throw new BookNotFoundException();
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public BookDetailResponse getBookSimpleInformation(Long bookId) {
         Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
 
         return mapper.convertValue(book, BookDetailResponse.class);
@@ -141,23 +161,16 @@ public class BookService {
         bookAuthorRepository.save(bookAuthor);
 
         // 책-카테고리 저장
-        BookCategory category_depth1 = BookCategory.builder()
-                .book(book)
-                .category(categoryRepository.findByName(bookAddRequest.getCategory_depth1()).get())
-                .build();
-        bookCategoryRepository.save(category_depth1);
+        if (bookAddRequest.getCategories() != null) {
+            for (String categoryName : bookAddRequest.getCategories()) {
+                BookCategory bookCategory = BookCategory.builder()
+                        .book(book)
+                        .category(categoryRepository.findByName(categoryName).get())
+                        .build();
+                bookCategoryRepository.save(bookCategory);
+            }
+        }
 
-        BookCategory category_depth2 = BookCategory.builder()
-                .book(book)
-                .category(categoryRepository.findByName(bookAddRequest.getCategory_depth2()).get())
-                .build();
-        bookCategoryRepository.save(category_depth2);
-
-        BookCategory category_depth3 = BookCategory.builder()
-                .book(book)
-                .category(categoryRepository.findByName(bookAddRequest.getCategory_depth3()).get())
-                .build();
-        bookCategoryRepository.save(category_depth3);
 
         // 책-파일 저장
     }

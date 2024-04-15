@@ -15,14 +15,11 @@ public class BookAddRequest {
     // 관리자 책 등록에 사용하는 책 등록 요청 DTO
     // Book 의 필드 중 id, view 는 등록 페이지에서 사용하지 않으므로 제외
     // front 에서 사용하는 버전에는 작가 필드를 스트링으로 받음
+    
     @JsonIgnore
     private MultipartFile thumbnail;
     private String title;
-
-    private String category_depth1;
-    private String category_depth2;
-    private String category_depth3;
-
+    private List<String> categories;
     private List<String> tags;
     private String authors;
     private Publisher publisher;
@@ -41,12 +38,9 @@ public class BookAddRequest {
     private Integer stock;
 
     @Builder
-
     public BookAddRequest(MultipartFile thumbnail,
                           String title,
-                          String category_depth1,
-                          String category_depth2,
-                          String category_depth3,
+                          List<String> categories,
                           List<String> tags,
                           String authors,
                           String description,
@@ -62,9 +56,7 @@ public class BookAddRequest {
                           Publisher publisher) {
         this.thumbnail = thumbnail;
         this.title = title;
-        this.category_depth1 = category_depth1;
-        this.category_depth2 = category_depth2;
-        this.category_depth3 = category_depth3;
+        this.categories = categories;
         this.tags = tags;
         this.authors = authors;
         this.description = description;
