@@ -14,5 +14,4 @@ public class BeforeOrderRequest {
     private Long bookId;
     @Min(value = 1, message = "수량은 한 개 이상이어야 합니다.")
     private Integer quantity;
-
 }

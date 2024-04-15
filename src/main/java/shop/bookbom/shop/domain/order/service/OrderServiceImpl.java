@@ -2,7 +2,6 @@ package shop.bookbom.shop.domain.order.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +9,7 @@ import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequest;
+import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
@@ -31,35 +31,31 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public BeforeOrderResponse getOrderBookInfo(List<BeforeOrderRequest> beforeOrderRequestList) {
+    public BeforeOrderResponse getOrderBookInfo(BeforeOrderRequestList beforeOrderRequestList) {
         int TotalOrderCount = 0;
         List<BeforeOrderBookResponse> beforeOrderBookResponseList = new ArrayList<>();
         //각 책에 대한 정보를 list로부터 가져와서 foreach문 돌림
-        for (BeforeOrderRequest bookRequest : beforeOrderRequestList) {
+        for (BeforeOrderRequest bookRequest : beforeOrderRequestList.getBeforeOrderRequestList()) {
             //bookId로 책 가져옴
-            BookTitleAndCostResponse titleAndCostById = bookRepository.getTitleAndCostById(bookRequest.getBookId());
-            //책 정보가 존재하면
-            if (Objects.nonNull(titleAndCostById)) {
-                //책 정보를 가져와서 응답 객체에 넣음
-                String title = titleAndCostById.getTitle();
-                Integer cost = titleAndCostById.getCost();
-                Integer quantity = bookRequest.getQuantity();
-                String imageUrl = bookFileRepository.getBookImageUrl(bookRequest.getBookId());
+            BookTitleAndCostResponse titleAndCostById = bookRepository.getTitleAndCostById(bookRequest.getBookId())
+                    .orElseThrow(BookNotFoundException::new);
+            String title = titleAndCostById.getTitle();
+            Integer cost = titleAndCostById.getCost();
+            Integer quantity = bookRequest.getQuantity();
+            String imageUrl = bookFileRepository.getBookImageUrl(bookRequest.getBookId());
 
-                //새로운 주문 도서 응답 빌더 생성
-                BeforeOrderBookResponse beforeOrderBookResponse = BeforeOrderBookResponse.builder()
-                        .title(title)
-                        .imageUrl(imageUrl)
-                        .cost(cost)
-                        .quantity(quantity)
-                        .build();
+            //새로운 주문 도서 응답 빌더 생성
+            BeforeOrderBookResponse beforeOrderBookResponse = BeforeOrderBookResponse.builder()
+                    .bookId(bookRequest.getBookId())
+                    .title(title)
+                    .imageUrl(imageUrl)
+                    .cost(cost)
+                    .quantity(quantity)
+                    .build();
 
-                beforeOrderBookResponseList.add(beforeOrderBookResponse);
-                //총 주문 개수 다 더함
-                TotalOrderCount += quantity;
-            } else {
-                throw new BookNotFoundException();
-            }
+            beforeOrderBookResponseList.add(beforeOrderBookResponse);
+            //총 주문 개수 다 더함
+            TotalOrderCount += quantity;
         }
         //모든 포장지 list 가져옴
         List<Wrapper> wrapperList = wrapperRepository.findAll();
@@ -89,7 +85,9 @@ public class OrderServiceImpl implements OrderService {
         List<WrapperSelectBookResponse> wrapperSelectBookResponseList = new ArrayList<>();
         for (WrapperSelectBookRequest selectBookRequest : wrapperSelectBookRequestList) {
             WrapperSelectBookResponse wrapperSelectBookResponse =
-                    WrapperSelectBookResponse.builder().bookTitle(selectBookRequest.getBookTitle())
+                    WrapperSelectBookResponse.builder()
+                            .bookId(selectBookRequest.getBookId())
+                            .bookTitle(selectBookRequest.getBookTitle())
                             .wrapperName(selectBookRequest.getWrapperName())
                             .imgUrl(selectBookRequest.getImgUrl())
                             .quantity(selectBookRequest.getQuantity())
