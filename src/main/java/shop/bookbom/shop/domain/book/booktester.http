@@ -1,5 +1,5 @@
 ### get/detail
-GET http://localhost:8011/shop/book/detail/1006
+GET http://localhost:8011/shop/book/detail/1
 
 ### get/simple
 GET http://localhost:8011/shop/book/simple/1006
@@ -7,5 +7,8 @@ GET http://localhost:8011/shop/book/simple/1006
 ### get/medium
 GET http://localhost:8011/shop/book/medium/1
 
-### get/medium/pageable
-GET http://localhost:8011/shop/book/medium?pageable=asd
+### get/pageable, all
+GET http://localhost:8011/shop/books/all?page=2&size=1
+
+### get/pageable, category
+GET http://localhost:8011/shop/books/category/103

@@ -11,20 +11,22 @@ public interface BookRepository extends JpaRepository<Book, Long>, BookRepositor
     @Query("SELECT new shop.bookbom.shop.domain.order.dto.response.BookTitleAndCostResponse(b.title, b.cost) FROM Book b WHERE b.id = :bookId")
     BookTitleAndCostResponse getTitleAndCostById(@Param("bookId") Long bookId);
 
-    // 베스트 도서,도서 전체 목록: 표지, 제목, 작가, 출판사, 출판일자, 포인트, 가격, 할인가격, 설명 , 별점, 리뷰갯수. pageable(별점순)
-//    @Query(value =
-//            "SELECT new shop.bookbom.shop.domain.book.dto.response.BookMediumResponse(b,b.authors,b.tags,b.bookFiles) " +
-//                    "FROM Book b " +
-//                    "WHERE b.id = :bookId ORDER BY :condition")
-//    Page<BookMediumResponse> getPageableBookMediumInfoByCondition(@Param("condition") String condition,
-//                                                                  Pageable pageable);
-//
-//    @Query(value =
-//            "SELECT new shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse(b,b.bookFiles) " +
-//                    "FROM Book b " +
-//                    "WHERE b.id = :bookId ORDER BY :condition")
-//    Page<BookSimpleResponse> getPageableBookSimpleInfoByCondition(@Param("condition") String condition,
-//                                                                  Pageable pageable);
+/*   * 최대크기 DTO 단건조회
+    BookDetailResponse getBookDetailInfoById(Long bookId);
 
+     * 중간크기 DTO 단건조회
+    BookMediumResponse getBookMediumInfoById(Long bookId);
 
+     * 최소크기 DTO 단건조회
+    BookSimpleResponse getBookSimpleInfoById(Long bookId);
+
+     * pageable: 베스트 페이지
+    Page<BookMediumResponse> getPageableAndOrderByViewCountListBookMediumInfos(Pageable pageable);
+
+     * pageable: 전체책/관리자페이지
+    Page<BookMediumResponse> getPageableListBookMediumInfos(Pageable pageable);
+
+     * pageable: 카테고리별 책 조회
+    Page<BookMediumResponse> getPageableBookMediumInfosByCategoryId(Long categoryId, Pageable pageable);
+*/
 }

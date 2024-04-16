@@ -14,7 +14,8 @@ import shop.bookbom.shop.domain.pointrate.dto.PointRateSimpleInformation;
 @NoArgsConstructor
 public class BookSimpleResponse {
     // 주문, 장바구니에 사용하는 최소 정보 DTO
-    // 표지, 제목, 가격, 할인가격, 적립율
+    // id, 표지, 제목, 가격, 할인가격, 적립율
+    private Long id;
     private String title;
     private Integer cost;
     private Integer discountCost;
@@ -23,12 +24,13 @@ public class BookSimpleResponse {
 
     @Builder
     @QueryProjection
-    public BookSimpleResponse(String title,
+    public BookSimpleResponse(Long id,
+                              String title,
                               Integer cost,
                               Integer discountCost,
                               PointRateSimpleInformation pointRate,
                               List<FileDTO> files) {
-
+        this.id = id;
         this.title = title;
         this.cost = cost;
         this.discountCost = discountCost;

@@ -1,6 +1,7 @@
 package shop.bookbom.shop.domain.book.repository.custom;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
@@ -23,10 +24,11 @@ public interface BookRepositoryCustom {
     /**
      * methodName : getBookDetailInfoById
      * author : 전석준
-     * description : 책 상세정보 조회에 사용
+     * description : 최대크기 DTO 단건조회
+     * 책 상세정보 조회에 사용
      *
-     * @param book id
-     * @return book detail response
+     * @param book id : 책id
+     * @return 1 book detail response
      */
     BookDetailResponse getBookDetailInfoById(Long bookId);
 
@@ -35,28 +37,50 @@ public interface BookRepositoryCustom {
      * author : 전석준
      * description : 중간크기 DTO 단건조회
      *
-     * @param book id
-     * @return book medium response
+     * @param book id 책id
+     * @return 1 book medium response
      */
     BookMediumResponse getBookMediumInfoById(Long bookId);
 
     /**
      * methodName : getBookSimpleInfoById
      * author : 전석준
-     * description : 주문, 장바구니에서 사용
+     * description : 최소크기 DTO 단건조회
+     * 주문, 장바구니에서 사용
      *
-     * @param book id
-     * @return book simple response
+     * @param book id 책id
+     * @return 1 book simple response
      */
     BookSimpleResponse getBookSimpleInfoById(Long bookId);
 
     /**
-     * methodName : getPageableBookMediumInfoById
+     * methodName : getPageableAndOrderByViewCountListBookMediumInfos
      * author : 전석준
-     * description : 베스트 도서,도서 전체 목록에 사용
+     * description : 베스트 페이지에서 사용
      *
-     * @param book id
-     * @return pageable List: 표지, 제목, 작가, 출판사, 출판일자, 포인트, 가격, 할인가격, 설명 , 별점, 리뷰갯수.
+     * @param pageable 그거
+     * @return page 조회순 정렬/pageable 된 도서 DTO
      */
-    Page<BookMediumResponse> getPageableBookMediumInfoById(Long bookId);
+    Page<BookMediumResponse> getPageableAndOrderByViewCountListBookMediumInfos(Pageable pageable);
+
+    /**
+     * methodName : getPageableListBookMediumInfos
+     * author : 전석준
+     * description : 전체책/관리자페이지에서 사용
+     *
+     * @param pageable 그거
+     * @return page pageable 된 도서 DTO
+     */
+    Page<BookMediumResponse> getPageableListBookMediumInfos(Pageable pageable);
+
+    /**
+     * methodName : getPageableBookMediumInfosByCategoryId
+     * author : 전석준
+     * description : 카테고리별 책 조회에서 사용
+     *
+     * @param category id 카테고리번호
+     * @param pageable 그거
+     * @return page
+     */
+    Page<BookMediumResponse> getPageableBookMediumInfosByCategoryId(Long categoryId, Pageable pageable);
 }

@@ -18,12 +18,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ReviewSimpleInformation {
-    private Long totalCount;
-    private Integer averageRating;
+    private Long id;
+    private int rate;
+    private String content;
 
     @Builder
-    public ReviewSimpleInformation(Long totalCount, Integer averageRating) {
-        this.totalCount = totalCount;
-        this.averageRating = averageRating;
+    public ReviewSimpleInformation(Long id, int rate, String content) {
+        this.id = id;
+        this.rate = rate;
+        this.content = content;
     }
 }

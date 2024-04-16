@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,20 +61,19 @@ public class BookService {
 
     private final ObjectMapper mapper;
 
-    public boolean exists(Long bookId) {
-        try {
-            bookRepository.getReferenceById(bookId);
-            return true;
-
-        } catch (RuntimeException e) {
-            return false;
-        }
-    }
-
     @Transactional(readOnly = true)
     public BookDetailResponse getBookDetailInformation(Long bookId) {
         if (exists(bookId)) {
             return bookRepository.getBookDetailInfoById(bookId);
+        } else {
+            throw new BookNotFoundException();
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public BookMediumResponse getBookMediumInformation(Long bookId) {
+        if (exists(bookId)) {
+            return bookRepository.getBookMediumInfoById(bookId);
         } else {
             throw new BookNotFoundException();
         }
@@ -88,12 +89,21 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public BookMediumResponse getBookMediumInformation(Long bookId) {
-        if (exists(bookId)) {
-            return bookRepository.getBookMediumInfoById(bookId);
-        } else {
-            throw new BookNotFoundException();
-        }
+    public Page<BookMediumResponse> getPageableEntireBookList(Pageable pageable) {
+        //List<BookMediumResponse> responseList =
+        return bookRepository.getPageableListBookMediumInfos(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BookMediumResponse> getPageableEntireBookListOrderByCount(Pageable pageable) {
+
+        return bookRepository.getPageableAndOrderByViewCountListBookMediumInfos(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BookMediumResponse> getPageableBookListByCategoryId(Long categoryId, Pageable pageable) {
+
+        return bookRepository.getPageableBookMediumInfosByCategoryId(categoryId, pageable);
     }
 
     @Transactional
@@ -184,11 +194,27 @@ public class BookService {
         }
 
 
-        // 책-파일 저장
+        // #todo 책-파일 저장
     }
 
     @Transactional
     public void updateBook(BookUpdateRequest bookUpdateRequest) {
         bookRepository.save(mapper.convertValue(bookUpdateRequest, Book.class));
+    }
+
+    @Transactional
+    public void updateBookViewCount(BookUpdateRequest bookUpdateRequest) {
+        bookRepository.save(mapper.convertValue(bookUpdateRequest, Book.class));
+    }
+
+
+    private boolean exists(Long bookId) {
+        try {
+            bookRepository.getReferenceById(bookId);
+            return true;
+
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 }

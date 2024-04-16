@@ -25,6 +25,7 @@ import shop.bookbom.shop.domain.bookfile.entity.BookFile;
 import shop.bookbom.shop.domain.booktag.entity.BookTag;
 import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 import shop.bookbom.shop.domain.publisher.entity.Publisher;
+import shop.bookbom.shop.domain.review.entity.Review;
 
 @Entity
 @Getter
@@ -94,8 +95,8 @@ public class Book {
     @OneToMany(mappedBy = "book")
     private List<BookFile> bookFiles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "review")
-    private List<BookFile> reviews = new ArrayList<>();
+    @OneToMany(mappedBy = "book")
+    private List<Review> reviews = new ArrayList<>();
 
     @Builder
     public Book(String title,
