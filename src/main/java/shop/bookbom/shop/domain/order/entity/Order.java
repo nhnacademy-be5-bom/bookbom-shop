@@ -94,4 +94,8 @@ public class Order {
     public void addOrderBook(OrderBook orderBook) {
         orderBooks.add(orderBook);
     }
+
+    public void updateOrderDate(LocalDateTime orderDate) {
+        this.orderDate = orderDate;
+    }
 }

@@ -26,7 +26,22 @@ public enum ErrorCode {
     BOOK_TAG_ALREADY_EXIST(400, "해당 책에 태그가 이미 존재합니다."),
     //tag
     TAG_NOT_FOUND(400, "해당 태그가 존재하지 않습니다."),
-    TAG_ALREADY_EXIST(400, "해당 태그가 이미 존재합니다.");
+    TAG_ALREADY_EXIST(400, "해당 태그가 이미 존재합니다."),
+    //order
+    ORDER_NOT_FOUNT(400, "해당 주문이 존재하지 않습니다."),
+    //payment
+    PAYMENT_VERIFY_FAIL(400, "결제 검증 실패: 요청이 유효하지 않습니다."),
+    PAYMENT_NOT_ALLOWED(400, "결제가 허용되지 않습니다. 다시 시도해 주세요."),
+    //paymentMethod
+    PAYMENTMETHOD_NOT_FOUND(400, "해당 결제 수단이 존재하지 않습니다."),
+    //orderStatus
+    ORDERSTATUS_NOT_FOUND(400, "해당 주문 상태가 존재하지 않습니다."),
+    //orderBook
+    ORDERBOOK_NOT_FOUND(400, "해당 주문에 책정보가 존재하지 않습니다."),
+    //delivery
+    DELIVERY_NOT_FOUNT(400, "해당 주문의 배송 정보가 존재하지 않습니다.");
+
+
     private final int code;
     private final String message;
 }

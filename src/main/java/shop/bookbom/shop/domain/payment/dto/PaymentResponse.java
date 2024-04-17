@@ -1,18 +1,33 @@
 package shop.bookbom.shop.domain.payment.dto;
 
-import javax.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class PaymentResponse {
-    @NotBlank
     private String paymentKey;
-    @NotBlank
-    private Integer amount;
-    @NotBlank
     private String orderId;
+    private String orderName;
+    private String method;
+    private Integer totalAmount;
+    private String approvedAt;
+    private CardDto card;
+    private EasyPayDto easyPay;
+
+    public PaymentResponse(String paymentKey, String orderId, String orderName, String method, Integer totalAmount,
+                           String approvedAt, CardDto card, EasyPayDto easyPay) {
+        this.paymentKey = paymentKey;
+        this.orderId = orderId;
+        this.orderName = orderName;
+        this.method = method;
+        this.totalAmount = totalAmount;
+        this.approvedAt = approvedAt;
+        this.card = card;
+        this.easyPay = easyPay;
+    }
 }
