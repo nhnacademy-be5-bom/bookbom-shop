@@ -13,6 +13,5 @@ public class BookTitleAndCostResponse {
     public BookTitleAndCostResponse(String title, Integer cost) {
         this.title = title;
         this.cost = cost;
-
     }
 }

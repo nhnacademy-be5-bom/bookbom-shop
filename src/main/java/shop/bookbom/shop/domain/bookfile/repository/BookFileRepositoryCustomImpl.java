@@ -7,17 +7,13 @@ import shop.bookbom.shop.domain.bookfiletype.entity.QBookFileType;
 import shop.bookbom.shop.domain.file.entity.QFile;
 
 public class BookFileRepositoryCustomImpl extends QuerydslRepositorySupport implements BookFileRepositoryCustom {
-
-
+    
     public BookFileRepositoryCustomImpl() {
         super(BookFile.class);
     }
 
-
     @Override
     public String getBookImageUrl(Long bookId) {
-
-
         QBookFile bookFile = QBookFile.bookFile;
         QFile file = QFile.file;
         QBookFileType bookFileType = QBookFileType.bookFileType;
@@ -29,8 +25,5 @@ public class BookFileRepositoryCustomImpl extends QuerydslRepositorySupport impl
                         .and(bookFileType.name.eq("img")))
                 .select(file.url)
                 .fetchFirst();
-
     }
-
-
 }

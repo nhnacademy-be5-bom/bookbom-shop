@@ -22,7 +22,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.bookbom.shop.common.exception.ErrorCode;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequest;
+import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
@@ -48,11 +50,12 @@ public class OrderControllerTest {
     @DisplayName("주문 전 책 정보 불러오기")
     void showSelectWrapper() throws Exception {
         //given
-        List<BeforeOrderRequest> request = new ArrayList<>();
-        request.add(new BeforeOrderRequest(1L, 5));
+        List<BeforeOrderRequest> beforeOrderRequestList = new ArrayList<>();
+        beforeOrderRequestList.add(new BeforeOrderRequest(1L, 5));
+        BeforeOrderRequestList request = new BeforeOrderRequestList(beforeOrderRequestList);
 
         List<BeforeOrderBookResponse> beforeOrderBookResponseList = new ArrayList<>();
-        beforeOrderBookResponseList.add(new BeforeOrderBookResponse("http://img.jpg", "testBook", 5, 15000));
+        beforeOrderBookResponseList.add(new BeforeOrderBookResponse(1L, "http://img.jpg", "testBook", 5, 15000));
 
         List<WrapperDto> wrapperList = new ArrayList<>();
         wrapperList.add(new WrapperDto(1L, "포장지 1", 1000));
@@ -82,11 +85,53 @@ public class OrderControllerTest {
     }
 
     @Test
+    @DisplayName("주문 전 - 요청 값 유효성 검사 - bookId가 null일 때")
+    void beforeorder_invalidRequestException_IdIsNull() throws Exception {
+        //given
+        List<BeforeOrderRequest> beforeOrderRequestList = new ArrayList<>();
+        beforeOrderRequestList.add(new BeforeOrderRequest(null, 5));
+        BeforeOrderRequestList request = new BeforeOrderRequestList(beforeOrderRequestList);
+
+        //when, then
+        ResultActions perform = mockMvc.perform(post("/shop/orders/before-order")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        perform.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.header.resultCode").value(400))
+                .andExpect(jsonPath("$.header.resultMessage").value(ErrorCode.COMMON_INVALID_PARAMETER.getMessage()))
+                .andExpect(jsonPath("$.header.successful").value(false));
+
+    }
+
+    @Test
+    @DisplayName("주문 전 - 요청 값 유효성 검사 - 수량이 0일 때")
+    void beforeorder_invalidRequestException_quantityIsZero() throws Exception {
+        //given
+        List<BeforeOrderRequest> beforeOrderRequestList = new ArrayList<>();
+        beforeOrderRequestList.add(new BeforeOrderRequest(20L, 0));
+        BeforeOrderRequestList request = new BeforeOrderRequestList(beforeOrderRequestList);
+
+        //when, then
+        ResultActions perform = mockMvc.perform(post("/shop/orders/before-order")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        perform.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.header.resultCode").value(400))
+                .andExpect(jsonPath("$.header.resultMessage").value(ErrorCode.COMMON_INVALID_PARAMETER.getMessage()))
+                .andExpect(jsonPath("$.header.successful").value(false));
+
+    }
+
+    @Test
     @DisplayName("포장지 선택 - 회원")
     void selectWrapper_member() throws Exception {
         //given
         List<WrapperSelectBookRequest> wrapperSelectRequestList = new ArrayList<>();
-        wrapperSelectRequestList.add(new WrapperSelectBookRequest("test book", "http://img.jpg", "포장지 3"
+        wrapperSelectRequestList.add(new WrapperSelectBookRequest(1L, "test book", "http://img.jpg", "포장지 3"
                 , 3, 5000));
 
         WrapperSelectRequest request = new WrapperSelectRequest(wrapperSelectRequestList, 3);
@@ -122,8 +167,10 @@ public class OrderControllerTest {
     void selectWrapper_not_member() throws Exception {
         //given
         List<WrapperSelectBookRequest> wrapperSelectRequestList = new ArrayList<>();
-        wrapperSelectRequestList.add(new WrapperSelectBookRequest("test book1", "http://img1.jpg", "포장지 3", 3, 5000));
-        wrapperSelectRequestList.add(new WrapperSelectBookRequest("test book2", "http://img2.jpg", "포장지 3", 4, 6000));
+        wrapperSelectRequestList.add(
+                new WrapperSelectBookRequest(1L, "test book1", "http://img1.jpg", "포장지 3", 3, 5000));
+        wrapperSelectRequestList.add(
+                new WrapperSelectBookRequest(2L, "test book2", "http://img2.jpg", "포장지 3", 4, 6000));
 
         WrapperSelectRequest request = new WrapperSelectRequest(wrapperSelectRequestList, 7);
         Long userId = null;
@@ -157,6 +204,31 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.result.wrapperSelectResponseList[1].quantity").value(4))
                 .andExpect(jsonPath("$.result.wrapperSelectResponseList[1].cost").value(6000));
 
+
+    }
+
+    @Test
+    @DisplayName("포장지 선택- 요청 정보가 invalid")
+    void selectWrapper_invalidRequest() throws Exception {
+        //given
+        List<WrapperSelectBookRequest> wrapperSelectRequestList = new ArrayList<>();
+        wrapperSelectRequestList.add(
+                new WrapperSelectBookRequest(1L, " ", "http://img1.jpg", "포장지 3", 3, 5000));
+        wrapperSelectRequestList.add(
+                new WrapperSelectBookRequest(2L, "test book2", "http://img2.jpg", "포장지 3", 4, 6000));
+
+        WrapperSelectRequest request = new WrapperSelectRequest(wrapperSelectRequestList, 7);
+
+        //when
+        ResultActions perform = mockMvc.perform(post("/shop/orders/wrapper")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+        //then
+        perform.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.header.resultCode").value(400))
+                .andExpect(jsonPath("$.header.resultMessage").value(ErrorCode.COMMON_INVALID_PARAMETER.getMessage()))
+                .andExpect(jsonPath("$.header.successful").value(false));
 
     }
 }
