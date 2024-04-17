@@ -24,6 +24,9 @@ public class PaymentMethod {
     @Column(nullable = false, length = 20)
     private String name;
 
+    @Column(name = "card_company_code", nullable = true, length = 2)
+    private String cardCompanyCode;
+
     @Builder
     public PaymentMethod(String name) {
         this.name = name;
