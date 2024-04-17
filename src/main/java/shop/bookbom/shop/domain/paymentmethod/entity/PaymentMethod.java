@@ -7,7 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,8 +26,8 @@ public class PaymentMethod {
     @Column(name = "card_company_code", nullable = true, length = 2)
     private String cardCompanyCode;
 
-    @Builder
-    public PaymentMethod(String name) {
+    public PaymentMethod(String name, String cardCompanyCode) {
         this.name = name;
+        this.cardCompanyCode = cardCompanyCode;
     }
 }
