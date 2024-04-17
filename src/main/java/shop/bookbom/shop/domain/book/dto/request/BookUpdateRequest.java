@@ -1,23 +1,34 @@
 package shop.bookbom.shop.domain.book.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
+import shop.bookbom.shop.domain.author.dto.AuthorDTO;
 import shop.bookbom.shop.domain.book.entity.BookStatus;
-import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
-import shop.bookbom.shop.domain.pointrate.entity.PointRate;
-import shop.bookbom.shop.domain.publisher.entity.Publisher;
 
 @Getter
 public class BookUpdateRequest {
     // 관리자 책 수정에 사용하는 책 수정 요청 DTO
-    // Book 의 필드 중 id, view 는 등록 페이지에서 사용하지 않으므로 제외
+    // Book 의 필드 중 view 는 수정 페이지에서 사용하지 않으므로 제외
 
+    private Long bookId;
+    @JsonIgnore
+    private MultipartFile thumbnail;
     private String title;
+    private List<String> categories;
+    private List<String> tags;
+    private List<AuthorDTO> authors;
+    private String publisher;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate pubDate;
+
     private String description;
     private String index;
-    private LocalDate pubDate;
     private String isbn10;
     private String isbn13;
     private Integer cost;
@@ -25,12 +36,15 @@ public class BookUpdateRequest {
     private Boolean packagable;
     private BookStatus status;
     private Integer stock;
-    private Publisher publisher;
-    private PointRate pointRate;
-    private List<BookAuthor> authors;
 
     @Builder
-    public BookUpdateRequest(String title,
+    public BookUpdateRequest(Long bookId,
+                             MultipartFile thumbnail,
+                             String title,
+                             List<String> categories,
+                             List<String> tags,
+                             List<AuthorDTO> authors,
+                             String publisher,
                              String description,
                              String index,
                              LocalDate pubDate,
@@ -40,12 +54,13 @@ public class BookUpdateRequest {
                              Integer discountCost,
                              Boolean packagable,
                              BookStatus status,
-                             Integer stock,
-                             Publisher publisher,
-                             PointRate pointRate,
-                             List<BookAuthor> authors) {
-
+                             Integer stock) {
+        this.thumbnail = thumbnail;
         this.title = title;
+        this.categories = categories;
+        this.tags = tags;
+        this.authors = authors;
+        this.publisher = publisher;
         this.description = description;
         this.index = index;
         this.pubDate = pubDate;
@@ -56,8 +71,5 @@ public class BookUpdateRequest {
         this.packagable = packagable;
         this.status = status;
         this.stock = stock;
-        this.publisher = publisher;
-        this.pointRate = pointRate;
-        this.authors = authors;
     }
 }

@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
+import shop.bookbom.shop.domain.author.dto.AuthorSimpleInfo;
 import shop.bookbom.shop.domain.book.entity.BookStatus;
-import shop.bookbom.shop.domain.publisher.entity.Publisher;
 
 @Getter
 @NoArgsConstructor
@@ -23,8 +23,8 @@ public class BookAddRequest {
     private String title;
     private List<String> categories;
     private List<String> tags;
-    private String authors;
-    private Publisher publisher;
+    private List<AuthorSimpleInfo> authors;
+    private String publisher;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate pubDate;
@@ -44,7 +44,8 @@ public class BookAddRequest {
                           String title,
                           List<String> categories,
                           List<String> tags,
-                          String authors,
+                          List<AuthorSimpleInfo> authors,
+                          String publisher,
                           String description,
                           String index,
                           LocalDate pubDate,
@@ -54,13 +55,13 @@ public class BookAddRequest {
                           Integer discountCost,
                           Boolean packagable,
                           BookStatus status,
-                          Integer stock,
-                          Publisher publisher) {
+                          Integer stock) {
         this.thumbnail = thumbnail;
         this.title = title;
         this.categories = categories;
         this.tags = tags;
         this.authors = authors;
+        this.publisher = publisher;
         this.description = description;
         this.index = index;
         this.pubDate = pubDate;
@@ -71,6 +72,5 @@ public class BookAddRequest {
         this.packagable = packagable;
         this.status = status;
         this.stock = stock;
-        this.publisher = publisher;
     }
 }

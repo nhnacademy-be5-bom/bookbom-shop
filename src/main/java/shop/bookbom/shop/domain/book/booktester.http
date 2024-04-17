@@ -11,4 +11,7 @@ GET http://localhost:8011/shop/book/medium/1
 GET http://localhost:8011/shop/books/all?page=2&size=1
 
 ### get/pageable, category
-GET http://localhost:8011/shop/books/category/103
+GET http://localhost:8011/shop/books/category/420
+
+### delete
+DELETE http://localhost:8011/shop/book/delete/2

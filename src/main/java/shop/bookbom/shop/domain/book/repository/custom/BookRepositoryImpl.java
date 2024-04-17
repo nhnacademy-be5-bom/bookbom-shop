@@ -206,6 +206,12 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
     }
 
     @Override
+    public Book findByIdFetch(Long bookId) {
+        return from(book)
+                .where(book.id.eq(bookId)).fetchOne();
+    }
+
+    @Override
     public Page<BookMediumResponse> getPageableAndOrderByViewCountListBookMediumInfos(Pageable pageable) {
         List<BookMediumResponse> orderdList = getAllBookMediumInfosOrderByViewCount(pageable);
         long count = getTotalCount();
@@ -223,10 +229,10 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
     @Override
     public Page<BookMediumResponse> getPageableBookMediumInfosByCategoryId(Long categoryId, Pageable pageable) {
-        List<BookMediumResponse> orderdList = getListBookMediumInfosByCategoryId(categoryId, pageable);
+        List<BookMediumResponse> entityList = getListBookMediumInfosByCategoryId(categoryId, pageable);
         long count = getCount(categoryId);
 
-        return new PageImpl<>(orderdList, pageable, count);
+        return new PageImpl<>(entityList, pageable, count);
     }
 
     private List<BookMediumResponse> getAllBookMediumInfosOrderByViewCount(Pageable pageable) {
@@ -253,12 +259,13 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
     }
 
     private List<BookMediumResponse> getListBookMediumInfosByCategoryId(Long categoryId, Pageable pageable) {
-        //#todo
-        List<Book> entityList = from(book)
-                .where(book.status.ne(BookStatus.DEL))
+        List<Book> entityList = from(category).rightJoin(bookCategory).on(category.id.eq(bookCategory.category.id))
+                .leftJoin(bookCategory.book)
+                .where(category.id.eq(categoryId).and(bookCategory.book.status.ne(BookStatus.DEL)))
                 .offset(pageable.getOffset())   // 페이지 번호
                 .limit(pageable.getPageSize())  // 페이지 사이즈
-                .select(book)
+                .groupBy(bookCategory.book.id)
+                .select(bookCategory.book)
                 .fetch();
 
         return convertBookToMedium(entityList);

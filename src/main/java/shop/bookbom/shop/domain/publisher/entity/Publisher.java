@@ -28,4 +28,10 @@ public class Publisher {
     public Publisher(String name) {
         this.name = name;
     }
+
+    @Builder(builderMethodName = "updateBuilder")
+    public Publisher(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

@@ -129,4 +129,49 @@ public class Book {
         this.publisher = publisher;
         this.pointRate = pointRate;
     }
+
+    @Builder(builderMethodName = "updateBuilder")
+    public Book(Long id,
+                String title,
+                String description,
+                String index,
+                LocalDate pubDate,
+                String isbn10,
+                String isbn13,
+                Integer cost,
+                Integer discountCost,
+                Boolean packagable,
+                Long views,
+                BookStatus status,
+                Integer stock,
+                Publisher publisher,
+                PointRate pointRate) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.index = index;
+        this.pubDate = pubDate;
+        this.isbn10 = isbn10;
+        this.isbn13 = isbn13;
+        this.cost = cost;
+        this.discountCost = discountCost;
+        this.packagable = packagable;
+        this.views = views;
+        this.status = status;
+        this.stock = stock;
+        this.publisher = publisher;
+        this.pointRate = pointRate;
+    }
+
+    public void updateStatus(BookStatus status) {
+        this.status = status;
+    }
+
+    public void updateViewCount(Long hits) {
+        this.views += hits;
+    }
+
+    public void updateStock(Integer stock) {
+        this.stock = stock;
+    }
 }
