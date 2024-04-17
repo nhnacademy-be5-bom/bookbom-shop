@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -14,6 +15,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Repository;
 import shop.bookbom.shop.domain.book.document.BookDocument;
+import shop.bookbom.shop.domain.book.dto.SortCondition;
 import shop.bookbom.shop.domain.book.repository.BookSearchRepository;
 
 @Repository
@@ -26,29 +28,58 @@ public class BookSearchRepositoryImpl implements BookSearchRepository {
      *
      * @param pageable   페이지 정보
      * @param keyword    검색 키워드
-     * @param firstValue 우선 검색 키워드
+     * @param searchCond 검색 가중치 조건
+     * @param sortCond   정렬 조건
      * @return 검색 쿼리
      */
     private static Query createQuery(
             Pageable pageable,
             String keyword,
-            String firstValue
+            String searchCond,
+            SortCondition sortCond
     ) {
-        float firstBoost = 200F;
+        float primaryBoost = 200F;
+
 
         return NativeQuery.builder()
                 .withQuery(q -> q
                         .bool(b -> b
                                 .should(
-                                        buildMatchQuery(keyword, "book_title", firstValue, firstBoost, 100f),
-                                        buildMatchQuery(keyword, "book_description", firstValue, firstBoost, 80f),
-                                        buildMatchQuery(keyword, "author_names", firstValue, firstBoost, 60f),
-                                        buildMatchQuery(keyword, "book_index", firstValue, firstBoost, 40f),
-                                        buildMatchQuery(keyword, "publisher_name", firstValue, firstBoost, 30f)
+                                        buildMatchQuery(keyword, "title", searchCond, primaryBoost, 100f),
+                                        buildMatchQuery(keyword, "author_names", searchCond, primaryBoost, 50f),
+                                        buildMatchQuery(keyword, "publisher_name", searchCond, primaryBoost, 40f),
+                                        buildMatchQuery(keyword, "book_description", 30f),
+                                        buildMatchQuery(keyword, "book_index", 20f)
                                 )
                         ))
+                .withSort(buildSortCondition(sortCond))
                 .withPageable(pageable)
                 .build();
+    }
+
+    /**
+     * 정렬 조건을 쿼리에 넣을 수 있도록 만들어주는 메서드입니다.
+     *
+     * @param condition 정렬 조건
+     * @return Sort 객체
+     */
+    private static Sort buildSortCondition(SortCondition condition) {
+        if (condition.getFieldName().isEmpty()) {
+            return Sort.unsorted();
+        }
+        return Sort.by(condition.getDirection(), condition.getFieldName());
+    }
+
+    private static co.elastic.clients.elasticsearch._types.query_dsl.Query buildMatchQuery(
+            String keyword,
+            String field,
+            float boost
+    ) {
+        return QueryBuilders.match(m -> m
+                .query(keyword)
+                .field(field)
+                .boost(boost)
+        );
     }
 
     /**
@@ -76,8 +107,8 @@ public class BookSearchRepositoryImpl implements BookSearchRepository {
     }
 
     @Override
-    public Page<BookDocument> search(Pageable pageable, String keyword, String firstValue) {
-        Query query = createQuery(pageable, keyword, firstValue);
+    public Page<BookDocument> search(Pageable pageable, String keyword, String searchCond, SortCondition sortCond) {
+        Query query = createQuery(pageable, keyword, searchCond, sortCond);
 
         SearchHits<BookDocument> searchHits = operations.search(query, BookDocument.class);
         List<BookDocument> content = searchHits.stream()
@@ -85,4 +116,5 @@ public class BookSearchRepositoryImpl implements BookSearchRepository {
                 .collect(Collectors.toList());
         return new PageImpl<>(content, pageable, searchHits.getTotalHits());
     }
+
 }

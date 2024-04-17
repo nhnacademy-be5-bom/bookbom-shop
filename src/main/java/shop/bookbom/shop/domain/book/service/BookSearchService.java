@@ -11,10 +11,11 @@ public interface BookSearchService {
      *
      * @param pageable   페이지 정보
      * @param keyword    검색 키워드
-     * @param firstValue 검색 조건
+     * @param searchCond 검색 조건
+     * @param sortCond   정렬 조건
      * @return 검색 결과
      */
-    Page<BookSearchResponse> search(Pageable pageable, String keyword, String firstValue);
+    Page<BookSearchResponse> search(Pageable pageable, String keyword, String searchCond, String sortCond);
 
     /**
      * 책 ID에 해당하는 리뷰 개수를 반환합니다.

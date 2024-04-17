@@ -20,7 +20,7 @@ public class BookDocument {
     @Field(name = "book_id", type = FieldType.Long)
     private Long bookId;
 
-    @Field(name = "book_title", type = FieldType.Text)
+    @Field(name = "title", type = FieldType.Text)
     private String bookTitle;
 
     @Field(type = FieldType.Text)

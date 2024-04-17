@@ -37,13 +37,17 @@ class BookControllerTest {
     @DisplayName("도서 검색 요청")
     void search() throws Exception {
         //given
-        String keyword = "title";
+        String keyword = "book_title";
+        String sortCond = "none";
+        String searchCond = "none";
         PageRequest pageRequest = PageRequest.of(0, 5);
-        when(bookSearchService.search(any(), any(), any())).thenReturn(
+        when(bookSearchService.search(any(), any(), any(), any())).thenReturn(
                 new PageImpl<>(List.of(getBookSearchResponse()), pageRequest, 1));
         //when
         ResultActions perform = mockMvc.perform(get("/shop/search")
-                .param("keyword", keyword));
+                .param("keyword", keyword)
+                .param("searchCond", searchCond)
+                .param("sortCond", sortCond));
         //then
         perform
                 .andExpect(status().isOk())

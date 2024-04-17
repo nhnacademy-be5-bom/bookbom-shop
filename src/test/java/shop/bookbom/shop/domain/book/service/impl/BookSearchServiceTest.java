@@ -41,15 +41,16 @@ class BookSearchServiceTest {
         // given
         PageRequest pageable = PageRequest.of(0, 5);
         String keyword = "title";
-        String firstValue = "book_title";
+        String searchCond = "book_title";
+        String sortCond = "none";
         BookDocument bookDocument = getBookDocument();
         List<BookDocument> searchResult = List.of(bookDocument);
         PageImpl<BookDocument> searchResponse = new PageImpl<>(searchResult, pageable, searchResult.size());
-        when(bookSearchRepository.search(any(), any(), any())).thenReturn(searchResponse);
+        when(bookSearchRepository.search(any(), any(), any(), any())).thenReturn(searchResponse);
         when(reviewRepository.avgRateByBookId(anyLong())).thenReturn(Optional.of(4.5));
         when(reviewRepository.countByBookId(anyLong())).thenReturn(Optional.of(10L));
         // when
-        Page<BookSearchResponse> result = bookSearchService.search(pageable, keyword, firstValue);
+        Page<BookSearchResponse> result = bookSearchService.search(pageable, keyword, searchCond, sortCond);
         // then
         List<BookSearchResponse> content = result.getContent();
         BookSearchResponse response = content.get(0);
