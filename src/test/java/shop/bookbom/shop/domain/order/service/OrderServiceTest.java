@@ -1,19 +1,23 @@
 package shop.bookbom.shop.domain.order.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequest;
+import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
@@ -44,9 +48,11 @@ public class OrderServiceTest {
         List<BeforeOrderRequest> beforeOrderRequestList = new ArrayList<>();
         beforeOrderRequestList.add(new BeforeOrderRequest(1L, 2));
         beforeOrderRequestList.add(new BeforeOrderRequest(2L, 3));
-
-        when(bookRepository.getTitleAndCostById(1L)).thenReturn(new BookTitleAndCostResponse("test book1", 1000));
-        when(bookRepository.getTitleAndCostById(2L)).thenReturn(new BookTitleAndCostResponse("test book2", 2000));
+        BookTitleAndCostResponse testBook1 = BookTitleAndCostResponse.builder().title("test book1").cost(1000).build();
+        when(bookRepository.getTitleAndCostById(1L)).thenReturn(
+                Optional.of(BookTitleAndCostResponse.builder().title("test book1").cost(1000).build()));
+        when(bookRepository.getTitleAndCostById(2L)).thenReturn(
+                Optional.of(BookTitleAndCostResponse.builder().title("test book2").cost(2000).build()));
         when(bookFileRepository.getBookImageUrl(1L)).thenReturn("http://img1.jpg");
         when(bookFileRepository.getBookImageUrl(2L)).thenReturn("http://img2.jpg");
 
@@ -58,7 +64,8 @@ public class OrderServiceTest {
         when(wrapperRepository.findAll()).thenReturn(wrapperList);
 
         //when
-        BeforeOrderResponse response = orderService.getOrderBookInfo(beforeOrderRequestList);
+        BeforeOrderResponse response =
+                orderService.getOrderBookInfo(new BeforeOrderRequestList(beforeOrderRequestList));
 
         //then
         assertEquals(2, response.getBeforeOrderBookResponseList().size());
@@ -73,11 +80,27 @@ public class OrderServiceTest {
     }
 
     @Test
+    @DisplayName("주문 전 - 책이 존재하지 않을 때")
+    public void beforeorder_bookNotExistException() throws Exception {
+        //given
+        List<BeforeOrderRequest> requestList = new ArrayList<>();
+        Long bookId = 1000000L;
+        requestList.add(new BeforeOrderRequest(bookId, 4));
+        BeforeOrderRequestList request = new BeforeOrderRequestList(requestList);
+
+        // getTitleAndCostById 메서드가 호출될 때 BookNotFoundException 발생하도록 설정
+        when(bookRepository.getTitleAndCostById(bookId)).thenReturn(Optional.empty());
+
+        //when & then
+        assertThrows(BookNotFoundException.class, () -> orderService.getOrderBookInfo(request));
+    }
+
+    @Test
     @DisplayName("포장지 선택 - 회원일 때")
     public void selectWrapper_memeber() throws Exception {
         //given
         WrapperSelectBookRequest bookRequest =
-                new WrapperSelectBookRequest("test book", "http://img.jpg", "포장지 1", 3, 12000);
+                new WrapperSelectBookRequest(1L, "test book", "http://img.jpg", "포장지 1", 3, 12000);
         List<WrapperSelectBookRequest> bookRequests = new ArrayList<>();
         bookRequests.add(bookRequest);
         WrapperSelectRequest wrapperSelectRequest = new WrapperSelectRequest(bookRequests, 3);
@@ -92,8 +115,7 @@ public class OrderServiceTest {
         assertEquals(bookRequest.getBookTitle(), wrapperSelectBookResponse.getBookTitle());
         assertEquals(bookRequest.getCost(), wrapperSelectBookResponse.getCost());
         assertEquals(bookRequest.getWrapperName(), wrapperSelectBookResponse.getWrapperName());
-
-
+        assertEquals(bookRequest.getBookId(), wrapperSelectBookResponse.getBookId());
     }
 
     @Test
@@ -101,7 +123,7 @@ public class OrderServiceTest {
     public void selectWrapper_unregisteredMemeber() throws Exception {
         //given
         WrapperSelectBookRequest bookRequest =
-                new WrapperSelectBookRequest("test book", "http://img.jpg", "포장지 1", 3, 12000);
+                new WrapperSelectBookRequest(1L, "test book", "http://img.jpg", "포장지 1", 3, 12000);
         List<WrapperSelectBookRequest> bookRequests = new ArrayList<>();
         bookRequests.add(bookRequest);
         WrapperSelectRequest wrapperSelectRequest = new WrapperSelectRequest(bookRequests, 3);
