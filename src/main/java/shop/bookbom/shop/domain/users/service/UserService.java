@@ -1,23 +1,17 @@
 package shop.bookbom.shop.domain.users.service;
 
-import java.util.Optional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import shop.bookbom.shop.domain.users.entity.User;
-import shop.bookbom.shop.domain.users.exception.UserNotFoundException;
-import shop.bookbom.shop.domain.users.repository.UserRepository;
+import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
+import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 
+public interface UserService {
 
-@Service
-@RequiredArgsConstructor
-public class UserService {
-    private final UserRepository userRepository;
+    Long save(UserRequestDto userRequestDto);
 
-    public Optional<User> getUser(Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-        return user;
-    }
+    void changeRegistered(Long id, boolean registered);
+
+    void resetPassword(ResetPasswordRequestDto resetPasswordRequestDto);
+
+    boolean isRegistered(Long id);
+
+    boolean checkEmailCanUse(String email);
 }
