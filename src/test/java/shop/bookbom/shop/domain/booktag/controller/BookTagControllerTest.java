@@ -1,5 +1,16 @@
 package shop.bookbom.shop.domain.booktag.controller;
 
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Collections;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,16 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import shop.bookbom.shop.domain.booktag.dto.response.BookTagInfoResponse;
 import shop.bookbom.shop.domain.booktag.service.BookTagService;
-
-import java.util.Collections;
 import shop.bookbom.shop.domain.category.entity.Status;
-
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BookTagController.class)
 class BookTagControllerTest {
@@ -52,7 +54,7 @@ class BookTagControllerTest {
                 .andExpect(jsonPath("$.result[0].status").value(Status.USED.toString()));
     }
 
-        @Test
+    @Test
     @DisplayName("책 태그 등록 - 성공")
     void saveBookTag_Success() throws Exception {
         // Given
@@ -92,6 +94,6 @@ class BookTagControllerTest {
         mockMvc.perform(post("/shop/book/tag")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(jsonPath("$.header.resultCode").value(400));
     }
 }
