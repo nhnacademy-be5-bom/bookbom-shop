@@ -20,7 +20,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import shop.bookbom.shop.domain.users.controller.UserController;
-import shop.bookbom.shop.domain.users.dto.request.ChangeRegisteredRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.exception.RoleNotFoundException;
@@ -49,7 +48,7 @@ public class UserControllerTest {
 
         when(userService.save(any(UserRequestDto.class))).thenReturn(1L);
 
-        mockMvc.perform(post("/shop/user").content(objectMapper.writeValueAsString(userRequestDto))
+        mockMvc.perform(post("/shop/users").content(objectMapper.writeValueAsString(userRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value(1));
     }
@@ -61,7 +60,7 @@ public class UserControllerTest {
                 UserRequestDto.builder().email("wow@email.com").password("1").roleName("INVALID_ROLE").build();
         doThrow(new RoleNotFoundException()).when(userService).save(any(UserRequestDto.class));
 
-        mockMvc.perform(post("/shop/user").content(objectMapper.writeValueAsString(userRequestDto))
+        mockMvc.perform(post("/shop/users").content(objectMapper.writeValueAsString(userRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
@@ -73,7 +72,19 @@ public class UserControllerTest {
                 UserRequestDto.builder().email("wow@email.com").password("1").roleName("INVALID_ROLE").build();
         doThrow(new UserAlreadyExistException()).when(userService).save(any(UserRequestDto.class));
 
-        mockMvc.perform(post("/shop/user").content(objectMapper.writeValueAsString(userRequestDto))
+        mockMvc.perform(post("/shop/users").content(objectMapper.writeValueAsString(userRequestDto))
+                        .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
+                .andExpect(jsonPath("$.header.successful").value(false));
+    }
+
+    @Test
+    @DisplayName("#1_2 CREATE USER : save invalid email user test")
+    void wrongEmailUserSaveTest() throws Exception {
+        UserRequestDto userRequestDto =
+                UserRequestDto.builder().email("INVALID_EMAIL").password("1").roleName("ROLE_USER").build();
+//        doThrow(new UserAlreadyExistException()).when(userService).save(any(UserRequestDto.class));
+
+        mockMvc.perform(post("/shop/users").content(objectMapper.writeValueAsString(userRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
@@ -86,8 +97,9 @@ public class UserControllerTest {
 
         when(userService.save(any(UserRequestDto.class))).thenReturn(1L);
 
-        mockMvc.perform(patch("/shop/user/1/password").content(objectMapper.writeValueAsString(resetPasswordRequestDto))
-                        .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(200))
+        mockMvc.perform(
+                        patch("/shop/users/1/password").content(objectMapper.writeValueAsString(resetPasswordRequestDto))
+                                .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.header.successful").value(true));
     }
 
@@ -98,19 +110,17 @@ public class UserControllerTest {
                 ResetPasswordRequestDto.builder().id(1L).password("123").build();
         doThrow(new UserNotFoundException()).when(userService).resetPassword(any(ResetPasswordRequestDto.class));
 
-        mockMvc.perform(patch("/shop/user/1/password").content(objectMapper.writeValueAsString(resetPasswordRequestDto))
-                        .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
+        mockMvc.perform(
+                        patch("/shop/users/1/password").content(objectMapper.writeValueAsString(resetPasswordRequestDto))
+                                .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
 
     @Test
     @DisplayName("#2-2_1 UPDATE USER : set registered")
     void changeRegisteredTest() throws Exception {
-        ChangeRegisteredRequestDto changeRegisteredRequestDto =
-                ChangeRegisteredRequestDto.builder().id(1L).registered(true).build();
-
         mockMvc.perform(
-                        patch("/shop/user/1/registered").content(objectMapper.writeValueAsString(changeRegisteredRequestDto))
+                        patch("/shop/users/1/registered").param("registered", "false")
                                 .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.header.successful").value(true));
     }
@@ -118,13 +128,12 @@ public class UserControllerTest {
     @Test
     @DisplayName("#2-2_2 UPDATE USER : set registered with not exist user")
     void changeRegisteredWithNoUserTest() throws Exception {
-        ChangeRegisteredRequestDto changeRegisteredRequestDto =
-                ChangeRegisteredRequestDto.builder().id(-4L).registered(true).build();
 
-        doThrow(new UserNotFoundException()).when(userService).changeRegistered(any(ChangeRegisteredRequestDto.class));
+        doThrow(new UserNotFoundException()).when(userService)
+                .changeRegistered(any(Long.class), any(Boolean.class));
 
         mockMvc.perform(
-                        patch("/shop/user/-4/registered").content(objectMapper.writeValueAsString(changeRegisteredRequestDto))
+                        patch("/shop/users/-4/registered").param("registered", "true")
                                 .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
@@ -134,7 +143,7 @@ public class UserControllerTest {
     void getRegisteredTest() throws Exception {
         when(userService.isRegistered(any(Long.class))).thenReturn(true);
 
-        mockMvc.perform(get("/shop/user/1/registered").param("id", "1").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/shop/users/1/registered").param("id", "1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.result").value(Boolean.TRUE));
     }
@@ -144,7 +153,7 @@ public class UserControllerTest {
     void getRegisteredWithNoUserTest() throws Exception {
         doThrow(new UserNotFoundException()).when(userService).isRegistered(any(Long.class));
 
-        mockMvc.perform(get("/shop/user/-4/registered").param("id", "-4").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/shop/users/-4/registered").param("id", "-4").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
@@ -154,14 +163,20 @@ public class UserControllerTest {
     void checkEmailCanUseTest() throws Exception {
         when(userService.checkEmailCanUse(any(String.class))).thenReturn(true);
 
-        mockMvc.perform(get("/shop/user/hi@email").param("email", "hi@email").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(
+                        post("/shop/users/email/confirm")
+                                .content(objectMapper.writeValueAsString("hi@email"))
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.result").value(Boolean.TRUE));
 
 
         when(userService.checkEmailCanUse(any(String.class))).thenReturn(false);
 
-        mockMvc.perform(get("/shop/user/hi@email").param("email", "hi@email").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(
+                        post("/shop/users/email/confirm")
+                                .content(objectMapper.writeValueAsString("hi@email"))
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.result").value(Boolean.FALSE));
     }
