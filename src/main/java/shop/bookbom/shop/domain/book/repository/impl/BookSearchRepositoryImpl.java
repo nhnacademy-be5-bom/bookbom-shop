@@ -47,9 +47,7 @@ public class BookSearchRepositoryImpl implements BookSearchRepository {
                                 .should(
                                         buildMatchQuery(keyword, "title", boostField, primaryBoost, 100f),
                                         buildMatchQuery(keyword, "author_names", boostField, primaryBoost, 50f),
-                                        buildMatchQuery(keyword, "publisher_name", boostField, primaryBoost, 40f),
-                                        buildMatchQuery(keyword, "book_description", 30f),
-                                        buildMatchQuery(keyword, "book_index", 20f)
+                                        buildMatchQuery(keyword, "publisher_name", boostField, primaryBoost, 40f)
                                 )
                         ))
                 .withSort(buildSortCondition(sortCond))
