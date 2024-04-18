@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
-import shop.bookbom.shop.domain.users.dto.request.ChangeRegisteredRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.service.UserService;
 
 @RestController
-@RequestMapping("/shop/user")
+@RequestMapping("/shop/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -40,8 +40,10 @@ public class UserController {
     // #2-2 UPDATE USER - REGISTERED 설정
     // request : Long id, boolean registered
     @PatchMapping("/{id}/registered")
-    public CommonResponse changeRegistered(@RequestBody ChangeRegisteredRequestDto changeRegisteredRequestDto) {
-        userService.changeRegistered(changeRegisteredRequestDto);
+    public CommonResponse changeRegistered(@PathVariable("id") Long id,
+                                           @RequestParam boolean registered) {
+        log.info("id is : " + id);
+        userService.changeRegistered(id, registered);
         return CommonResponse.success();
     }
 
@@ -54,8 +56,8 @@ public class UserController {
 
 
     // #3-2 READ USER - Email이 사용 가능한지 확인
-    @GetMapping("/{email}")
-    public CommonResponse<Boolean> checkEmailCanUse(@PathVariable String email) {
+    @PostMapping("/email/confirm")
+    public CommonResponse<Boolean> checkEmailCanUse(@RequestBody String email) {
         if (userService.checkEmailCanUse(email)) {
             return CommonResponse.successWithData(Boolean.TRUE);
         } else {
