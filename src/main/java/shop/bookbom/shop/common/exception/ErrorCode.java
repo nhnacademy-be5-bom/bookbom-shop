@@ -31,7 +31,7 @@ public enum ErrorCode {
     BOOK_TAG_ALREADY_EXIST(400, "해당 책에 태그가 이미 존재합니다."),
     //tag
     TAG_NOT_FOUND(400, "해당 태그가 존재하지 않습니다."),
-    TAG_ALREADY_EXIST(400, "해당 태그가 이미 존재합니다.");
+    TAG_ALREADY_EXIST(400, "해당 태그가 이미 존재합니다."),
     // file
     FILE_NOT_FOUND(400, "해당 파일을 찾을 수 없습니다."),
     ;

@@ -52,6 +52,9 @@ public class BookSearchServiceImpl implements BookSearchService {
      * @return 작가 정보 리스트
      */
     private static List<AuthorResponse> getAuthors(BookDocument content) {
+        if (content.getAuthorNames() == null) {
+            return new ArrayList<>();
+        }
         String[] authorNames = content.getAuthorNames().split("｜");
         String[] authorIds = content.getAuthorIds().split("｜");
         String[] authorRoles = content.getAuthorRoles().split("｜");
