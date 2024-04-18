@@ -1,4 +1,4 @@
-package shop.bookbom.shop.common.objectstorage;
+package shop.bookbom.shop.common.file;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,8 +18,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
-import shop.bookbom.shop.common.objectstorage.dto.ObjectToken;
-import shop.bookbom.shop.common.objectstorage.dto.TokenInfo;
+import shop.bookbom.shop.common.file.dto.ObjectToken;
+import shop.bookbom.shop.common.file.dto.TokenInfo;
 import shop.bookbom.shop.config.SecureManager;
 
 @ExtendWith(MockitoExtension.class)

@@ -1,4 +1,4 @@
-package shop.bookbom.shop.common.objectstorage;
+package shop.bookbom.shop.common.file;
 
 
 import java.io.IOException;
@@ -22,11 +22,11 @@ import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import shop.bookbom.shop.common.objectstorage.dto.TokenInfo;
-import shop.bookbom.shop.common.objectstorage.exception.FileNotFoundException;
+import shop.bookbom.shop.common.file.dto.TokenInfo;
+import shop.bookbom.shop.common.file.exception.FileNotFoundException;
 
 @Service
-public class ObjectService {
+public class ObjectService implements FileService {
     private final RestTemplate restTemplate;
     private final TokenService tokenService;
     @Value("${object.storage.url}")
@@ -52,7 +52,7 @@ public class ObjectService {
      * @param containerName 저장할 컨테이너 이름 ex) bookbom/book_thumbnail
      * @param objectName    저장될 파일 이름
      */
-    public void uploadObject(MultipartFile file, String containerName, String objectName) {
+    public void uploadFile(MultipartFile file, String containerName, String objectName) {
         String url = this.getUrl(containerName, objectName);
         if (Objects.isNull(token) || token.getExpires().isBefore(LocalDateTime.now())) {
             token = tokenService.requestToken();
@@ -80,7 +80,7 @@ public class ObjectService {
      * @param objectName    저장한 파일 이름
      * @return 파일 데이터
      */
-    public byte[] downloadObject(String containerName, String objectName) {
+    public byte[] downloadFile(String containerName, String objectName) {
         String url = this.getUrl(containerName, objectName);
         if (Objects.isNull(token) || token.getExpires().isBefore(LocalDateTime.now())) {
             token = tokenService.requestToken();

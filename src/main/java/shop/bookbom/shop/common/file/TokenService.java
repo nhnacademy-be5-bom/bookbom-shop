@@ -1,7 +1,7 @@
-package shop.bookbom.shop.common.objectstorage;
+package shop.bookbom.shop.common.file;
 
-import static shop.bookbom.shop.common.objectstorage.dto.TokenRequest.Auth;
-import static shop.bookbom.shop.common.objectstorage.dto.TokenRequest.PasswordCredentials;
+import static shop.bookbom.shop.common.file.dto.TokenRequest.Auth;
+import static shop.bookbom.shop.common.file.dto.TokenRequest.PasswordCredentials;
 
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +12,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import shop.bookbom.shop.common.objectstorage.dto.ObjectToken;
-import shop.bookbom.shop.common.objectstorage.dto.TokenInfo;
-import shop.bookbom.shop.common.objectstorage.dto.TokenRequest;
+import shop.bookbom.shop.common.file.dto.ObjectToken;
+import shop.bookbom.shop.common.file.dto.TokenInfo;
+import shop.bookbom.shop.common.file.dto.TokenRequest;
 import shop.bookbom.shop.config.SecureManager;
 
 @Service

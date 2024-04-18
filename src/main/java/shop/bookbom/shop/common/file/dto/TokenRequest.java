@@ -1,4 +1,4 @@
-package shop.bookbom.shop.common.objectstorage.dto;
+package shop.bookbom.shop.common.file.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

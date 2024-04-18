@@ -1,4 +1,4 @@
-package shop.bookbom.shop.common.objectstorage;
+package shop.bookbom.shop.common.file;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -24,8 +24,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
-import shop.bookbom.shop.common.objectstorage.dto.TokenInfo;
-import shop.bookbom.shop.common.objectstorage.exception.FileNotFoundException;
+import shop.bookbom.shop.common.file.dto.TokenInfo;
+import shop.bookbom.shop.common.file.exception.FileNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class ObjectServiceTest {
@@ -53,7 +53,7 @@ class ObjectServiceTest {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", fileContent);
 
         // when
-        objectService.uploadObject(mockMultipartFile, containerName, objectName);
+        objectService.uploadFile(mockMultipartFile, containerName, objectName);
 
         // then
         verify(restTemplate, times(1)).execute(anyString(), (HttpMethod) any(), (RequestCallback) any(), any());
@@ -74,7 +74,7 @@ class ObjectServiceTest {
         when(tokenService.requestToken()).thenReturn(
                 new TokenInfo("test", LocalDateTime.now().plusDays(7), LocalDateTime.now()));
         // when
-        byte[] result = objectService.downloadObject(containerName, objectName);
+        byte[] result = objectService.downloadFile(containerName, objectName);
 
         // then
         assertThat(result).isEqualTo(fileContent);
@@ -93,7 +93,7 @@ class ObjectServiceTest {
         when(tokenService.requestToken()).thenReturn(
                 new TokenInfo("test", LocalDateTime.now().plusDays(7), LocalDateTime.now()));
         // when
-        assertThatThrownBy(() -> objectService.downloadObject(containerName, objectName))
+        assertThatThrownBy(() -> objectService.downloadFile(containerName, objectName))
                 .isInstanceOf(FileNotFoundException.class);
 
     }

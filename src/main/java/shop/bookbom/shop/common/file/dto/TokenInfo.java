@@ -1,4 +1,4 @@
-package shop.bookbom.shop.common.objectstorage.dto;
+package shop.bookbom.shop.common.file.dto;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

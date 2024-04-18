@@ -1,4 +1,4 @@
-package shop.bookbom.shop.common.objectstorage.exception;
+package shop.bookbom.shop.common.file.exception;
 
 import shop.bookbom.shop.common.exception.BaseException;
 import shop.bookbom.shop.common.exception.ErrorCode;
