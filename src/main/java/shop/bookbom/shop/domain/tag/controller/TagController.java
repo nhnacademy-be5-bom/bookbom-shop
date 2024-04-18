@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.category.entity.Status;
-import shop.bookbom.shop.domain.tag.dto.TagRequest;
+import shop.bookbom.shop.domain.tag.dto.request.TagCreateRequest;
 import shop.bookbom.shop.domain.tag.service.TagService;
 
 @RequiredArgsConstructor
@@ -23,7 +23,7 @@ public class TagController {
 
     //태그 등록
     @PostMapping("/tag")
-    public CommonResponse<Void> saveTag(final @Valid @RequestBody TagRequest tagRequest) {
+    public CommonResponse<Void> saveTag(final @Valid @RequestBody TagCreateRequest tagRequest) {
         String name = tagRequest.getName();
         Status status = tagRequest.getStatus();
         //태그 등록함수 실행

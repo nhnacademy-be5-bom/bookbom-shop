@@ -24,6 +24,9 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(400, "해당 회원이 존재하지 않습니다."),
     // category
     CATEGORY_NAME_NOT_FOUND(400, "입력하신 카테고리는 존재하지 않습니다."),
+    // book_tag
+    BOOK_TAG_NOT_FOUND(400, "해당 책에 태그가 존재하지 않습니다."),
+    BOOK_TAG_ALREADY_EXIST(400, "해당 책에 태그가 이미 존재합니다."),
     //tag
     TAG_NOT_FOUND(400, "해당 태그가 존재하지 않습니다."),
     TAG_ALREADY_EXIST(400, "해당 태그가 이미 존재합니다."),
