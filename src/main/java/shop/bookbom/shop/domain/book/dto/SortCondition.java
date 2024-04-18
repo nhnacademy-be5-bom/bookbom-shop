@@ -5,7 +5,6 @@ import org.springframework.data.domain.Sort;
 
 @Getter
 public enum SortCondition {
-    NAME("title", Sort.Direction.DESC),
     LATEST("pubDate", Sort.Direction.DESC),
     LOWEST_PRICE("cost", Sort.Direction.ASC),
     HIGHEST_PRICE("cost", Sort.Direction.DESC),

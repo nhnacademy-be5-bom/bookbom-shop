@@ -15,6 +15,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Repository;
 import shop.bookbom.shop.domain.book.document.BookDocument;
+import shop.bookbom.shop.domain.book.dto.SearchCondition;
 import shop.bookbom.shop.domain.book.dto.SortCondition;
 import shop.bookbom.shop.domain.book.repository.BookSearchRepository;
 
@@ -35,19 +36,18 @@ public class BookSearchRepositoryImpl implements BookSearchRepository {
     private static Query createQuery(
             Pageable pageable,
             String keyword,
-            String searchCond,
+            SearchCondition searchCond,
             SortCondition sortCond
     ) {
         float primaryBoost = 200F;
-
-
+        String boostField = searchCond.getFieldName();
         return NativeQuery.builder()
                 .withQuery(q -> q
                         .bool(b -> b
                                 .should(
-                                        buildMatchQuery(keyword, "title", searchCond, primaryBoost, 100f),
-                                        buildMatchQuery(keyword, "author_names", searchCond, primaryBoost, 50f),
-                                        buildMatchQuery(keyword, "publisher_name", searchCond, primaryBoost, 40f),
+                                        buildMatchQuery(keyword, "title", boostField, primaryBoost, 100f),
+                                        buildMatchQuery(keyword, "author_names", boostField, primaryBoost, 50f),
+                                        buildMatchQuery(keyword, "publisher_name", boostField, primaryBoost, 40f),
                                         buildMatchQuery(keyword, "book_description", 30f),
                                         buildMatchQuery(keyword, "book_index", 20f)
                                 )
@@ -55,6 +55,22 @@ public class BookSearchRepositoryImpl implements BookSearchRepository {
                 .withSort(buildSortCondition(sortCond))
                 .withPageable(pageable)
                 .build();
+    }
+
+    @Override
+    public Page<BookDocument> search(
+            Pageable pageable,
+            String keyword,
+            SearchCondition searchCond,
+            SortCondition sortCond
+    ) {
+        Query query = createQuery(pageable, keyword, searchCond, sortCond);
+
+        SearchHits<BookDocument> searchHits = operations.search(query, BookDocument.class);
+        List<BookDocument> content = searchHits.stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+        return new PageImpl<>(content, pageable, searchHits.getTotalHits());
     }
 
     /**
@@ -104,17 +120,6 @@ public class BookSearchRepositoryImpl implements BookSearchRepository {
                 .field(field)
                 .boost(field.equals(firstValue) ? firstBoost : defaultBoost)
         );
-    }
-
-    @Override
-    public Page<BookDocument> search(Pageable pageable, String keyword, String searchCond, SortCondition sortCond) {
-        Query query = createQuery(pageable, keyword, searchCond, sortCond);
-
-        SearchHits<BookDocument> searchHits = operations.search(query, BookDocument.class);
-        List<BookDocument> content = searchHits.stream()
-                .map(SearchHit::getContent)
-                .collect(Collectors.toList());
-        return new PageImpl<>(content, pageable, searchHits.getTotalHits());
     }
 
 }

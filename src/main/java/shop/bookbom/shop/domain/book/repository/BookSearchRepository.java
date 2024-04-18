@@ -3,6 +3,7 @@ package shop.bookbom.shop.domain.book.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.bookbom.shop.domain.book.document.BookDocument;
+import shop.bookbom.shop.domain.book.dto.SearchCondition;
 import shop.bookbom.shop.domain.book.dto.SortCondition;
 
 public interface BookSearchRepository {
@@ -14,5 +15,5 @@ public interface BookSearchRepository {
      * @param searchCond 검색 조건
      * @param sortCond   정렬 조건
      */
-    Page<BookDocument> search(Pageable pageable, String keyword, String searchCond, SortCondition sortCond);
+    Page<BookDocument> search(Pageable pageable, String keyword, SearchCondition searchCond, SortCondition sortCond);
 }

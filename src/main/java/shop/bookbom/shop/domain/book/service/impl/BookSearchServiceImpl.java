@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.author.dto.AuthorResponse;
 import shop.bookbom.shop.domain.book.document.BookDocument;
 import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
+import shop.bookbom.shop.domain.book.dto.SearchCondition;
 import shop.bookbom.shop.domain.book.dto.SortCondition;
 import shop.bookbom.shop.domain.book.repository.BookSearchRepository;
 import shop.bookbom.shop.domain.book.service.BookSearchService;
@@ -26,9 +26,9 @@ public class BookSearchServiceImpl implements BookSearchService {
     @Transactional(readOnly = true)
     public Page<BookSearchResponse> search(Pageable pageable, String keyword, String searchCond, String sortCond) {
         SortCondition sortCondition = SortCondition.valueOf(sortCond.toUpperCase());
-        Page<BookDocument> result = bookSearchRepository.search(pageable, keyword, searchCond, sortCondition);
-        List<BookSearchResponse> content = result.map(this::documentToResponse).getContent();
-        return new PageImpl<>(content, pageable, content.size());
+        SearchCondition searchCondition = SearchCondition.valueOf(searchCond.toUpperCase());
+        Page<BookDocument> result = bookSearchRepository.search(pageable, keyword, searchCondition, sortCondition);
+        return result.map(this::documentToResponse);
     }
 
     @Override

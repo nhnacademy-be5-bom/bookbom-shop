@@ -19,6 +19,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHitsImpl;
 import org.springframework.data.elasticsearch.core.query.Query;
 import shop.bookbom.shop.domain.book.document.BookDocument;
+import shop.bookbom.shop.domain.book.dto.SearchCondition;
 import shop.bookbom.shop.domain.book.dto.SortCondition;
 import shop.bookbom.shop.domain.book.repository.impl.BookSearchRepositoryImpl;
 
@@ -36,8 +37,8 @@ class BookSearchRepositoryTest {
     void search() {
         PageRequest pageable = PageRequest.of(0, 5);
         String keyword = "title";
-        String searchCond = "book_title";
-        SortCondition sortCond = SortCondition.NAME;
+        SearchCondition searchCond = SearchCondition.NONE;
+        SortCondition sortCond = SortCondition.LATEST;
         BookDocument bookDocument = getBookDocument();
         SearchHitsImpl<BookDocument> searchHits = getSearchHits(bookDocument);
         when(operations.search(any(Query.class), eq(BookDocument.class))).thenReturn(searchHits);
