@@ -28,11 +28,14 @@ public class Address {
     @Column(length = 50)
     private String nickname;
 
-    @Column(name = "address_number", nullable = false, length = 5)
-    private String addressNumber;
+    @Column(name = "zip_code", nullable = false, length = 5)
+    private String zipCode;
 
     @Column(nullable = false, length = 200)
-    private String location;
+    private String address;
+
+    @Column(name = "address_detail", nullable = false, length = 200)
+    private String addressDetail;
 
     @Column(name = "default_address", nullable = false)
     private boolean defaultAddress;
@@ -43,20 +46,16 @@ public class Address {
     private Member member;
 
     @Builder
-    public Address(
-            String nickname,
-            String addressNumber,
-            String location,
-            boolean defaultAddress,
-            Member member
-    ) {
+    public Address(String nickname, String zipCode, String address, String addressDetail, boolean defaultAddress,
+                   Member member) {
         this.nickname = nickname;
-        this.addressNumber = addressNumber;
-        this.location = location;
+        this.zipCode = zipCode;
+        this.address = address;
+        this.addressDetail = addressDetail;
         this.defaultAddress = defaultAddress;
         this.member = member;
     }
-
+    
     public void setDefaultAddress() {
         this.defaultAddress = true;
     }
