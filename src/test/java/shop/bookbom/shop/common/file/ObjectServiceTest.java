@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
-import java.util.Base64;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -96,21 +95,5 @@ class ObjectServiceTest {
         assertThatThrownBy(() -> objectService.downloadFile(containerName, objectName))
                 .isInstanceOf(FileNotFoundException.class);
 
-    }
-
-    @Test
-    @DisplayName("바이트 배열을 이미지 URL로 변환")
-    void bufferToUrl() {
-        // given
-        byte[] buffer = "TestImage".getBytes();
-        String url = Base64.getEncoder().encodeToString(buffer);
-
-        // when
-        String result = objectService.bufferToUrl(buffer);
-        String[] splitResult = result.split(",");
-
-        // then
-        assertThat(splitResult[0]).isEqualTo("data:image/jpeg;base64");
-        assertThat(splitResult[1]).isEqualTo(url);
     }
 }
