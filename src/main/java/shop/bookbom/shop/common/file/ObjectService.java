@@ -41,7 +41,7 @@ public class ObjectService implements FileService {
     }
 
 
-    private String getUrl(@NonNull String containerName, @NonNull String objectName) {
+    public String getUrl(@NonNull String containerName, @NonNull String objectName) {
         return storageUrl + "/" + containerName + "/" + objectName;
     }
 
@@ -66,7 +66,8 @@ public class ObjectService implements FileService {
             SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
             requestFactory.setBufferRequestBody(false);
             HttpMessageConverterExtractor<String> responseExtractor
-                    = new HttpMessageConverterExtractor<>(String.class, new RestTemplate(requestFactory).getMessageConverters());
+                    = new HttpMessageConverterExtractor<>(String.class,
+                    new RestTemplate(requestFactory).getMessageConverters());
             restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor);
         } catch (IOException e) {
             throw new FileNotFoundException();
@@ -98,16 +99,5 @@ public class ObjectService implements FileService {
             throw new FileNotFoundException();
         }
         return body;
-    }
-
-    /**
-     * Object Stroage에서 받아온 바이트 배열을 이미지 데이터로 바꿔주는 메서드입니다.
-     *
-     * @param buffer 이미지 데이터
-     * @return Base64로 인코딩한 이미지 데이터
-     */
-    public String bufferToUrl(byte[] buffer) {
-        String imageUrl = Base64.getEncoder().encodeToString(buffer);
-        return "data:image/jpeg;base64," + imageUrl;
     }
 }
