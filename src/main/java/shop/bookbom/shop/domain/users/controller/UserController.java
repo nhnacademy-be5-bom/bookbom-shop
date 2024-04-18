@@ -1,8 +1,9 @@
 package shop.bookbom.shop.domain.users.controller;
 
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
+import shop.bookbom.shop.common.exception.BaseException;
+import shop.bookbom.shop.common.exception.ErrorCode;
 import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.service.UserService;
@@ -31,7 +34,11 @@ public class UserController {
      * @return Long userId
      */
     @PostMapping
-    public CommonResponse<Long> registerUser(@Validated @RequestBody UserRequestDto userRequestDto) {
+    public CommonResponse<Long> registerUser(@Valid @RequestBody UserRequestDto userRequestDto,
+                                             BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new BaseException(ErrorCode.COMMON_INVALID_PARAMETER);
+        }
         Long userId = userService.save(userRequestDto);
         return CommonResponse.successWithData(userId);
     }

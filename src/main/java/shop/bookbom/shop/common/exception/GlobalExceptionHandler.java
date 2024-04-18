@@ -1,6 +1,5 @@
 package shop.bookbom.shop.common.exception;
 
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import shop.bookbom.shop.common.CommonResponse;
@@ -13,9 +12,4 @@ public class GlobalExceptionHandler {
         return CommonResponse.fail(e.getErrorCode());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public CommonResponse<Void> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        // 사용자 정의 예외를 던질 수 있습니다.
-        return CommonResponse.fail(ErrorCode.COMMON_INVALID_PARAMETER);
-    }
 }
