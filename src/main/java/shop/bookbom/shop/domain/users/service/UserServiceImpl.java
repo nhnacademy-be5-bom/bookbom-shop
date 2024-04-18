@@ -3,6 +3,7 @@ package shop.bookbom.shop.domain.users.service;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.role.repository.RoleRepository;
 import shop.bookbom.shop.domain.users.dto.request.ChangeRegisteredRequestDto;
@@ -22,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
 
     @Override
+    @Transactional
     public Long save(UserRequestDto userRequestDto) {
         Optional<Role> optionalRole = roleRepository.findByName(userRequestDto.getRoleName());
         optionalRole.orElseThrow(RoleNotFoundException::new);
