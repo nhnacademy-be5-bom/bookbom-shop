@@ -61,6 +61,7 @@ class TagControllerTest {
         mockMvc.perform(post("/shop/tag")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
+                .andExpect(jsonPath("$.header.successful").value(false))
                 .andExpect(jsonPath("$.header.resultCode").value(400));
     }
 

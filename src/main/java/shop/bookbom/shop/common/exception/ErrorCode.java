@@ -21,6 +21,8 @@ public enum ErrorCode {
     CART_ITEM_INVALID_QUANTITY(400, "장바구니 상품 수량이 올바르지 않습니다."),
     // member
     MEMBER_NOT_FOUND(400, "해당 회원이 존재하지 않습니다."),
+    // user
+    USER_ALREADY_EXIST(400, "이미 존재하는 사용자입니다"),
     //wish
     WISH_NOT_FOUND(400, "해당 찜 상품이 존재하지 않습니다."),
     WISH_DUPLICATE_VALUE(400, "이미 찜한 상품입니다."),

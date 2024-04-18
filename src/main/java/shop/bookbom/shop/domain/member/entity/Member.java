@@ -56,7 +56,6 @@ public class Member extends User {
     public Member(
             String email,
             String password,
-            Boolean registered,
             Role role,
             String name,
             String phoneNumber,
@@ -66,7 +65,7 @@ public class Member extends User {
             MemberStatus status,
             Rank rank
     ) {
-        super(email, password, registered, role);
+        super(email, password, role);
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
