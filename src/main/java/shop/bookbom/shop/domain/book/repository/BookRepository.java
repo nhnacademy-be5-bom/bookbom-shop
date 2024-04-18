@@ -10,8 +10,6 @@ import shop.bookbom.shop.domain.order.dto.response.BookTitleAndCostResponse;
 
 public interface BookRepository extends JpaRepository<Book, Long>, BookRepositoryCustom {
     @Query("SELECT new shop.bookbom.shop.domain.order.dto.response.BookTitleAndCostResponse(b.title, b.cost) FROM Book b WHERE b.id = :bookId")
-    BookTitleAndCostResponse getTitleAndCostById(@Param("bookId") Long bookId);
-  
     Optional<BookTitleAndCostResponse> getTitleAndCostById(@Param("bookId") Long bookId);
   
 /*   * 최대크기 DTO 단건조회
