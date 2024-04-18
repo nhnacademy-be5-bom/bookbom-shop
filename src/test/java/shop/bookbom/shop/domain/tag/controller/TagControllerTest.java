@@ -1,5 +1,12 @@
 package shop.bookbom.shop.domain.tag.controller;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import shop.bookbom.shop.domain.category.entity.Status;
 import shop.bookbom.shop.domain.tag.service.TagService;
-
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(TagController.class)
 class TagControllerTest {
@@ -48,7 +51,7 @@ class TagControllerTest {
         // Then
         verify(tagService, times(1)).deleteTagService(tagId);
     }
-    
+
     @Test
     @DisplayName("태그 등록 - 유효성 검사 실패")
     void addTag_ValidationFailed() throws Exception {
@@ -58,7 +61,7 @@ class TagControllerTest {
         mockMvc.perform(post("/shop/tag")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(jsonPath("$.header.resultCode").value(400));
     }
 
 }

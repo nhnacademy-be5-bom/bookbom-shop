@@ -52,7 +52,7 @@ class BookTagControllerTest {
                 .andExpect(jsonPath("$.result[0].status").value(Status.USED.toString()));
     }
 
-        @Test
+    @Test
     @DisplayName("책 태그 등록 - 성공")
     void saveBookTag_Success() throws Exception {
         // Given
@@ -92,6 +92,6 @@ class BookTagControllerTest {
         mockMvc.perform(post("/shop/book/tag")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());
+                .andExpect(jsonPath("$.header.resultCode").value(400));
     }
 }
