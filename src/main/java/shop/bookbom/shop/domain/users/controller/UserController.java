@@ -1,6 +1,8 @@
 package shop.bookbom.shop.domain.users.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,28 +19,40 @@ import shop.bookbom.shop.domain.users.service.UserService;
 @RestController
 @RequestMapping("/shop/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
     private final UserService userService;
 
-    // #1 CREATE USER
-    // request : String email, String password, String roleName
-    @PostMapping("")
-    public CommonResponse<Long> registerUser(@RequestBody UserRequestDto userRequestDto) {
+    /**
+     * CREATE USER
+     *
+     * @param userRequestDto : String email, String password, String roleName
+     * @return Long userId
+     */
+    @PostMapping
+    public CommonResponse<Long> registerUser(@Validated @RequestBody UserRequestDto userRequestDto) {
         Long userId = userService.save(userRequestDto);
         return CommonResponse.successWithData(userId);
     }
 
-    // #2-1 UPDATE USER - 비밀번호 변경
-    // request : Long id, String password
+    /**
+     * UPDATE USER - 비밀번호 변경
+     *
+     * @param resetPasswordRequestDto : Long id, String password
+     */
     @PatchMapping("/{id}/password")
     public CommonResponse resetPassword(@RequestBody ResetPasswordRequestDto resetPasswordRequestDto) {
         userService.resetPassword(resetPasswordRequestDto);
         return CommonResponse.success();
     }
 
-    // #2-2 UPDATE USER - REGISTERED 설정
-    // request : Long id, boolean registered
+    /**
+     * UPDATE USER - REGISTERED 설정
+     *
+     * @param id         userId
+     * @param registered
+     */
     @PatchMapping("/{id}/registered")
     public CommonResponse changeRegistered(@PathVariable("id") Long id,
                                            @RequestParam boolean registered) {
@@ -47,14 +61,24 @@ public class UserController {
         return CommonResponse.success();
     }
 
-    // #3-1 READ USER - Id로 registered 읽어옴
+    /**
+     * READ USER - REGISTERED 확인
+     *
+     * @param id
+     * @return registered   user의 registered를 받아옴
+     */
     @GetMapping("/{id}/registered")
     public CommonResponse<Boolean> getRegistered(@PathVariable Long id) {
         boolean registered = userService.isRegistered(id);
         return CommonResponse.successWithData(Boolean.valueOf(registered));
     }
 
-
+    /**
+     * READ USER - Email이 사용 가능한지 확인
+     *
+     * @param email
+     * @return emial이 사용 가능한지 여부. 사용 가능하면 true
+     */
     // #3-2 READ USER - Email이 사용 가능한지 확인
     @PostMapping("/email/confirm")
     public CommonResponse<Boolean> checkEmailCanUse(@RequestBody String email) {
@@ -64,5 +88,4 @@ public class UserController {
             return CommonResponse.successWithData(Boolean.FALSE);
         }
     }
-
 }
