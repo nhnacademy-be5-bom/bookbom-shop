@@ -1,6 +1,7 @@
 package shop.bookbom.shop.domain.pointrate.repository.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.Builder;
 import lombok.Getter;
 import shop.bookbom.shop.domain.pointrate.entity.EarnPointType;
 
@@ -11,6 +12,7 @@ public class PointRateResponse {
     private EarnPointType earnType;
     private int earnPoint;
 
+    @Builder
     @QueryProjection
     public PointRateResponse(Long id, String name, EarnPointType earnType, int earnPoint) {
         this.id = id;

@@ -10,4 +10,14 @@ public interface PointRateService {
      * @return 포인트 정책 목록
      */
     List<PointRateResponse> getPointPolicies();
+
+    /**
+     * 포인트 정책을 수정하는 메서드입니다.
+     *
+     * @param id        수정할 포인트 정책의 id
+     * @param earnType  수정할 적립 유형
+     * @param earnPoint 수정할 적립율
+     * @return 수정된 포인트 정책
+     */
+    PointRateResponse updatePolicy(Long id, String earnType, int earnPoint);
 }

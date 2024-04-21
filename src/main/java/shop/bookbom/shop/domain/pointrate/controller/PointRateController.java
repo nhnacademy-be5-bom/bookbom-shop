@@ -1,10 +1,19 @@
 package shop.bookbom.shop.domain.pointrate.controller;
 
+import static shop.bookbom.shop.common.CommonListResponse.successWithList;
+import static shop.bookbom.shop.common.CommonResponse.successWithData;
+
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonListResponse;
+import shop.bookbom.shop.common.CommonResponse;
+import shop.bookbom.shop.domain.pointrate.dto.request.PointRateUpdateRequest;
 import shop.bookbom.shop.domain.pointrate.repository.dto.PointRateResponse;
 import shop.bookbom.shop.domain.pointrate.service.PointRateService;
 
@@ -16,6 +25,15 @@ public class PointRateController {
 
     @GetMapping("/point-rate")
     public CommonListResponse<PointRateResponse> getAllPolicies() {
-        return CommonListResponse.successWithList(pointRateService.getPointPolicies());
+        return successWithList(pointRateService.getPointPolicies());
+    }
+
+    @PutMapping("/point-rate/{id}")
+    public CommonResponse<PointRateResponse> updatePolicy(
+            @PathVariable("id") Long id,
+            @RequestBody @Valid PointRateUpdateRequest request
+    ) {
+        PointRateResponse response = pointRateService.updatePolicy(id, request.getEarnType(), request.getEarnPoint());
+        return successWithData(response);
     }
 }

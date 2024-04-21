@@ -34,6 +34,8 @@ public enum ErrorCode {
     TAG_ALREADY_EXIST(400, "해당 태그가 이미 존재합니다."),
     // file
     FILE_NOT_FOUND(400, "해당 파일을 찾을 수 없습니다."),
+    // point_rate
+    POINT_RATE_NOT_FOUND(400, "해당 포인트 정책이 존재하지 않습니다."),
     ;
     private final int code;
     private final String message;
