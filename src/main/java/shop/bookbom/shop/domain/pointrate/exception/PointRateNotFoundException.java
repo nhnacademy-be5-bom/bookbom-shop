@@ -8,12 +8,4 @@ public class PointRateNotFoundException extends BaseException {
         super(ErrorCode.POINT_RATE_NOT_FOUND);
 
     }
-
-    public PointRateNotFoundException(ErrorCode errorCode) {
-        super(errorCode);
-    }
-
-    public PointRateNotFoundException(ErrorCode errorCode, String message) {
-        super(errorCode, message);
-    }
 }
