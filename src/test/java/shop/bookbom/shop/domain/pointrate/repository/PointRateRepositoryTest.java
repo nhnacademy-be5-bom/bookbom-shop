@@ -44,11 +44,11 @@ class PointRateRepositoryTest {
 
         // when
         List<PointRateResponse> pointPolicies = pointRateRepository.getPointPolicies();
+        PointRateResponse response = pointPolicies.get(0);
 
         //then
-        PointRateResponse response = pointPolicies.get(0);
-        assertThat(response.getId()).isEqualTo(1L);
         assertThat(pointPolicies).hasSize(2);
+        assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getName()).isEqualTo("테스트1");
         assertThat(response.getEarnType()).isEqualTo(EarnPointType.COST);
         assertThat(response.getEarnPoint()).isEqualTo(100);
