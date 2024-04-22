@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.book.dto.request.BookAddRequest;
@@ -38,11 +37,10 @@ public class UpdateBookRestController {
     }
 
     @PutMapping("/book/update/{id}")
-    public CommonResponse<Void> updateBook(@RequestParam BookUpdateRequest bookUpdateRequest,
+    public CommonResponse<Void> updateBook(@RequestBody BookUpdateRequest bookUpdateRequest,
                                            @PathVariable("id") Long bookId) {
 
         bookService.updateBook(bookUpdateRequest, bookId);
-
         return CommonResponse.success();
     }
 
@@ -50,7 +48,6 @@ public class UpdateBookRestController {
     public CommonResponse<Void> deleteBook(@PathVariable("id") Long bookId) {
 
         bookService.deleteBook(bookId);
-
         return CommonResponse.success();
     }
 

@@ -3,6 +3,7 @@ package shop.bookbom.shop.domain.book.dto.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,10 +13,8 @@ import shop.bookbom.shop.domain.book.entity.BookStatus;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class BookAddRequest {
-    // 관리자 책 등록에 사용하는 책 등록 요청 DTO
-    // Book 의 필드 중 id, view 는 등록 페이지에서 사용하지 않으므로 제외
-    // front 에서 사용하는 버전에는 작가 필드를 스트링으로 받음
 
     @JsonIgnore
     private MultipartFile thumbnail;

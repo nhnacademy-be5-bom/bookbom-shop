@@ -1,4 +1,4 @@
-package shop.bookbom.shop.domain.file.entity.dto;
+package shop.bookbom.shop.domain.file.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -24,15 +24,6 @@ public class FileDTO {
 
     @Builder
     public FileDTO(String url, String extension) {
-        this.url = url;
-        this.extension = extension;
-    }
-
-    @Builder(builderMethodName = "idBuilder")
-    public FileDTO(Long id,
-                   String url,
-                   String extension) {
-        this.id = id;
         this.url = url;
         this.extension = extension;
     }

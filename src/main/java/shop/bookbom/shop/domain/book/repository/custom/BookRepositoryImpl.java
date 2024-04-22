@@ -9,6 +9,7 @@ import com.querydsl.core.types.Projections;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -32,12 +33,10 @@ import shop.bookbom.shop.domain.booktag.entity.BookTag;
 import shop.bookbom.shop.domain.booktag.entity.QBookTag;
 import shop.bookbom.shop.domain.category.dto.CategoryDTO;
 import shop.bookbom.shop.domain.category.entity.QCategory;
+import shop.bookbom.shop.domain.file.dto.FileDTO;
 import shop.bookbom.shop.domain.file.entity.QFile;
-import shop.bookbom.shop.domain.file.entity.dto.FileDTO;
 import shop.bookbom.shop.domain.pointrate.dto.PointRateSimpleInformation;
-import shop.bookbom.shop.domain.pointrate.entity.QPointRate;
 import shop.bookbom.shop.domain.publisher.dto.PublisherSimpleInformation;
-import shop.bookbom.shop.domain.publisher.entity.QPublisher;
 import shop.bookbom.shop.domain.review.dto.ReviewSimpleInformation;
 import shop.bookbom.shop.domain.review.entity.QReview;
 import shop.bookbom.shop.domain.review.entity.Review;
@@ -57,8 +56,6 @@ import shop.bookbom.shop.domain.tag.entity.QTag;
  */
 public class BookRepositoryImpl extends QuerydslRepositorySupport implements BookRepositoryCustom {
     QBook book = QBook.book;
-    QPublisher publisher = QPublisher.publisher;
-    QPointRate pointRate = QPointRate.pointRate;
     QAuthor author = QAuthor.author;
     QBookAuthor bookAuthor = QBookAuthor.bookAuthor;
     QTag tag = QTag.tag;
@@ -75,7 +72,7 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
     }
 
     @Override
-    public BookDetailResponse getBookDetailInfoById(Long bookId) {
+    public Optional<BookDetailResponse> getBookDetailInfoById(Long bookId) {
 
         List<BookDetailResponse> result = from(book)
                 .join(book.publisher)
@@ -120,14 +117,14 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
                 ));
 
         if (result.size() == 1) {// 항상 1
-            return result.get(0);
+            return Optional.of(result.get(0));
         } else {// 중복된 결과 조회 오류
             throw new BookNotFoundException();
         }
     }
 
     @Override
-    public BookMediumResponse getBookMediumInfoById(Long bookId) {
+    public Optional<BookMediumResponse> getBookMediumInfoById(Long bookId) {
         List<BookMediumResponse> result = from(book)
                 .join(book.pointRate)
 
@@ -168,14 +165,14 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
                         )));
 
         if (result.size() == 1) {// 항상 1
-            return result.get(0);
+            return Optional.of(result.get(0));
         } else {// #todo 중복된 결과 조회 오류로 변경
             throw new BookNotFoundException();
         }
     }
 
     @Override
-    public BookSimpleResponse getBookSimpleInfoById(Long bookId) {
+    public Optional<BookSimpleResponse> getBookSimpleInfoById(Long bookId) {
 
         List<BookSimpleResponse> result = from(book)
                 .join(book.pointRate)
@@ -199,7 +196,7 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
                 ));
 
         if (result.size() == 1) {// 항상 1
-            return result.get(0);
+            return Optional.of(result.get(0));
         } else {// 중복된 결과 조회 오류
             throw new BookNotFoundException();
         }

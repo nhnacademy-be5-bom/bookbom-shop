@@ -1,6 +1,6 @@
 package shop.bookbom.shop.domain.book.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -10,7 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import shop.bookbom.shop.common.file.ObjectService;
 import shop.bookbom.shop.domain.author.dto.AuthorDTO;
 import shop.bookbom.shop.domain.author.dto.AuthorSimpleInfo;
 import shop.bookbom.shop.domain.author.entity.Author;
@@ -30,12 +32,17 @@ import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
 import shop.bookbom.shop.domain.bookauthor.repository.BookAuthorRepository;
 import shop.bookbom.shop.domain.bookcategory.entity.BookCategory;
 import shop.bookbom.shop.domain.bookcategory.repository.BookCategoryRepository;
+import shop.bookbom.shop.domain.bookfile.entity.BookFile;
 import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
+import shop.bookbom.shop.domain.bookfiletype.repository.BookFileTypeRepository;
 import shop.bookbom.shop.domain.booktag.entity.BookTag;
 import shop.bookbom.shop.domain.booktag.repository.BookTagRepository;
 import shop.bookbom.shop.domain.category.entity.Status;
 import shop.bookbom.shop.domain.category.exception.NoSuchCategoryNameException;
 import shop.bookbom.shop.domain.category.repository.CategoryRepository;
+import shop.bookbom.shop.domain.file.entity.File;
+import shop.bookbom.shop.domain.file.exception.ThumbNailNotFoundException;
+import shop.bookbom.shop.domain.file.repository.FileRepository;
 import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 import shop.bookbom.shop.domain.pointrate.repository.PointRateRepository;
 import shop.bookbom.shop.domain.publisher.entity.Publisher;
@@ -55,36 +62,25 @@ public class BookService {
     private final BookTagRepository booktagRepository;
     private final CategoryRepository categoryRepository;
     private final BookCategoryRepository bookCategoryRepository;
-    //private final FileRepository fileRepository;
+    private final FileRepository fileRepository;
+    private final BookFileTypeRepository bookFileTypeRepository;
     private final BookFileRepository bookFileRepository;
-
-    private final ObjectMapper mapper;
+    private final ObjectService objectService;
+    private static final String CONTAINER_NAME = "bookbom/book_thumbnail";
 
     @Transactional(readOnly = true)
     public BookDetailResponse getBookDetailInformation(Long bookId) {
-        if (exists(bookId)) {
-            return bookRepository.getBookDetailInfoById(bookId);
-        } else {
-            throw new BookNotFoundException();
-        }
+        return bookRepository.getBookDetailInfoById(bookId).orElseThrow(BookNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     public BookMediumResponse getBookMediumInformation(Long bookId) {
-        if (exists(bookId)) {
-            return bookRepository.getBookMediumInfoById(bookId);
-        } else {
-            throw new BookNotFoundException();
-        }
+        return bookRepository.getBookMediumInfoById(bookId).orElseThrow(BookNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     public BookSimpleResponse getBookSimpleInformation(Long bookId) {
-        if (exists(bookId)) {
-            return bookRepository.getBookSimpleInfoById(bookId);
-        } else {
-            throw new BookNotFoundException();
-        }
+        return bookRepository.getBookSimpleInfoById(bookId).orElseThrow(BookNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
@@ -129,7 +125,6 @@ public class BookService {
                 .publisher(publisher)
                 .pointRate(pointRate)
                 .build();
-
         bookRepository.save(book);
 
         // 태그, 책-태그 저장
@@ -138,7 +133,7 @@ public class BookService {
         handleNewAuthor(bookAddRequest.getAuthors(), book);
         // 책-카테고리 저장, 카테고리는 저장하지 않음: 카테고리 저장 페이지에서만 가능
         handleNewCategory(bookAddRequest.getCategories(), book);
-        // #todo 파일,  책-파일 저장
+        // 파일, 책-파일 저장
         handleThumbnail(bookAddRequest.getThumbnail(), book);
     }
 
@@ -165,6 +160,9 @@ public class BookService {
             // 카테고리 업데이트
             resetBookCategory(targetBook.getCategories());
             handleNewCategory(bookUpdateRequest.getCategories(), targetBook);
+            // 썸네일 업데이트
+            File thumbnail = fileRepository.findThumbnailByBookId(bookId).orElseThrow(ThumbNailNotFoundException::new);
+            updateThumbnail(bookUpdateRequest.getThumbnail(), thumbnail);
 
         } else {
             throw new BookIdMismatchException();
@@ -197,17 +195,6 @@ public class BookService {
     public void reviveBook(Long bookId) {
         Book bookToRevive = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
         bookToRevive.updateStatus(BookStatus.FS);
-    }
-
-
-    private boolean exists(Long bookId) {
-        try {
-            bookRepository.existsById(bookId);
-            return true;
-
-        } catch (RuntimeException e) {
-            return false;
-        }
     }
 
     private Publisher handleNewPublisher(String publisherName) {
@@ -328,6 +315,34 @@ public class BookService {
     }
 
     private void handleThumbnail(MultipartFile thumbnail, Book book) {
-        //# todo 썸네일 처리
+        String objectName = book.getTitle().substring(1, 7) + "_thumbnail";
+
+        objectService.uploadFile(thumbnail, CONTAINER_NAME, objectName);
+
+        File file = File.builder()
+                .url(objectService.getUrl(CONTAINER_NAME, objectName))
+                .extension(StringUtils.getFilenameExtension(thumbnail.getOriginalFilename()))
+                .createdAt(LocalDateTime.now())
+                .build();
+        fileRepository.save(file);
+
+        BookFile bookFile = BookFile.builder()
+                .book(book)
+                .bookFileType(bookFileTypeRepository.getReferenceById(1L))//= "img"
+                .file(file)
+                .build();
+        bookFileRepository.save(bookFile);
+    }
+
+    private void updateThumbnail(MultipartFile newThumbnail, File originalThumbnail) {
+        String url = originalThumbnail.getUrl();
+        int index = url.indexOf(CONTAINER_NAME) + CONTAINER_NAME.length();
+        String objectName = url.substring(index);
+
+        objectService.uploadFile(newThumbnail, CONTAINER_NAME, objectName);
+
+        originalThumbnail.update(objectService.getUrl(CONTAINER_NAME, objectName),
+                StringUtils.getFilenameExtension(newThumbnail.getOriginalFilename()),
+                LocalDateTime.now());
     }
 }

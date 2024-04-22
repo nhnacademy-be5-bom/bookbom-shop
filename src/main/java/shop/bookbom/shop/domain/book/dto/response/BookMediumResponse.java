@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import shop.bookbom.shop.domain.author.dto.AuthorDTO;
-import shop.bookbom.shop.domain.file.entity.dto.FileDTO;
+import shop.bookbom.shop.domain.file.dto.FileDTO;
 import shop.bookbom.shop.domain.pointrate.dto.PointRateSimpleInformation;
 import shop.bookbom.shop.domain.publisher.dto.PublisherSimpleInformation;
 import shop.bookbom.shop.domain.review.dto.BookReviewStatisticsInformation;

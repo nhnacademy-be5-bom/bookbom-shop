@@ -1,5 +1,6 @@
 package shop.bookbom.shop.domain.book.repository.custom;
 
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -28,20 +29,20 @@ public interface BookRepositoryCustom {
      * description : 최대크기 DTO 단건조회
      * 책 상세정보 조회에 사용
      *
-     * @param book id : 책id
+     * @param bookId id : 책id
      * @return 1 book detail response
      */
-    BookDetailResponse getBookDetailInfoById(Long bookId);
+    Optional<BookDetailResponse> getBookDetailInfoById(Long bookId);
 
     /**
      * methodName : getBookMediumInfoById
      * author : 전석준
      * description : 중간크기 DTO 단건조회
      *
-     * @param book id 책id
+     * @param bookId id 책id
      * @return 1 book medium response
      */
-    BookMediumResponse getBookMediumInfoById(Long bookId);
+    Optional<BookMediumResponse> getBookMediumInfoById(Long bookId);
 
     /**
      * methodName : getBookSimpleInfoById
@@ -49,17 +50,17 @@ public interface BookRepositoryCustom {
      * description : 최소크기 DTO 단건조회
      * 주문, 장바구니에서 사용
      *
-     * @param book id 책id
+     * @param bookId id 책id
      * @return 1 book simple response
      */
-    BookSimpleResponse getBookSimpleInfoById(Long bookId);
+    Optional<BookSimpleResponse> getBookSimpleInfoById(Long bookId);
 
     /**
      * methodName : findByIdFetch
      * author : 전석준
      * description : 업데이트를 위해 한권만 fetch join 으로 가져오기
      *
-     * @param book id
+     * @param bookId id
      * @return book
      */
     Book findByIdFetch(Long bookId);
@@ -89,8 +90,8 @@ public interface BookRepositoryCustom {
      * author : 전석준
      * description : 카테고리별 책 조회에서 사용
      *
-     * @param category id 카테고리번호
-     * @param pageable 그거
+     * @param categoryId id 카테고리번호
+     * @param pageable   그거
      * @return page
      */
     Page<BookMediumResponse> getPageableBookMediumInfosByCategoryId(Long categoryId, Pageable pageable);

@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.bookbom.shop.domain.file.entity.dto.FileDTO;
+import shop.bookbom.shop.domain.file.dto.FileDTO;
 import shop.bookbom.shop.domain.pointrate.dto.PointRateSimpleInformation;
 
 

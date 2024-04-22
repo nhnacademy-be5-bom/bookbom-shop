@@ -1,27 +1,30 @@
 package shop.bookbom.shop.domain.book.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHitsImpl;
+import org.springframework.data.elasticsearch.core.TotalHitsRelation;
 import shop.bookbom.shop.domain.author.dto.AuthorDTO;
+import shop.bookbom.shop.domain.author.dto.AuthorResponse;
+import shop.bookbom.shop.domain.author.dto.AuthorSimpleInfo;
+import shop.bookbom.shop.domain.book.document.BookDocument;
+import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
+import shop.bookbom.shop.domain.book.dto.request.BookAddRequest;
+import shop.bookbom.shop.domain.book.dto.request.BookUpdateRequest;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
+import shop.bookbom.shop.domain.book.entity.BookStatus;
 import shop.bookbom.shop.domain.category.dto.CategoryDTO;
-import shop.bookbom.shop.domain.file.entity.dto.FileDTO;
+import shop.bookbom.shop.domain.file.dto.FileDTO;
 import shop.bookbom.shop.domain.pointrate.dto.PointRateSimpleInformation;
 import shop.bookbom.shop.domain.publisher.dto.PublisherSimpleInformation;
 import shop.bookbom.shop.domain.review.dto.ReviewSimpleInformation;
 import shop.bookbom.shop.domain.tag.dto.TagDTO;
-import java.time.LocalDate;
-import java.util.List;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHitsImpl;
-import org.springframework.data.elasticsearch.core.TotalHitsRelation;
-import shop.bookbom.shop.domain.author.dto.AuthorResponse;
-import shop.bookbom.shop.domain.book.document.BookDocument;
-import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
 
 /**
  * packageName    : shop.bookbom.shop.domain.book.utils
@@ -35,6 +38,8 @@ import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
  * 2024-04-17        UuLaptop       최초 생성
  */
 public class BookTestUtils {
+    ObjectMapper mapper = new ObjectMapper();
+
     private BookTestUtils() {
 
     }
@@ -90,6 +95,52 @@ public class BookTestUtils {
                 .files(getFileDTOs())
                 .build();
         return response;
+    }
+
+    public static BookAddRequest getBookAddRequest(String title) {
+        ArrayList<AuthorSimpleInfo> authors = new ArrayList<>();
+        authors.add(new AuthorSimpleInfo("지은이", "전석준"));
+        authors.add(new AuthorSimpleInfo("옮긴이", "전재학"));
+
+        return new BookAddRequest(null,
+                title,
+                new ArrayList<>(List.of(new String[] {"카테1", "카테2"})),
+                new ArrayList<>(List.of(new String[] {"태그1", "태그2"})),
+                authors,
+                "출판사",
+                LocalDate.now(),
+                "설명",
+                "목차",
+                "10",
+                "13",
+                1000,
+                100,
+                true,
+                BookStatus.FS,
+                123
+        );
+    }
+
+    public static BookUpdateRequest getBookUpdateRequest(String title) {
+
+        return new BookUpdateRequest(1L,
+                null,
+                title,
+                new ArrayList<>(List.of(new String[] {"카테1", "카테2"})),
+                new ArrayList<>(List.of(new String[] {"태그1", "태그2"})),
+                getAuthorDTOs(),
+                "출판사",
+                LocalDate.now(),
+                "설명",
+                "목차",
+                "10",
+                "13",
+                1000,
+                100,
+                true,
+                BookStatus.FS,
+                123
+        );
     }
 
     public static List<AuthorDTO> getAuthorDTOs() {
@@ -246,6 +297,68 @@ public class BookTestUtils {
         return PublisherSimpleInformation.builder()
                 .name("출판사1")
                 .build();
+    }
 
-}
+    public static BookDocument getBookDocument() {
+        return new BookDocument(
+                1L,
+                "title",
+                "description",
+                "index",
+                10000,
+                9000,
+                LocalDate.now(),
+                "1",
+                "role",
+                "name",
+                1L,
+                "publisher",
+                0,
+                1L,
+                "thumbnail",
+                "jpg");
+    }
+
+
+    public static SearchHitsImpl<BookDocument> getSearchHits(BookDocument bookDocument) {
+        SearchHit<BookDocument> searchHit = new SearchHit<>(
+                "book_index", // 인덱스 이름
+                "1", // 문서 ID
+                null, // 라우팅 값
+                1.0f, // 점수
+                null, // 정렬 값
+                null, // 하이라이트 필드
+                null, // 내부 히트
+                null, // 중첩 메타데이터
+                null, // 설명
+                null, // 일치하는 쿼리
+                bookDocument // 내용
+        );
+        return new SearchHitsImpl<>(
+                1L, // 총 히트 수
+                TotalHitsRelation.EQUAL_TO, // 히트 수 관계
+                1.0f, // 최대 점수
+                null, // 스크롤 ID
+                List.of(searchHit), // 검색 히트 리스트
+                null, // 집계 정보
+                null  // 제안 정보
+        );
+    }
+
+    public static BookSearchResponse getBookSearchResponse() {
+        return new BookSearchResponse(
+                1L,
+                "thumbnail",
+                "title",
+                List.of(new AuthorResponse(1L, "name", "지은이")),
+                1L,
+                "publisher",
+                LocalDate.now(),
+                10000,
+                8000,
+                4.5,
+                10L
+        );
+    }
+
 }
