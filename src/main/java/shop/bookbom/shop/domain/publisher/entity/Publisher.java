@@ -29,9 +29,7 @@ public class Publisher {
         this.name = name;
     }
 
-    @Builder(builderMethodName = "updateBuilder")
-    public Publisher(Long id, String name) {
-        this.id = id;
+    public void update(String name) {
         this.name = name;
     }
 }

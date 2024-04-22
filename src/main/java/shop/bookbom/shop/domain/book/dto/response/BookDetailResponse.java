@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import shop.bookbom.shop.domain.author.dto.AuthorDTO;
 import shop.bookbom.shop.domain.category.dto.CategoryDTO;
 import shop.bookbom.shop.domain.file.entity.dto.FileDTO;
@@ -23,6 +24,7 @@ public class BookDetailResponse {
     private String title;
     private String description;
     private String index;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate pubDate;
     private String isbn10;
     private String isbn13;

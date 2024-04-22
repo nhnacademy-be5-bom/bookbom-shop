@@ -29,9 +29,7 @@ public class Author {
         this.name = name;
     }
 
-    @Builder(builderMethodName = "updateBuilder")
-    public Author(Long id, String name) {
-        this.id = id;
+    public void update(String name) {
         this.name = name;
     }
 }

@@ -3,7 +3,6 @@ package shop.bookbom.shop.domain.book.dto.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.util.List;
-import lombok.Builder;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,39 +36,4 @@ public class BookUpdateRequest {
     private BookStatus status;
     private Integer stock;
 
-    @Builder
-    public BookUpdateRequest(Long bookId,
-                             MultipartFile thumbnail,
-                             String title,
-                             List<String> categories,
-                             List<String> tags,
-                             List<AuthorDTO> authors,
-                             String publisher,
-                             String description,
-                             String index,
-                             LocalDate pubDate,
-                             String isbn10,
-                             String isbn13,
-                             Integer cost,
-                             Integer discountCost,
-                             Boolean packagable,
-                             BookStatus status,
-                             Integer stock) {
-        this.thumbnail = thumbnail;
-        this.title = title;
-        this.categories = categories;
-        this.tags = tags;
-        this.authors = authors;
-        this.publisher = publisher;
-        this.description = description;
-        this.index = index;
-        this.pubDate = pubDate;
-        this.isbn10 = isbn10;
-        this.isbn13 = isbn13;
-        this.cost = cost;
-        this.discountCost = discountCost;
-        this.packagable = packagable;
-        this.status = status;
-        this.stock = stock;
-    }
 }

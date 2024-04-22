@@ -18,11 +18,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class FileDTO {
+    private Long id;
     private String url;
     private String extension;
 
     @Builder
     public FileDTO(String url, String extension) {
+        this.url = url;
+        this.extension = extension;
+    }
+
+    @Builder(builderMethodName = "idBuilder")
+    public FileDTO(Long id,
+                   String url,
+                   String extension) {
+        this.id = id;
         this.url = url;
         this.extension = extension;
     }

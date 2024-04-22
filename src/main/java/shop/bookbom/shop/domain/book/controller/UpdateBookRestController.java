@@ -1,7 +1,6 @@
 package shop.bookbom.shop.domain.book.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,14 +27,13 @@ import shop.bookbom.shop.domain.book.service.BookService;
 @RestController
 @RequestMapping("/shop")
 @RequiredArgsConstructor
-@Slf4j
 public class UpdateBookRestController {
 
     private final BookService bookService;
 
     @PutMapping("/book/update/new")
     public CommonResponse<Void> addBook(@RequestBody BookAddRequest bookAddRequest) {
-        bookService.putBook(bookAddRequest);
+        bookService.addBook(bookAddRequest);
         return CommonResponse.success();
     }
 
@@ -44,24 +42,6 @@ public class UpdateBookRestController {
                                            @PathVariable("id") Long bookId) {
 
         bookService.updateBook(bookUpdateRequest, bookId);
-
-        return CommonResponse.success();
-    }
-
-    @PutMapping("/book/update/viewcount/{id},{count}")
-    public CommonResponse<Void> updateBookView(@PathVariable("id") Long bookId,
-                                               @PathVariable("count") Long viewCount) {
-
-        bookService.updateBookViewCount(bookId, viewCount);
-
-        return CommonResponse.success();
-    }
-
-    @PutMapping("/book/update/stock/{id},{stock}")
-    public CommonResponse<Void> updateBookStock(@PathVariable("id") Long bookId,
-                                                @PathVariable("count") Integer stock) {
-
-        bookService.updateBookStock(bookId, stock);
 
         return CommonResponse.success();
     }

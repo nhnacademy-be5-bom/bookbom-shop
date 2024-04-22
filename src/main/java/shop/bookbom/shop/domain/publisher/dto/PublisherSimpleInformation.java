@@ -2,6 +2,7 @@ package shop.bookbom.shop.domain.publisher.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * packageName    : shop.bookbom.shop.domain.publisher.dto
@@ -15,6 +16,7 @@ import lombok.Getter;
  * 2024-04-12        전석준       최초 생성
  */
 @Getter
+@NoArgsConstructor
 public class PublisherSimpleInformation {
     private String name;
 

@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.domain.book.dto.request.BookUpdateRequest;
 import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
 import shop.bookbom.shop.domain.bookcategory.entity.BookCategory;
 import shop.bookbom.shop.domain.bookfile.entity.BookFile;
@@ -161,6 +162,24 @@ public class Book {
         this.stock = stock;
         this.publisher = publisher;
         this.pointRate = pointRate;
+    }
+
+    public void update(BookUpdateRequest bookUpdateRequest) {
+        this.title = bookUpdateRequest.getTitle();
+        this.description = bookUpdateRequest.getDescription();
+        this.index = bookUpdateRequest.getIndex();
+        this.pubDate = bookUpdateRequest.getPubDate();
+        this.isbn10 = bookUpdateRequest.getIsbn10();
+        this.isbn13 = bookUpdateRequest.getIsbn13();
+        this.cost = bookUpdateRequest.getCost();
+        this.discountCost = bookUpdateRequest.getDiscountCost();
+        this.packagable = bookUpdateRequest.getPackagable();
+        this.status = bookUpdateRequest.getStatus();
+        this.stock = bookUpdateRequest.getStock();
+    }
+
+    public void updatePublisher(Publisher publisher) {
+        this.publisher = publisher;
     }
 
     public void updateStatus(BookStatus status) {

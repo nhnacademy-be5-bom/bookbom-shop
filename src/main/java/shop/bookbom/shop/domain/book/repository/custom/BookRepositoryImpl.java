@@ -207,8 +207,9 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
     @Override
     public Book findByIdFetch(Long bookId) {
-        return from(book)
-                .where(book.id.eq(bookId)).fetchOne();
+        return from(book).fetchJoin()
+                .where(book.id.eq(bookId))
+                .fetchOne();
     }
 
     @Override
@@ -365,7 +366,7 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
                             .authors(authors)
                             .tags(tags)
                             .files(files)
-                            .review(reviews)
+                            .reviews(reviews)
                             .build()
             );
         }

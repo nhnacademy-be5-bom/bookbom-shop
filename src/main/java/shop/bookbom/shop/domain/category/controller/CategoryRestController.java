@@ -18,17 +18,17 @@ import shop.bookbom.shop.domain.category.service.CategoryService;
 public class CategoryRestController {
     private final CategoryService categoryService;
 
-//    @GetMapping("/category/get/all")
+//    @GetMapping("/category/all")
 //    public CommonListResponse<CategoryDTO> getAllCategories() {
 //        return CommonListResponse.successWithList(categoryService.getAllDepthOneCategories());
 //    }
 
-    @GetMapping("/category/get/depth1")
+    @GetMapping("/category/depth1")
     public CommonListResponse<CategoryDTO> getDepthOneCategories() {
         return CommonListResponse.successWithList(categoryService.getAllDepthOneCategories());
     }
 
-    @GetMapping("/category/get/{parentId}")
+    @GetMapping("/category/{parentId}")
     @CrossOrigin(origins = "*")
     public CommonListResponse<CategoryDTO> getChildCategoriesOf(@PathVariable("parentId") Long parentId) {
         return CommonListResponse.successWithList(categoryService.getChildCategoriesByCategoryId(parentId));

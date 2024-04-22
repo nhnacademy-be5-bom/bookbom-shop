@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import shop.bookbom.shop.domain.author.dto.AuthorDTO;
 import shop.bookbom.shop.domain.file.entity.dto.FileDTO;
 import shop.bookbom.shop.domain.pointrate.dto.PointRateSimpleInformation;
@@ -39,6 +40,7 @@ public class BookMediumResponse {
     @Getter
     private String title;
     @Getter
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate pubDate;
     @Getter
     private Integer cost;
@@ -51,10 +53,10 @@ public class BookMediumResponse {
 
     // 중복제거를 위해 야매로 hashset으로 설정
     // getter 따로 만듬, 사용 시 list 리턴
-    private Map<Long, AuthorDTO> authors = new HashMap<Long, AuthorDTO>();
-    private Map<Long, TagDTO> tags = new HashMap<Long, TagDTO>();
-    private Map<Long, FileDTO> files = new HashMap<Long, FileDTO>();
-    private Map<Long, ReviewSimpleInformation> reviews = new HashMap<Long, ReviewSimpleInformation>();
+    private Map<Long, AuthorDTO> authors = new HashMap<>();
+    private Map<Long, TagDTO> tags = new HashMap<>();
+    private Map<Long, FileDTO> files = new HashMap<>();
+    private Map<Long, ReviewSimpleInformation> reviews = new HashMap<>();
 
     // 리뷰 평점, 리뷰 총갯수
     @Getter
@@ -72,7 +74,7 @@ public class BookMediumResponse {
                               Map<Long, AuthorDTO> authors,
                               Map<Long, TagDTO> tags,
                               Map<Long, FileDTO> files,
-                              Map<Long, ReviewSimpleInformation> review) {
+                              Map<Long, ReviewSimpleInformation> reviews) {
         this.id = id;
         this.title = title;
         this.pubDate = pubDate;
@@ -83,7 +85,7 @@ public class BookMediumResponse {
         this.authors = authors;
         this.tags = tags;
         this.files = files;
-        this.reviews = review;
+        this.reviews = reviews;
 
         setReviewStatistics();
     }
@@ -141,7 +143,7 @@ public class BookMediumResponse {
         Integer totalCount = 0;
         Double averageRate = 0D;
 
-        if (!(this.reviews.size() == 1) && !this.reviews.containsKey(null)) {
+        if (this.reviews.size() != 1 && !this.reviews.containsKey(null)) {
             totalCount = this.reviews.size();
         }
 

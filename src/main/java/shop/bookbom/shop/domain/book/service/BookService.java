@@ -7,6 +7,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -105,7 +106,8 @@ public class BookService {
     }
 
     @Transactional
-    public void putBook(BookAddRequest bookAddRequest) {
+    @Modifying
+    public void addBook(BookAddRequest bookAddRequest) {
         // 출판사 저장
         Publisher publisher = handleNewPublisher(bookAddRequest.getPublisher());
         // 포인트 적립율 저장: 도서 기본 적립율
@@ -141,93 +143,66 @@ public class BookService {
     }
 
     @Transactional
+    @Modifying
     public void updateBook(BookUpdateRequest bookUpdateRequest, Long bookId) {
-        if (exists(bookId)) {
-            if (Objects.equals(bookUpdateRequest.getBookId(), bookId)) {
-                Book targetBook = bookRepository.findByIdFetch(bookId);
 
-                Book updatedBook = Book.updateBuilder()
-                        .id(bookId)
-                        .title(bookUpdateRequest.getTitle())
-                        .description(bookUpdateRequest.getDescription())
-                        .index(bookUpdateRequest.getIndex())
-                        .pubDate(bookUpdateRequest.getPubDate())
-                        .isbn10(bookUpdateRequest.getIsbn10())
-                        .isbn13(bookUpdateRequest.getIsbn13())
-                        .cost(bookUpdateRequest.getCost())
-                        .discountCost(bookUpdateRequest.getDiscountCost())
-                        .packagable(bookUpdateRequest.getPackagable())
-                        .views(targetBook.getViews())
-                        .status(bookUpdateRequest.getStatus())
-                        .stock(bookUpdateRequest.getStock())
-                        //출판사 업데이트
-                        .publisher(updatePublisher(targetBook.getPublisher(), bookUpdateRequest.getPublisher()))
-                        .pointRate(targetBook.getPointRate())
-                        .build();
+        if (Objects.equals(bookUpdateRequest.getBookId(), bookId)) {
+            Book targetBook = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+            targetBook.update(bookUpdateRequest);
 
-                bookRepository.save(updatedBook);
+            //출판사 업데이트
+            Publisher targetPublisher = targetBook.getPublisher();
+            updatePublisher(targetBook.getPublisher(), bookUpdateRequest.getPublisher());
+            targetBook.updatePublisher(targetPublisher);
 
-                // 태그 업데이트
-                resetBookTag(targetBook.getTags());
-                handleNewTag(bookUpdateRequest.getTags(), updatedBook);
-                // 작가 업데이트
-                updateAuthor(bookUpdateRequest.getAuthors());
-                // 카테고리 업데이트
-                resetBookCategory(targetBook.getCategories());
-                handleNewCategory(bookUpdateRequest.getCategories(), updatedBook);
+            bookRepository.save(targetBook);
 
-            } else {
-                throw new BookIdMismatchException();
-            }
+            // 태그 업데이트
+            resetBookTag(targetBook.getTags());
+            handleNewTag(bookUpdateRequest.getTags(), targetBook);
+            // 작가 업데이트
+            updateAuthor(bookUpdateRequest.getAuthors());
+            // 카테고리 업데이트
+            resetBookCategory(targetBook.getCategories());
+            handleNewCategory(bookUpdateRequest.getCategories(), targetBook);
+
         } else {
-            throw new BookNotFoundException();
+            throw new BookIdMismatchException();
         }
+
     }
 
     @Transactional
+    @Modifying
     public void updateBookViewCount(Long bookId, Long hits) {
-        if (exists(bookId)) {
-            Book bookToUpdate = bookRepository.findById(bookId).get();
-            bookToUpdate.updateViewCount(hits);
-        } else {
-            throw new BookNotFoundException();
-        }
+        Book bookToUpdate = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+        bookToUpdate.updateViewCount(hits);
     }
 
     @Transactional
+    @Modifying
     public void updateBookStock(Long bookId, Integer newStock) {
-        if (exists(bookId)) {
-            Book bookToUpdate = bookRepository.findById(bookId).get();
-            bookToUpdate.updateStock(newStock);
-        } else {
-            throw new BookNotFoundException();
-        }
+        Book bookToUpdate = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+        bookToUpdate.updateStock(newStock);
     }
 
     @Transactional
     public void deleteBook(Long bookId) {
-        if (exists(bookId)) {
-            Book bookToDelete = bookRepository.findById(bookId).get();
-            bookToDelete.updateStatus(BookStatus.DEL);
-        } else {
-            throw new BookNotFoundException();
-        }
+        Book bookToDelete = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+        bookToDelete.updateStatus(BookStatus.DEL);
     }
 
     @Transactional
+    @Modifying
     public void reviveBook(Long bookId) {
-        if (exists(bookId)) {
-            Book bookToDelete = bookRepository.findById(bookId).get();
-            bookToDelete.updateStatus(BookStatus.FS);
-        } else {
-            throw new BookNotFoundException();
-        }
+        Book bookToRevive = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+        bookToRevive.updateStatus(BookStatus.FS);
     }
 
 
     private boolean exists(Long bookId) {
         try {
-            bookRepository.getReferenceById(bookId);
+            bookRepository.existsById(bookId);
             return true;
 
         } catch (RuntimeException e) {
@@ -266,7 +241,8 @@ public class BookService {
         if (categoryNames == null) {
             BookCategory bookCategory = BookCategory.builder()
                     .book(book)
-                    .category(categoryRepository.findById(777L).orElseThrow())//카테고리 없음
+                    //카테고리 777= "카테고리 없음"
+                    .category(categoryRepository.findById(777L).orElseThrow())
                     .build();
             bookCategoryRepository.save(bookCategory);
         } else {
@@ -302,34 +278,25 @@ public class BookService {
         }
     }
 
-
     private void updateAuthor(List<AuthorDTO> authorUpdateInfo) {
+
         for (AuthorDTO authorInfo : authorUpdateInfo) {
 
             Optional<Author> target = authorRepository.findById(authorInfo.getId());
 
             if (target.isPresent() && !Objects.equals(target.get().getId(), authorInfo.getId())) {
+                target.get().update(authorInfo.getName());
+                authorRepository.save(target.get());
 
-                Author updateEntity = Author.updateBuilder()
-                        .id(authorInfo.getId())
-                        .name(authorInfo.getName())
-                        .build();
-
-                authorRepository.save(updateEntity);
             } else {
                 throw new AuthorIdNotFoundException();
             }
         }
     }
 
-    private Publisher updatePublisher(Publisher target, String newName) {
-        Publisher publisherEntity = Publisher.updateBuilder()
-                .id(target.getId())
-                .name(newName)
-                .build();
-
-        publisherRepository.save(publisherEntity);
-        return publisherEntity;
+    private void updatePublisher(Publisher target, String newName) {
+        target.update(newName);
+        publisherRepository.save(target);
     }
 
     private void updateCategory(List<String> categoryNames, Book book) {
