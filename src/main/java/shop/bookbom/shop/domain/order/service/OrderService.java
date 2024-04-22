@@ -1,7 +1,6 @@
 package shop.bookbom.shop.domain.order.service;
 
-import java.util.List;
-import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequest;
+import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
@@ -14,7 +13,7 @@ public interface OrderService {
      * @param beforeOrderRequestList(bookId,quantity)
      * @return 책 제목, 책 이미지, 수량, 가격 그리고 전체 주문 갯수, 포장지 전체 List
      */
-    BeforeOrderResponse getOrderBookInfo(List<BeforeOrderRequest> beforeOrderRequestList);
+    BeforeOrderResponse getOrderBookInfo(BeforeOrderRequestList beforeOrderRequestList);
 
     /**
      * 포장지 선택 정보를 처리하는 메소드

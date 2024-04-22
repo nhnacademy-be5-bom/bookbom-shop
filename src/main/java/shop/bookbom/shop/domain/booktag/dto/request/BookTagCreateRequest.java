@@ -1,4 +1,4 @@
-package shop.bookbom.shop.domain.order.dto.request;
+package shop.bookbom.shop.domain.booktag.dto.request;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BeforeOrderRequest {
+public class BookTagCreateRequest {
     @NotNull
+    @Min(value = 1)
     private Long bookId;
-    @Min(value = 1, message = "수량은 한 개 이상이어야 합니다.")
-    private Integer quantity;
+    @NotNull
+    @Min(value = 1)
+    private Long tagId;
 }

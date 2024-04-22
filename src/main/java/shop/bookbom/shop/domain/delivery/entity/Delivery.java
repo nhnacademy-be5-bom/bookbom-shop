@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.domain.deliveryaddress.entity.DeliveryAddress;
 import shop.bookbom.shop.domain.order.entity.Order;
 
 @Entity
@@ -34,8 +35,9 @@ public class Delivery {
     @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
 
-    @Column(name = "delivery_address", nullable = false, length = 200)
-    private String address;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "delivery_address_id", nullable = false)
+    private DeliveryAddress deliveryAddress;
 
     @Column(name = "delivery_cost", nullable = false)
     private Integer cost;
@@ -47,21 +49,15 @@ public class Delivery {
     private LocalDate completeDate;
 
     @Builder
-    public Delivery(
-            Order order,
-            String name,
-            String phoneNumber,
-            String address,
-            Integer cost,
-            LocalDate estimatedDate
-    ) {
-        this.id = order.getId();
+    public Delivery(Order order, String name, String phoneNumber, DeliveryAddress deliveryAddress, Integer cost,
+                    LocalDate estimatedDate, LocalDate completeDate) {
         this.order = order;
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.address = address;
+        this.deliveryAddress = deliveryAddress;
         this.cost = cost;
         this.estimatedDate = estimatedDate;
+        this.completeDate = completeDate;
     }
 
     public void complete(LocalDate completeDate) {
