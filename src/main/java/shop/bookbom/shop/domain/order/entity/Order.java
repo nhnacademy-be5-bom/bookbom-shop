@@ -1,8 +1,6 @@
 package shop.bookbom.shop.domain.order.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,13 +9,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
 import shop.bookbom.shop.domain.users.entity.User;
 
@@ -46,10 +42,10 @@ public class Order {
     @Column(name = "phone_number", nullable = false, length = 20)
     private String senderPhoneNumber;
 
-    @Column(name = "total_cost", nullable = false)
+    @Column(name = "total_cost", nullable = false, columnDefinition = "int default 0")
     private Integer totalCost;
 
-    @Column(name = "used_point", nullable = false)
+    @Column(name = "used_point", nullable = false, columnDefinition = "int default 0")
     private int usedPoint;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,10 +55,6 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_status_id", nullable = false)
     private OrderStatus status;
-
-    @OneToMany(mappedBy = "order")
-    private List<OrderBook> orderBooks = new ArrayList<>();
-
 
     @Builder
     public Order(
@@ -91,9 +83,6 @@ public class Order {
         this.status = status;
     }
 
-    public void addOrderBook(OrderBook orderBook) {
-        orderBooks.add(orderBook);
-    }
 
     public void updateOrderDate(LocalDateTime orderDate) {
         this.orderDate = orderDate;

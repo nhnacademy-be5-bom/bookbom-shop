@@ -1,11 +1,13 @@
 package shop.bookbom.shop.domain.payment.service;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
@@ -18,7 +20,6 @@ import shop.bookbom.shop.domain.order.exception.OrderNotFoundException;
 import shop.bookbom.shop.domain.order.repository.OrderRepository;
 import shop.bookbom.shop.domain.orderbook.dto.OrderBookInfoDto;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
-import shop.bookbom.shop.domain.orderbook.exception.OrderBookNotFoundException;
 import shop.bookbom.shop.domain.orderbook.repository.OrderBookRepository;
 import shop.bookbom.shop.domain.orderstatus.exception.OrderStatusNotFoundException;
 import shop.bookbom.shop.domain.orderstatus.repository.OrderStatusRepository;
@@ -56,7 +57,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     }
 
+    @Transactional
     @Override
+
     public Payment savePaymentInfo(PaymentResponse paymentResponse, Order order) {
 
         PaymentMethod paymentMethod;
@@ -70,26 +73,28 @@ public class PaymentServiceImpl implements PaymentService {
         } else {
             throw new PaymentNotAllowedException();
         }
+        LocalDateTime localDateTime =
+                OffsetDateTime.parse(paymentResponse.getApprovedAt(), DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                        .toLocalDateTime();
+        order.updateOrderDate(localDateTime);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        order.updateOrderDate(LocalDateTime.parse(paymentResponse.getApprovedAt(), formatter));
         order.updateStatus(orderStatusRepository.findByName("대기")
                 .orElseThrow(OrderStatusNotFoundException::new));
-        orderRepository.save(order);
 
         Payment payment = Payment.builder().order(order).cost(paymentResponse.getTotalAmount())
                 .key(paymentResponse.getPaymentKey())
                 .paymentMethod(paymentMethod).build();
-        return paymentRepository.save(payment);
+        Payment save = paymentRepository.save(payment);
+        return save;
     }
 
+    @Transactional
     @Override
     public PaymentSuccessResponse orderComplete(Payment payment) {
-        Order order = orderRepository.findById(payment.getId())
+        Order order = orderRepository.findById(payment.getOrder().getId())
                 .orElseThrow(OrderNotFoundException::new);
 
-        List<OrderBook> orderBooks = orderBookRepository.findByOrder_Id(order.getId())
-                .orElseThrow(OrderBookNotFoundException::new);
+        List<OrderBook> orderBooks = orderBookRepository.findByOrder(order);
 
         List<OrderBookInfoDto> orderBookInfoDtoList = new ArrayList<>();
         Integer totalCount = 0;

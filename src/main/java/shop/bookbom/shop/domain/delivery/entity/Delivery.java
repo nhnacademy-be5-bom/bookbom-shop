@@ -22,6 +22,7 @@ import shop.bookbom.shop.domain.order.entity.Order;
 @Getter
 public class Delivery {
     @Id
+    @Column(name = "order_id")
     private Long id;
 
     @MapsId

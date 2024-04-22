@@ -34,8 +34,7 @@ public class OrderBook {
 
     @Column(nullable = false)
     private boolean packaging;
-
-    @Column(nullable = false)
+    
     @Enumerated(EnumType.STRING)
     private OrderBookStatus status;
 

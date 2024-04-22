@@ -103,6 +103,5 @@ public class OrderServiceImpl implements OrderService {
                 .totalOrderCount(totalOrderCount)
                 .wrapperSelectResponseList(wrapperSelectBookResponseList)
                 .build();
-
     }
 }

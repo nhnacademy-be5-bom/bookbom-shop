@@ -32,6 +32,9 @@ public enum ErrorCode {
     //payment
     PAYMENT_VERIFY_FAIL(400, "결제 검증 실패: 요청이 유효하지 않습니다."),
     PAYMENT_NOT_ALLOWED(400, "결제가 허용되지 않습니다. 다시 시도해 주세요."),
+    PAYMENT_FAILED(400, "결제가 실패했습니다. 다시 시도해 주세요."),
+    PAYMENT_NOT_FOUND(400, "존재하지 않는 경제 정보입니다."),
+    PAYMENT_ALREADY_PROCESSED(400, "이미 처리된 결제입니다."),
     //paymentMethod
     PAYMENTMETHOD_NOT_FOUND(400, "해당 결제 수단이 존재하지 않습니다."),
     //orderStatus
@@ -40,7 +43,6 @@ public enum ErrorCode {
     ORDERBOOK_NOT_FOUND(400, "해당 주문에 책정보가 존재하지 않습니다."),
     //delivery
     DELIVERY_NOT_FOUNT(400, "해당 주문의 배송 정보가 존재하지 않습니다.");
-
 
     private final int code;
     private final String message;
