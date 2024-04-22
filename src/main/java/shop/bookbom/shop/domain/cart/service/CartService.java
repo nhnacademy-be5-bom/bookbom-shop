@@ -12,9 +12,8 @@ public interface CartService {
      *
      * @param addItems 추가할 상품 정보 (상품 ID, 수량)
      * @param userId   회원 Id
-     * @return 장바구니 ID, 장바구니 상품 정보 리스트 (상품 ID, 수량)
      */
-    CartInfoResponse addCart(List<CartAddRequest> addItems, Long userId);
+    void addCart(List<CartAddRequest> addItems, Long userId);
 
     /**
      * 장바구니에 담긴 상품 목록을 반환하는 메서드입니다.
@@ -22,7 +21,6 @@ public interface CartService {
      * @param userId 회원 ID
      * @return 장바구니 ID, 장바구니 상품 정보 리스트 (상품 ID, 수량)
      */
-
     CartInfoResponse getCartInfo(Long userId);
 
     /**
