@@ -75,7 +75,6 @@ public class Book {
     @Column(nullable = false)
     private Integer stock;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id", nullable = false)
     private Publisher publisher;

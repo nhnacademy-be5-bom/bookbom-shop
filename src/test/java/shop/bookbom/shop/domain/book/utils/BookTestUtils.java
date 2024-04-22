@@ -14,6 +14,14 @@ import shop.bookbom.shop.domain.pointrate.dto.PointRateSimpleInformation;
 import shop.bookbom.shop.domain.publisher.dto.PublisherSimpleInformation;
 import shop.bookbom.shop.domain.review.dto.ReviewSimpleInformation;
 import shop.bookbom.shop.domain.tag.dto.TagDTO;
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHitsImpl;
+import org.springframework.data.elasticsearch.core.TotalHitsRelation;
+import shop.bookbom.shop.domain.author.dto.AuthorResponse;
+import shop.bookbom.shop.domain.book.document.BookDocument;
+import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
 
 /**
  * packageName    : shop.bookbom.shop.domain.book.utils
@@ -27,7 +35,9 @@ import shop.bookbom.shop.domain.tag.dto.TagDTO;
  * 2024-04-17        UuLaptop       최초 생성
  */
 public class BookTestUtils {
+    private BookTestUtils() {
 
+    }
 
     public static BookDetailResponse getBookDetailResponse(Long id, String title) {
         BookDetailResponse response = BookDetailResponse.builder()
@@ -236,5 +246,6 @@ public class BookTestUtils {
         return PublisherSimpleInformation.builder()
                 .name("출판사1")
                 .build();
-    }
+
+}
 }

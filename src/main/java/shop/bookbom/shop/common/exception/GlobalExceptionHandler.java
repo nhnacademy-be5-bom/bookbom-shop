@@ -11,4 +11,5 @@ public class GlobalExceptionHandler {
     public CommonResponse<Void> handleBaseException(BaseException e) {
         return CommonResponse.fail(e.getErrorCode());
     }
+
 }
