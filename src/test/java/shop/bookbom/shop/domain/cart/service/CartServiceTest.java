@@ -4,6 +4,7 @@ package shop.bookbom.shop.domain.cart.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,7 +24,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
+import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartInfoResponse;
+import shop.bookbom.shop.domain.cart.dto.repsonse.CartItemDto;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartUpdateResponse;
 import shop.bookbom.shop.domain.cart.entity.Cart;
 import shop.bookbom.shop.domain.cart.service.impl.CartServiceImpl;
@@ -44,8 +47,12 @@ class CartServiceTest {
 
     @Mock
     BookRepository bookRepository;
+
     @Mock
     CartItemRepository cartItemRepository;
+
+    @Mock
+    BookFileRepository bookFileRepository;
 
     @Test
     @DisplayName("장바구니에 없던 도서 추가")
@@ -62,15 +69,10 @@ class CartServiceTest {
         when(bookRepository.findById(3L)).thenReturn(Optional.of(book3));
 
         // when
-        CartInfoResponse cartInfo = cartService.addCart(getCartAddRequest(), member.getId());
+        cartService.addCart(getCartAddRequest(), member.getId());
 
         //then
         verify(cartItemRepository, times(3)).save(any());
-        List<CartInfoResponse.CartItemInfo> cartItems = cartInfo.getCartItems();
-        assertThat(cartInfo.getCartId()).isEqualTo(cart.getId());
-        assertThat(cartItems).hasSize(3);
-        assertThat(cartItems.get(0).getBookId()).isEqualTo(1L);
-        assertThat(cartItems.get(0).getQuantity()).isEqualTo(1);
     }
 
     @Test
@@ -103,15 +105,10 @@ class CartServiceTest {
         when(bookRepository.findById(3L)).thenReturn(Optional.of(book3));
 
         // when
-        CartInfoResponse cartInfo = cartService.addCart(getCartAddRequest(), member.getId());
+        cartService.addCart(getCartAddRequest(), member.getId());
 
         //then
         verify(cartItemRepository, times(0)).save(any());
-        List<CartInfoResponse.CartItemInfo> cartItems = cartInfo.getCartItems();
-        assertThat(cartInfo.getCartId()).isEqualTo(cart.getId());
-        assertThat(cartItems).hasSize(3);
-        assertThat(cartItems.get(0).getBookId()).isEqualTo(1L);
-        assertThat(cartItems.get(0).getQuantity()).isEqualTo(1 + 1);
     }
 
 
@@ -191,15 +188,16 @@ class CartServiceTest {
                 .quantity(3)
                 .build());
         when(cartFindService.getCart(1L)).thenReturn(cart);
+        when(bookFileRepository.getBookImageUrl(anyLong())).thenReturn("thumbnail");
 
         //when
         CartInfoResponse cartInfo = cartService.getCartInfo(1L);
 
         //then
-        List<CartInfoResponse.CartItemInfo> cartItems = cartInfo.getCartItems();
+        List<CartItemDto> cartItems = cartInfo.getCartItems();
         assertThat(cartInfo.getCartId()).isEqualTo(1L);
         assertThat(cartItems).hasSize(1);
-        assertThat(cartItems.get(0).getBookId()).isEqualTo(1L);
+        assertThat(cartItems.get(0).getTitle()).isEqualTo("title1");
         assertThat(cartItems.get(0).getQuantity()).isEqualTo(3);
     }
 }

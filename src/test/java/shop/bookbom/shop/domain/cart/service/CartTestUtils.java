@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.test.util.ReflectionTestUtils;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartInfoResponse;
+import shop.bookbom.shop.domain.cart.dto.repsonse.CartItemDto;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartUpdateResponse;
 import shop.bookbom.shop.domain.cart.dto.request.CartAddRequest;
 import shop.bookbom.shop.domain.cart.dto.request.CartUpdateRequest;
@@ -27,6 +28,8 @@ public class CartTestUtils {
                 .index("index")
                 .pubDate(LocalDate.now())
                 .isbn10("isbn10")
+                .cost(10000)
+                .discountCost(8000)
                 .build();
         ReflectionTestUtils.setField(book, "id", id);
         return book;
@@ -54,23 +57,21 @@ public class CartTestUtils {
     public static List<CartAddRequest> getCartAddRequest() {
         List<CartAddRequest> requests = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
-            CartAddRequest cartAddRequest = new CartAddRequest();
-            cartAddRequest.setBookId((long) i);
-            cartAddRequest.setQuantity(i);
+            CartAddRequest cartAddRequest = new CartAddRequest((long) i, i);
             requests.add(cartAddRequest);
         }
         return requests;
     }
 
     public static CartInfoResponse getCartInfoResponse() {
-        List<CartInfoResponse.CartItemInfo> cartItems = new ArrayList<>();
+        List<CartItemDto> cartItems = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
-            CartInfoResponse.CartItemInfo cartItemInfo = CartInfoResponse.CartItemInfo.builder()
-                    .cartItemId((long) i)
+            CartItemDto item = CartItemDto.builder()
+                    .id((long) i)
                     .bookId((long) i)
                     .quantity(i)
                     .build();
-            cartItems.add(cartItemInfo);
+            cartItems.add(item);
         }
 
         return CartInfoResponse.builder()

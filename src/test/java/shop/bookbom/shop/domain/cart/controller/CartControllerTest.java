@@ -49,8 +49,6 @@ class CartControllerTest {
     @DisplayName("장바구니 상품 추가")
     void addToCart() throws Exception {
         List<CartAddRequest> request = getCartAddRequest();
-        CartInfoResponse response = getCartInfoResponse();
-        when(cartService.addCart(request, 1L)).thenReturn(response);
         ResultActions perform = mockMvc.perform(post("/shop/carts/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -59,11 +57,21 @@ class CartControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
-                .andExpect(jsonPath("$.header.successful").value(true))
-                .andExpect(jsonPath("$.result.cartId").value(1))
-                .andExpect(jsonPath("$.result.cartItems.length()").value(3))
-                .andExpect(jsonPath("$.result.cartItems[0].bookId").value(1))
-                .andExpect(jsonPath("$.result.cartItems[0].quantity").value(1));
+                .andExpect(jsonPath("$.header.successful").value(true));
+    }
+
+    @Test
+    @DisplayName("장바구니 상품 추가 예외")
+    void addToCartException() throws Exception {
+        CartAddRequest cartAddRequest = new CartAddRequest(1L, -1);
+        ResultActions perform = mockMvc.perform(post("/shop/carts/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(List.of(cartAddRequest))));
+        perform
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.header.resultCode").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.header.resultMessage").value("요청한 상품 ID와 수량이 올바르지 않습니다."))
+                .andExpect(jsonPath("$.header.successful").value(false));
     }
 
     @Test
