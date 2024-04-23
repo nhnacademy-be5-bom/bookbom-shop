@@ -1,5 +1,7 @@
 package shop.bookbom.shop.domain.book.controller;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -71,6 +73,8 @@ class GetPageableBooksRestControllerTest {
                 .param("size", "20")
                 .contentType(MediaType.APPLICATION_JSON));
 
+        verify(bookService, times(1)).getPageableEntireBookListOrderByCount(pageable);
+
         perform
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -96,6 +100,8 @@ class GetPageableBooksRestControllerTest {
                 .param("page", "0")
                 .param("size", "20")
                 .contentType(MediaType.APPLICATION_JSON));
+
+        verify(bookService, times(1)).getPageableEntireBookList(pageable);
 
         perform
                 .andExpect(status().isOk())
@@ -123,6 +129,8 @@ class GetPageableBooksRestControllerTest {
                         .param("page", "0")
                         .param("size", "20")
                         .contentType(MediaType.APPLICATION_JSON));
+
+        verify(bookService, times(1)).getPageableBookListByCategoryId(1L, pageable);
 
         perform
                 .andExpect(status().isOk())

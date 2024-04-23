@@ -22,7 +22,6 @@ import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.entity.BookStatus;
 import shop.bookbom.shop.domain.book.entity.QBook;
-import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
 import shop.bookbom.shop.domain.bookauthor.entity.QBookAuthor;
 import shop.bookbom.shop.domain.bookcategory.entity.QBookCategory;
@@ -31,7 +30,6 @@ import shop.bookbom.shop.domain.bookfile.entity.QBookFile;
 import shop.bookbom.shop.domain.bookfiletype.entity.QBookFileType;
 import shop.bookbom.shop.domain.booktag.entity.BookTag;
 import shop.bookbom.shop.domain.booktag.entity.QBookTag;
-import shop.bookbom.shop.domain.category.dto.CategoryDTO;
 import shop.bookbom.shop.domain.category.entity.QCategory;
 import shop.bookbom.shop.domain.file.dto.FileDTO;
 import shop.bookbom.shop.domain.file.entity.QFile;
@@ -74,53 +72,19 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
     @Override
     public Optional<BookDetailResponse> getBookDetailInfoById(Long bookId) {
 
-        List<BookDetailResponse> result = from(book)
-                .join(book.publisher)
-                .join(book.pointRate)
-
-                .leftJoin(book.authors, bookAuthor)
-                .leftJoin(bookAuthor.author, author)
-
-                .leftJoin(book.tags, bookTag)
-                .leftJoin(bookTag.tag, tag)
-
-                .leftJoin(book.categories, bookCategory)
-                .leftJoin(bookCategory.category, category)
-
-                .leftJoin(book.bookFiles, bookFiles)
-                .leftJoin(bookFiles.file, file)
-                .leftJoin(bookFiles.bookFileType, fileType)
-
+        Book book1 = from(book)
                 .where(book.id.eq(bookId).and(book.status.ne(BookStatus.DEL)))
-                .transform(groupBy(book.id).list(
-                        Projections.constructor(BookDetailResponse.class,
-                                book.id,
-                                book.title,
-                                book.description,
-                                book.index,
-                                book.pubDate,
-                                book.isbn10,
-                                book.isbn13,
-                                book.cost,
-                                book.discountCost,
-                                book.packagable,
-                                book.stock,
-                                Projections.constructor(PublisherSimpleInformation.class, book.publisher.name),
-                                Projections.constructor(PointRateSimpleInformation.class,
-                                        book.pointRate.earnType.stringValue(),
-                                        book.pointRate.earnPoint),
-                                list(Projections.constructor(AuthorDTO.class, author.id, bookAuthor.role, author.name)),
-                                list(Projections.constructor(TagDTO.class, tag.id, tag.name)),
-                                list(Projections.constructor(CategoryDTO.class, category.id, category.name)),
-                                list(Projections.constructor(FileDTO.class, file.url, file.extension))
-                        )
-                ));
+                .select(book)
+                .fetchOne();
 
-        if (result.size() == 1) {// 항상 1
-            return Optional.of(result.get(0));
-        } else {// 중복된 결과 조회 오류
-            throw new BookNotFoundException();
-        }
+        BookDetailResponse response = BookDetailResponse.of(book1,
+                book1.getAuthors(),
+                book1.getTags(),
+                book1.getCategories(),
+                book1.getBookFiles(),
+                book1.getReviews());
+
+        return Optional.ofNullable(response);
     }
 
     @Override
@@ -166,8 +130,8 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
         if (result.size() == 1) {// 항상 1
             return Optional.of(result.get(0));
-        } else {// #todo 중복된 결과 조회 오류로 변경
-            throw new BookNotFoundException();
+        } else {
+            return Optional.empty();
         }
     }
 
@@ -198,7 +162,7 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
         if (result.size() == 1) {// 항상 1
             return Optional.of(result.get(0));
         } else {// 중복된 결과 조회 오류
-            throw new BookNotFoundException();
+            return Optional.empty();
         }
     }
 
