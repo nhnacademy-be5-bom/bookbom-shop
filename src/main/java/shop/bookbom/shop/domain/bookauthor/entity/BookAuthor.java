@@ -33,7 +33,8 @@ public class BookAuthor {
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // 책을 조회할 때 대부분 작가를 조회하고 싶기 때문에 EAGER 로 설정(N+1 방지)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
 

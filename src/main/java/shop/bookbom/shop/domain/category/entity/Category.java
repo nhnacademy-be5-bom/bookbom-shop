@@ -1,5 +1,7 @@
 package shop.bookbom.shop.domain.category.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -38,9 +40,11 @@ public class Category {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
+    @JsonBackReference
     private Category parent;
 
     @OneToMany(mappedBy = "parent")
+    @JsonManagedReference
     private List<Category> child = new ArrayList<>();
 
     @Builder
