@@ -8,10 +8,14 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static shop.bookbom.shop.domain.cart.service.CartTestUtils.getBook;
-import static shop.bookbom.shop.domain.cart.service.CartTestUtils.getCart;
-import static shop.bookbom.shop.domain.cart.service.CartTestUtils.getCartAddRequest;
-import static shop.bookbom.shop.domain.cart.service.CartTestUtils.getMember;
+import static shop.bookbom.shop.common.TestUtils.getBook;
+import static shop.bookbom.shop.common.TestUtils.getCart;
+import static shop.bookbom.shop.common.TestUtils.getCartAddRequest;
+import static shop.bookbom.shop.common.TestUtils.getMember;
+import static shop.bookbom.shop.common.TestUtils.getPointRate;
+import static shop.bookbom.shop.common.TestUtils.getPublisher;
+import static shop.bookbom.shop.common.TestUtils.getRank;
+import static shop.bookbom.shop.common.TestUtils.getRole;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,11 +62,14 @@ class CartServiceTest {
     @DisplayName("장바구니에 없던 도서 추가")
     void addCartEmpty() {
         //given
-        Book book1 = getBook(1L, "title1");
-        Book book2 = getBook(2L, "title2");
-        Book book3 = getBook(3L, "title3");
-        Member member = getMember(1L, "test@email.com");
-        Cart cart = getCart(member, 1L);
+        Book book1 = getBook("title1", getPointRate(), getPublisher());
+        ReflectionTestUtils.setField(book1, "id", 1L);
+        Book book2 = getBook("title2", getPointRate(), getPublisher());
+        ReflectionTestUtils.setField(book1, "id", 2L);
+        Book book3 = getBook("title3", getPointRate(), getPublisher());
+        ReflectionTestUtils.setField(book1, "id", 3L);
+        Member member = getMember("test@email.com", getRole(), getRank(getPointRate()));
+        Cart cart = getCart(member);
         when(cartFindService.getCart(any())).thenReturn(cart);
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book1));
         when(bookRepository.findById(2L)).thenReturn(Optional.of(book2));
@@ -79,11 +86,14 @@ class CartServiceTest {
     @DisplayName("장바구니에 있던 도서 추가")
     void addCartExists() {
         // given
-        Book book1 = getBook(1L, "title1");
-        Book book2 = getBook(2L, "title2");
-        Book book3 = getBook(3L, "title3");
-        Member member = getMember(1L, "test@email.com");
-        Cart cart = getCart(member, 1L);
+        Book book1 = getBook("title1", getPointRate(), getPublisher());
+        ReflectionTestUtils.setField(book1, "id", 1L);
+        Book book2 = getBook("title2", getPointRate(), getPublisher());
+        ReflectionTestUtils.setField(book1, "id", 2L);
+        Book book3 = getBook("title3", getPointRate(), getPublisher());
+        ReflectionTestUtils.setField(book1, "id", 3L);
+        Member member = getMember("test@email.com", getRole(), getRank(getPointRate()));
+        Cart cart = getCart(member);
         cart.addItem(CartItem.builder()
                 .cart(cart)
                 .book(book1)
@@ -117,8 +127,8 @@ class CartServiceTest {
     void delete() throws Exception {
         //given
         CartItem cartItem = CartItem.builder()
-                .cart(getCart(getMember(1L, "test@email.com"), 1L))
-                .book(getBook(1L, "title1"))
+                .cart(getCart(getMember("test@email.com", getRole(), getRank(getPointRate()))))
+                .book(getBook("title1", getPointRate(), getPublisher()))
                 .build();
         ReflectionTestUtils.setField(cartItem, "id", 1L);
         when(cartItemRepository.findById(1L)).thenReturn(Optional.of(cartItem));
@@ -147,8 +157,8 @@ class CartServiceTest {
     void updateQuantity() throws Exception {
         //given
         CartItem cartItem = CartItem.builder()
-                .cart(getCart(getMember(1L, "test@email.com"), 1L))
-                .book(getBook(1L, "title1"))
+                .cart(getCart(getMember("test@email.com", getRole(), getRank(getPointRate()))))
+                .book(getBook("title1", getPointRate(), getPublisher()))
                 .build();
         ReflectionTestUtils.setField(cartItem, "id", 1L);
         when(cartItemRepository.findById(1L)).thenReturn(Optional.of(cartItem));
@@ -165,8 +175,8 @@ class CartServiceTest {
     void updateQuantityException() throws Exception {
         // given
         CartItem cartItem = CartItem.builder()
-                .cart(getCart(getMember(1L, "test@email.com"), 1L))
-                .book(getBook(1L, "title1"))
+                .cart(getCart(getMember("test@email.com", getRole(), getRank(getPointRate()))))
+                .book(getBook("title1", getPointRate(), getPublisher()))
                 .build();
         ReflectionTestUtils.setField(cartItem, "id", 1L);
         when(cartItemRepository.findById(1L)).thenReturn(Optional.of(cartItem));
@@ -180,13 +190,15 @@ class CartServiceTest {
     @DisplayName("장바구니 정보 조회")
     void getCartInfo() throws Exception {
         //given
-        Cart cart = getCart(getMember(1L, "test@email.com"), 1L);
-        Book book = getBook(1L, "title1");
+        Cart cart = getCart(getMember("test@email.com", getRole(), getRank(getPointRate())));
+        Book book = getBook("title1", getPointRate(), getPublisher());
+        ReflectionTestUtils.setField(book, "id", 1L);
         cart.addItem(CartItem.builder()
                 .cart(cart)
                 .book(book)
                 .quantity(3)
                 .build());
+        ReflectionTestUtils.setField(cart, "id", 1L);
         when(cartFindService.getCart(1L)).thenReturn(cart);
         when(bookFileRepository.getBookImageUrl(anyLong())).thenReturn("thumbnail");
 

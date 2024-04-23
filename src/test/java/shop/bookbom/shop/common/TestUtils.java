@@ -1,11 +1,12 @@
-package shop.bookbom.shop.domain.cart.service;
+package shop.bookbom.shop.common;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.test.util.ReflectionTestUtils;
 import shop.bookbom.shop.domain.book.entity.Book;
+import shop.bookbom.shop.domain.book.entity.BookStatus;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartInfoResponse;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartItemDto;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartUpdateResponse;
@@ -13,45 +14,75 @@ import shop.bookbom.shop.domain.cart.dto.request.CartAddRequest;
 import shop.bookbom.shop.domain.cart.dto.request.CartUpdateRequest;
 import shop.bookbom.shop.domain.cart.entity.Cart;
 import shop.bookbom.shop.domain.member.entity.Member;
+import shop.bookbom.shop.domain.member.entity.MemberStatus;
+import shop.bookbom.shop.domain.pointrate.entity.ApplyPointType;
+import shop.bookbom.shop.domain.pointrate.entity.EarnPointType;
+import shop.bookbom.shop.domain.pointrate.entity.PointRate;
+import shop.bookbom.shop.domain.publisher.entity.Publisher;
+import shop.bookbom.shop.domain.rank.entity.Rank;
 import shop.bookbom.shop.domain.role.entity.Role;
 
-public class CartTestUtils {
-    private CartTestUtils() {
+public class TestUtils {
+    private TestUtils() {
 
     }
 
 
-    public static Book getBook(Long id, String title) {
-        Book book = Book.builder()
+    public static Book getBook(String title, PointRate pointRate, Publisher publisher) {
+        return Book.builder()
                 .title(title)
                 .description("description")
                 .index("index")
                 .pubDate(LocalDate.now())
                 .isbn10("isbn10")
+                .isbn13("isbn13")
                 .cost(10000)
+                .packagable(true)
+                .views(0L)
+                .status(BookStatus.FS)
+                .stock(100)
+                .pointRate(pointRate)
+                .publisher(publisher)
                 .discountCost(8000)
                 .build();
-        ReflectionTestUtils.setField(book, "id", id);
-        return book;
     }
 
-    public static Cart getCart(Member member, Long id) {
-        Cart cart = Cart.builder()
+    public static Cart getCart(Member member) {
+        return Cart.builder()
                 .member(member)
                 .build();
-        ReflectionTestUtils.setField(cart, "id", id);
-        return cart;
     }
 
-    public static Member getMember(Long id, String email) {
-        Member member = Member.builder()
+    public static Member getMember(String email, Role role, Rank rank) {
+        return Member.builder()
                 .email(email)
                 .password("qwerqwreqwer")
                 .name("test")
-                .role(Role.builder().name("ROLE_ADMIN").build())
+                .nickname("test")
+                .phoneNumber("010-1234-1234")
+                .birthDate(LocalDate.now())
+                .registered(true)
+                .role(role)
+                .status(MemberStatus.ACTIVE)
+                .rank(rank)
                 .build();
-        ReflectionTestUtils.setField(member, "id", id);
-        return member;
+    }
+
+    public static Rank getRank(PointRate pointRate) {
+        return Rank.builder()
+                .name("test")
+                .pointRate(pointRate)
+                .build();
+    }
+
+    public static PointRate getPointRate() {
+        return PointRate.builder()
+                .name("test")
+                .earnPoint(1)
+                .earnType(EarnPointType.COST)
+                .applyType(ApplyPointType.BOOK)
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
     public static List<CartAddRequest> getCartAddRequest() {
@@ -89,6 +120,18 @@ public class CartTestUtils {
     public static CartUpdateResponse getCartUpdateResponse() {
         return CartUpdateResponse.builder()
                 .quantity(10)
+                .build();
+    }
+
+    public static Role getRole() {
+        return Role.builder()
+                .name("USER")
+                .build();
+    }
+
+    public static Publisher getPublisher() {
+        return Publisher.builder()
+                .name("test")
                 .build();
     }
 }

@@ -9,10 +9,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static shop.bookbom.shop.domain.cart.service.CartTestUtils.getCartAddRequest;
-import static shop.bookbom.shop.domain.cart.service.CartTestUtils.getCartInfoResponse;
-import static shop.bookbom.shop.domain.cart.service.CartTestUtils.getCartUpdateRequest;
-import static shop.bookbom.shop.domain.cart.service.CartTestUtils.getCartUpdateResponse;
+import static shop.bookbom.shop.common.TestUtils.getCartAddRequest;
+import static shop.bookbom.shop.common.TestUtils.getCartInfoResponse;
+import static shop.bookbom.shop.common.TestUtils.getCartUpdateRequest;
+import static shop.bookbom.shop.common.TestUtils.getCartUpdateResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
