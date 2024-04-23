@@ -1,5 +1,8 @@
 package shop.bookbom.shop.domain.order.service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -97,12 +100,46 @@ public class OrderServiceImpl implements OrderService {
 
         }
 
+        List<String> estimatedDateList = new ArrayList<>();
+        int daysToAdd = 1;
+        while (estimatedDateList.size() < 5) {
+            LocalDate localDate = LocalDate.now().plusDays(daysToAdd);
+            DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+            if (!(dayOfWeek.equals(DayOfWeek.SATURDAY) ||
+                    dayOfWeek.equals(DayOfWeek.SUNDAY))) {
+                String dateString = localDate.format(DateTimeFormatter.ofPattern("M/d"));
+                String dayofWeekKorean = getDayofWeekKorean(dayOfWeek);
+                String estimatedDate = dayofWeekKorean + "(" + dateString + ")";
+
+                estimatedDateList.add(estimatedDate);
+            }
+            daysToAdd++;
+        }
+
         //응답 반환
         return WrapperSelectResponse.builder()
                 .userId(userId)
                 .totalOrderCount(totalOrderCount)
                 .wrapperSelectResponseList(wrapperSelectBookResponseList)
+                .estimatedDateList(estimatedDateList)
                 .build();
 
+    }
+
+    private static String getDayofWeekKorean(DayOfWeek dayOfWeek) {
+        switch (dayOfWeek) {
+            case MONDAY:
+                return "월";
+            case TUESDAY:
+                return "화";
+            case WEDNESDAY:
+                return "수";
+            case THURSDAY:
+                return "목";
+            case FRIDAY:
+                return "금";
+            default:
+                return null;
+        }
     }
 }
