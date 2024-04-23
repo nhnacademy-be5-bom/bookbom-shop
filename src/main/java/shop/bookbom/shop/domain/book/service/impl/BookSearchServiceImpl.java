@@ -55,9 +55,9 @@ public class BookSearchServiceImpl implements BookSearchService {
         if (content.getAuthorNames() == null) {
             return new ArrayList<>();
         }
-        String[] authorNames = content.getAuthorNames().split("｜");
-        String[] authorIds = content.getAuthorIds().split("｜");
-        String[] authorRoles = content.getAuthorRoles().split("｜");
+        String[] authorNames = content.getAuthorNames().split("\\|");
+        String[] authorIds = content.getAuthorIds().split("\\|");
+        String[] authorRoles = content.getAuthorRoles().split("\\|");
         List<AuthorResponse> authors = new ArrayList<>();
         for (int i = 0; i < authorNames.length; i++) {
             AuthorResponse author = AuthorResponse.builder()
