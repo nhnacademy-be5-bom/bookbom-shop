@@ -19,8 +19,10 @@ public class PaymentResponse {
     private CardDto card;
     private EasyPayDto easyPay;
 
+    private FailureDto failure;
+
     public PaymentResponse(String paymentKey, String orderId, String orderName, String method, Integer totalAmount,
-                           String approvedAt, CardDto card, EasyPayDto easyPay) {
+                           String approvedAt, CardDto card, EasyPayDto easyPay, FailureDto failure) {
         this.paymentKey = paymentKey;
         this.orderId = orderId;
         this.orderName = orderName;
@@ -29,5 +31,6 @@ public class PaymentResponse {
         this.approvedAt = approvedAt;
         this.card = card;
         this.easyPay = easyPay;
+        this.failure = failure;
     }
 }

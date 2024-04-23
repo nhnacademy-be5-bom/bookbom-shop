@@ -83,4 +83,8 @@ public class Member extends User {
     public void deleteWish(Wish wish) {
         wishList.remove(wish);
     }
+
+    public void updatePoints(int point) {
+        this.point = point;
+    }
 }
