@@ -31,7 +31,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void addCart(List<CartAddRequest> addItems, Long userId) {
+    public List<Long> addCart(List<CartAddRequest> addItems, Long userId) {
         Cart cart = cartFindService.getCart(userId);
         addItems.forEach(c -> {
             Book book = bookRepository.findById(c.getBookId())
@@ -52,6 +52,9 @@ public class CartServiceImpl implements CartService {
                 cart.addItem(cartItem);
             }
         });
+        return cart.getCartItems().stream()
+                .map(CartItem::getId)
+                .collect(Collectors.toList());
     }
 
     @Override

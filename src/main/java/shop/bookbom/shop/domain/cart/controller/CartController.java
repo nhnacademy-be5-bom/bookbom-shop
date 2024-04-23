@@ -1,5 +1,6 @@
 package shop.bookbom.shop.domain.cart.controller;
 
+import static shop.bookbom.shop.common.CommonListResponse.successWithList;
 import static shop.bookbom.shop.common.CommonResponse.success;
 import static shop.bookbom.shop.common.CommonResponse.successWithData;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.bookbom.shop.common.CommonListResponse;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartInfoResponse;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartUpdateResponse;
@@ -35,15 +37,14 @@ public class CartController {
      * @param requests 장바구니 추가할 상품 ID와 수량 리스트
      */
     @PostMapping("/carts/{id}")
-    public CommonResponse<Void> addToCart(
+    public CommonListResponse<Long> addToCart(
             @PathVariable("id") Long userId,
             @RequestBody List<CartAddRequest> requests
     ) {
         if (!isValidAddRequest(requests)) {
             throw new CartInvalidAddRequestException();
         }
-        cartService.addCart(requests, userId);
-        return success();
+        return successWithList(cartService.addCart(requests, userId));
     }
 
     /**
