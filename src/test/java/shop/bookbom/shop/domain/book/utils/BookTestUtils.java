@@ -3,7 +3,6 @@ package shop.bookbom.shop.domain.book.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHitsImpl;
@@ -77,10 +76,10 @@ public class BookTestUtils {
                 .discountCost(777)
                 .publisher(getPublisher())
                 .pointRate(getPointRate())
-                .authors(getAuthorDTOMap(getAuthorDTOs()))
-                .tags(getTagDTOMap(getTagDTOs()))
-                .files(getFileDTOMap(getFileDTOs()))
-                .reviews(getReviewDTOMap(getReviewDTOs()))
+                .authors(getAuthorDTOs())
+                .tags(getTagDTOs())
+                .files(getFileDTOs())
+                .reviews(getReviewDTOs())
                 .build();
         return response;
     }
@@ -163,14 +162,6 @@ public class BookTestUtils {
         return authors;
     }
 
-    public static HashMap<Long, AuthorDTO> getAuthorDTOMap(List<AuthorDTO> authorList) {
-        HashMap<Long, AuthorDTO> authorMap = new HashMap<>();
-        for (AuthorDTO author : authorList) {
-            authorMap.put(author.getId(), author);
-        }
-        return authorMap;
-    }
-
     public static List<TagDTO> getTagDTOs() {
         List<TagDTO> tags = new ArrayList<>();
 
@@ -196,14 +187,6 @@ public class BookTestUtils {
 
     }
 
-    public static HashMap<Long, TagDTO> getTagDTOMap(List<TagDTO> tagList) {
-        HashMap<Long, TagDTO> tagMap = new HashMap<>();
-        for (TagDTO tag : tagList) {
-            tagMap.put(tag.getId(), tag);
-        }
-        return tagMap;
-    }
-
     public static List<CategoryDTO> getCategoryDTOs() {
         List<CategoryDTO> categories = new ArrayList<>();
 
@@ -222,14 +205,6 @@ public class BookTestUtils {
         return categories;
     }
 
-    public static HashMap<Long, CategoryDTO> getCategoryDTOMap(List<CategoryDTO> categoryList) {
-        HashMap<Long, CategoryDTO> categoryMap = new HashMap<>();
-        for (CategoryDTO category : categoryList) {
-            categoryMap.put(category.getId(), category);
-        }
-        return categoryMap;
-    }
-
     public static List<FileDTO> getFileDTOs() {
         List<FileDTO> files = new ArrayList<>();
 
@@ -240,15 +215,6 @@ public class BookTestUtils {
         files.add(file);
 
         return files;
-    }
-
-    public static HashMap<Long, FileDTO> getFileDTOMap(List<FileDTO> fileList) {
-        HashMap<Long, FileDTO> fileMap = new HashMap<>();
-        Long id = 0L;
-        for (FileDTO file : fileList) {
-            fileMap.put(++id, file);
-        }
-        return fileMap;
     }
 
     public static List<ReviewSimpleInformation> getReviewDTOs() {
@@ -276,14 +242,6 @@ public class BookTestUtils {
         reviews.add(file3);
 
         return reviews;
-    }
-
-    public static HashMap<Long, ReviewSimpleInformation> getReviewDTOMap(List<ReviewSimpleInformation> reviewList) {
-        HashMap<Long, ReviewSimpleInformation> reviewMap = new HashMap<>();
-        for (ReviewSimpleInformation review : reviewList) {
-            reviewMap.put(review.getId(), review);
-        }
-        return reviewMap;
     }
 
     public static PointRateSimpleInformation getPointRate() {
