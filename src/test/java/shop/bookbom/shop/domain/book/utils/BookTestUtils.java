@@ -2,11 +2,14 @@ package shop.bookbom.shop.domain.book.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHitsImpl;
 import org.springframework.data.elasticsearch.core.TotalHitsRelation;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import shop.bookbom.shop.domain.author.dto.AuthorDTO;
 import shop.bookbom.shop.domain.author.dto.AuthorResponse;
 import shop.bookbom.shop.domain.author.dto.AuthorSimpleInfo;
@@ -18,10 +21,17 @@ import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
 import shop.bookbom.shop.domain.book.entity.BookStatus;
+import shop.bookbom.shop.domain.bookfiletype.entity.BookFileType;
 import shop.bookbom.shop.domain.category.dto.CategoryDTO;
+import shop.bookbom.shop.domain.category.entity.Category;
+import shop.bookbom.shop.domain.category.entity.Status;
 import shop.bookbom.shop.domain.file.dto.FileDTO;
 import shop.bookbom.shop.domain.pointrate.dto.PointRateSimpleInformation;
+import shop.bookbom.shop.domain.pointrate.entity.ApplyPointType;
+import shop.bookbom.shop.domain.pointrate.entity.EarnPointType;
+import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 import shop.bookbom.shop.domain.publisher.dto.PublisherSimpleInformation;
+import shop.bookbom.shop.domain.publisher.entity.Publisher;
 import shop.bookbom.shop.domain.review.dto.ReviewSimpleInformation;
 import shop.bookbom.shop.domain.tag.dto.TagDTO;
 
@@ -101,7 +111,7 @@ public class BookTestUtils {
         authors.add(new AuthorSimpleInfo("지은이", "전석준"));
         authors.add(new AuthorSimpleInfo("옮긴이", "전재학"));
 
-        return new BookAddRequest(null,
+        return new BookAddRequest(new MockMultipartFile("image.jpg", new byte[123]),
                 title,
                 new ArrayList<>(List.of(new String[] {"카테1", "카테2"})),
                 new ArrayList<>(List.of(new String[] {"태그1", "태그2"})),
@@ -123,7 +133,7 @@ public class BookTestUtils {
     public static BookUpdateRequest getBookUpdateRequest(String title) {
 
         return new BookUpdateRequest(1L,
-                null,
+                new MockMultipartFile("image.jpg", new byte[123]),
                 title,
                 new ArrayList<>(List.of(new String[] {"카테1", "카테2"})),
                 new ArrayList<>(List.of(new String[] {"태그1", "태그2"})),
@@ -205,6 +215,16 @@ public class BookTestUtils {
         return categories;
     }
 
+    public static Category getCategoryEntity() {
+        Category category = Category.builder()
+                .name("카테고리")
+                .status(Status.USED)
+                .parent(null)
+                .build();
+        ReflectionTestUtils.setField(category, "id", 1L);
+        return category;
+    }
+
     public static List<FileDTO> getFileDTOs() {
         List<FileDTO> files = new ArrayList<>();
 
@@ -215,6 +235,14 @@ public class BookTestUtils {
         files.add(file);
 
         return files;
+    }
+
+    public static BookFileType getBookFileTypeEntity() {
+        BookFileType bookFileType = BookFileType.builder()
+                .name("img")
+                .build();
+        ReflectionTestUtils.setField(bookFileType, "id", 1L);
+        return bookFileType;
     }
 
     public static List<ReviewSimpleInformation> getReviewDTOs() {
@@ -251,10 +279,32 @@ public class BookTestUtils {
                 .build();
     }
 
+    public static PointRate getPointRateEntity() {
+        PointRate pointRate = PointRate.builder()
+                .name("포인트적립")
+                .earnType(EarnPointType.RATE)
+                .earnPoint(5)
+                .applyType(ApplyPointType.BOOK)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        ReflectionTestUtils.setField(pointRate, "id", 2L);
+
+        return pointRate;
+    }
+
     public static PublisherSimpleInformation getPublisher() {
         return PublisherSimpleInformation.builder()
                 .name("출판사1")
                 .build();
+    }
+
+    public static Publisher getPublisherEntity() {
+        Publisher publisher = Publisher.builder()
+                .name("출판사")
+                .build();
+        ReflectionTestUtils.setField(publisher, "id", 1L);
+        return publisher;
     }
 
     public static BookDocument getBookDocument() {

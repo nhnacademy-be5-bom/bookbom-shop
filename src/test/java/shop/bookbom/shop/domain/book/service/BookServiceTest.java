@@ -2,11 +2,17 @@ package shop.bookbom.shop.domain.book.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static shop.bookbom.shop.domain.book.utils.BookTestUtils.getBookAddRequest;
 import static shop.bookbom.shop.domain.book.utils.BookTestUtils.getBookDetailResponse;
+import static shop.bookbom.shop.domain.book.utils.BookTestUtils.getBookFileTypeEntity;
+import static shop.bookbom.shop.domain.book.utils.BookTestUtils.getCategoryEntity;
+import static shop.bookbom.shop.domain.book.utils.BookTestUtils.getPointRateEntity;
 
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import shop.bookbom.shop.common.file.ObjectService;
 import shop.bookbom.shop.domain.author.repository.AuthorRepository;
+import shop.bookbom.shop.domain.book.dto.request.BookAddRequest;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
@@ -44,8 +51,6 @@ import shop.bookbom.shop.domain.tag.repository.TagRepository;
  */
 @ExtendWith(MockitoExtension.class)
 class BookServiceTest {
-    @InjectMocks
-    BookService bookService;
     @Mock
     BookRepository bookRepository;
     @Mock
@@ -72,7 +77,8 @@ class BookServiceTest {
     BookFileRepository bookFileRepository;
     @Mock
     ObjectService objectService;
-
+    @InjectMocks
+    BookService bookService;
 
     @Test
     @DisplayName("책 상세정보 조회")
@@ -97,11 +103,21 @@ class BookServiceTest {
     }
 
     @Test
+    @DisplayName("책 중간정보 조회")
     void getBookMediumInformation() {
     }
 
     @Test
+    @DisplayName("책 중간정보 조회: 존재하지 않는 책 예외")
+    void getBookMediumInformation_BookNotFoundException() {
+    }
+
+    @Test
     void getBookSimpleInformation() {
+    }
+
+    @Test
+    void getBookSimpleInformation_BookNotFoundException() {
     }
 
     @Test
@@ -117,10 +133,37 @@ class BookServiceTest {
     }
 
     @Test
+    @DisplayName("책 저장: 모든 필드가 존재")
     void addBook() {
+        BookAddRequest request = getBookAddRequest("테스트");
+        when(pointRateRepository.getReferenceById(1L)).thenReturn(getPointRateEntity());
+        when(tagRepository.existsByName(anyString())).thenReturn(false);
+        when(categoryRepository.findByName(anyString())).thenReturn(Optional.ofNullable(getCategoryEntity()));
+        when(objectService.getUrl(anyString(), anyString())).thenReturn("URL");
+        when(bookFileTypeRepository.getReferenceById(1L)).thenReturn(getBookFileTypeEntity());
+
+        bookService.addBook(request);
+
+        verify(publisherRepository, times(1)).save(any());
+        verify(pointRateRepository, times(1)).getReferenceById(1L);
+
+        verify(tagRepository, times(2)).existsByName(anyString());
+        verify(tagRepository, times(2)).save(any());
+        verify(bookTagRepository, times(2)).save(any());
+
+        verify(authorRepository, times(2)).save(any());
+        verify(bookAuthorRepository, times(2)).save(any());
+
+        verify(categoryRepository, times(2)).findByName(anyString());
+        verify(bookCategoryRepository, times(2)).save(any());
+
+        verify(fileRepository, times(1)).save(any());
+        verify(bookFileTypeRepository, times(1)).getReferenceById(1L);
+        verify(bookFileRepository, times(1)).save(any());
     }
 
     @Test
+    @DisplayName("책 수정")
     void updateBook() {
     }
 

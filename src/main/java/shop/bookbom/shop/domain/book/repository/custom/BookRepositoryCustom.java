@@ -7,7 +7,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
-import shop.bookbom.shop.domain.book.entity.Book;
 
 /**
  * packageName    : shop.bookbom.shop.domain.book.repository.custom
@@ -54,16 +53,6 @@ public interface BookRepositoryCustom {
      * @return 1 book simple response
      */
     Optional<BookSimpleResponse> getBookSimpleInfoById(Long bookId);
-
-    /**
-     * methodName : findByIdFetch
-     * author : 전석준
-     * description : 업데이트를 위해 한권만 fetch join 으로 가져오기
-     *
-     * @param bookId id
-     * @return book
-     */
-    Book findByIdFetch(Long bookId);
 
     /**
      * methodName : getPageableAndOrderByViewCountListBookMediumInfos
