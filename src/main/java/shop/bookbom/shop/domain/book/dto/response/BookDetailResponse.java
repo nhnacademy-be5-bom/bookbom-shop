@@ -1,5 +1,11 @@
 package shop.bookbom.shop.domain.book.dto.response;
 
+import static shop.bookbom.shop.domain.book.DtoToListHandler.processAuthors;
+import static shop.bookbom.shop.domain.book.DtoToListHandler.processCategories;
+import static shop.bookbom.shop.domain.book.DtoToListHandler.processFiles;
+import static shop.bookbom.shop.domain.book.DtoToListHandler.processReviews;
+import static shop.bookbom.shop.domain.book.DtoToListHandler.processTags;
+
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -123,50 +129,5 @@ public class BookDetailResponse {
                 .build();
     }
 
-    private static List<AuthorDTO> processAuthors(List<BookAuthor> bookAuthors) {
-        List<AuthorDTO> authorList = new ArrayList<>();
-        for (BookAuthor bookAuthor : bookAuthors) {
-            authorList.add(AuthorDTO.from(bookAuthor));
-        }
-        return authorList;
-    }
 
-    private static List<TagDTO> processTags(List<BookTag> bookTags) {
-        List<TagDTO> tagList = new ArrayList<>();
-        for (BookTag bookTag : bookTags) {
-            tagList.add(TagDTO.from(bookTag));
-        }
-        return tagList;
-    }
-
-    private static List<CategoryDTO> processCategories(List<BookCategory> bookCategories) {
-        List<CategoryDTO> categoryList = new ArrayList<>();
-        for (BookCategory bookCategory : bookCategories) {
-            categoryList.add(CategoryDTO.from(bookCategory));
-        }
-        return categoryList;
-    }
-
-    private static List<FileDTO> processFiles(List<BookFile> bookFiles) {
-        List<FileDTO> fileList = new ArrayList<>();
-        for (BookFile bookFile : bookFiles) {
-            fileList.add(FileDTO.from(bookFile));
-        }
-        return fileList;
-    }
-
-    private static BookReviewStatisticsInformation processReviews(List<Review> reviews) {
-        Integer totalCount = 0;
-        Double averageRate = 0D;
-
-        for (Review review : reviews) {
-            totalCount++;
-            averageRate += review.getRate();
-        }
-
-        return BookReviewStatisticsInformation.builder()
-                .totalReviewCount(totalCount)
-                .averageReviewRate(totalCount == 0 ? averageRate : (averageRate / totalCount))
-                .build();
-    }
 }
