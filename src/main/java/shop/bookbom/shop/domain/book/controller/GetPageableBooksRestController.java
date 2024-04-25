@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
-import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
+import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
 import shop.bookbom.shop.domain.book.service.BookService;
 
 /**
@@ -32,24 +32,26 @@ public class GetPageableBooksRestController {
 
     @GetMapping("/books/best")
     @CrossOrigin(origins = "*")
-    public CommonResponse<Page<BookMediumResponse>> getBest(Pageable pageable) {
+    public CommonResponse<Page<BookSearchResponse>> getBest(Pageable pageable) {
 
         return CommonResponse.successWithData(bookService.getPageableEntireBookListOrderByCount(pageable));
     }
 
     @GetMapping("/books/all")
     @CrossOrigin(origins = "*")
-    public CommonResponse<Page<BookMediumResponse>> getAll(Pageable pageable) {
+    public CommonResponse<Page<BookSearchResponse>> getAll(Pageable pageable) {
         // #TODO 관리자 페이지로 이동
         return CommonResponse.successWithData(bookService.getPageableEntireBookList(pageable));
     }
 
     @GetMapping("/books/category/{categoryId}")
     @CrossOrigin(origins = "*")
-    public CommonResponse<Page<BookMediumResponse>> getByCategoryId(
+    public CommonResponse<Page<BookSearchResponse>> getByCategoryId(
             @PathVariable("categoryId") Long categoryId,
+            String sortCondition,
             Pageable pageable) {
 
-        return CommonResponse.successWithData(bookService.getPageableBookListByCategoryId(categoryId, pageable));
+        return CommonResponse.successWithData(
+                bookService.getPageableBookListByCategoryId(categoryId, sortCondition, pageable));
     }
 }

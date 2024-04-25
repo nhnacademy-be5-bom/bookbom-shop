@@ -2,6 +2,7 @@ package shop.bookbom.shop.domain.book;
 
 import java.util.ArrayList;
 import java.util.List;
+import shop.bookbom.shop.common.file.exception.FileNotFoundException;
 import shop.bookbom.shop.domain.author.dto.AuthorDTO;
 import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
 import shop.bookbom.shop.domain.bookcategory.entity.BookCategory;
@@ -25,6 +26,9 @@ import shop.bookbom.shop.domain.tag.dto.TagDTO;
  * 2024-04-24        UuLaptop       최초 생성
  */
 public class DtoToListHandler {
+    private DtoToListHandler() {
+    }
+
     public static List<AuthorDTO> processAuthors(List<BookAuthor> bookAuthors) {
         List<AuthorDTO> authorList = new ArrayList<>();
         for (BookAuthor bookAuthor : bookAuthors) {
@@ -55,6 +59,16 @@ public class DtoToListHandler {
             fileList.add(FileDTO.from(bookFile));
         }
         return fileList;
+    }
+
+    public static String getThumbnailFrom(List<BookFile> bookFiles) {
+
+        BookFile thumbnailBookFile = bookFiles.stream()
+                .filter(bookFile -> "img".equals(bookFile.getBookFileType().getName()))
+                .findFirst()
+                .orElseThrow(FileNotFoundException::new);
+
+        return thumbnailBookFile.getFile().getUrl();
     }
 
     public static BookReviewStatisticsInformation processReviews(List<Review> reviews) {

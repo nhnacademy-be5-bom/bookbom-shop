@@ -18,6 +18,7 @@ import shop.bookbom.shop.domain.author.dto.AuthorSimpleInfo;
 import shop.bookbom.shop.domain.author.entity.Author;
 import shop.bookbom.shop.domain.author.exception.AuthorIdNotFoundException;
 import shop.bookbom.shop.domain.author.repository.AuthorRepository;
+import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
 import shop.bookbom.shop.domain.book.dto.request.BookAddRequest;
 import shop.bookbom.shop.domain.book.dto.request.BookUpdateRequest;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
@@ -84,21 +85,23 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BookMediumResponse> getPageableEntireBookList(Pageable pageable) {
+    public Page<BookSearchResponse> getPageableEntireBookList(Pageable pageable) {
 
         return bookRepository.getPageableListBookMediumInfos(pageable);
     }
 
     @Transactional(readOnly = true)
-    public Page<BookMediumResponse> getPageableEntireBookListOrderByCount(Pageable pageable) {
+    public Page<BookSearchResponse> getPageableEntireBookListOrderByCount(Pageable pageable) {
 
         return bookRepository.getPageableAndOrderByViewCountListBookMediumInfos(pageable);
     }
 
     @Transactional(readOnly = true)
-    public Page<BookMediumResponse> getPageableBookListByCategoryId(Long categoryId, Pageable pageable) {
+    public Page<BookSearchResponse> getPageableBookListByCategoryId(Long categoryId,
+                                                                    String sortCondition,
+                                                                    Pageable pageable) {
 
-        return bookRepository.getPageableBookMediumInfosByCategoryId(categoryId, pageable);
+        return bookRepository.getPageableBookMediumInfosByCategoryId(categoryId, sortCondition, pageable);
     }
 
     @Transactional
