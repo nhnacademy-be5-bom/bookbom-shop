@@ -1,4 +1,4 @@
-package shop.bookbom.shop.domain.book.service.impl;
+package shop.bookbom.shop.domain.book.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import static shop.bookbom.shop.domain.book.utils.BookTestUtils.getBookDocument;
 
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,19 +19,19 @@ import org.springframework.data.domain.PageRequest;
 import shop.bookbom.shop.domain.book.document.BookDocument;
 import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
 import shop.bookbom.shop.domain.book.repository.BookSearchRepository;
-import shop.bookbom.shop.domain.review.repository.ReviewRepository;
+import shop.bookbom.shop.domain.book.service.impl.BookSearchServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 class BookSearchServiceTest {
-
-    @Mock
-    ReviewRepository reviewRepository;
 
     @Mock
     BookSearchRepository bookSearchRepository;
 
     @InjectMocks
     BookSearchServiceImpl bookSearchService;
+
+    @Mock
+    BookService bookService;
 
 
     @Test
@@ -47,8 +46,8 @@ class BookSearchServiceTest {
         List<BookDocument> searchResult = List.of(bookDocument);
         PageImpl<BookDocument> searchResponse = new PageImpl<>(searchResult, pageable, searchResult.size());
         when(bookSearchRepository.search(any(), any(), any(), any())).thenReturn(searchResponse);
-        when(reviewRepository.avgRateByBookId(anyLong())).thenReturn(Optional.of(4.5));
-        when(reviewRepository.countByBookId(anyLong())).thenReturn(Optional.of(10L));
+        when(bookService.getReviewCount(anyLong())).thenReturn(10L);
+        when(bookService.getReviewRating(anyLong())).thenReturn(4.5);
         // when
         Page<BookSearchResponse> result = bookSearchService.search(pageable, keyword, searchCond, sortCond);
         // then

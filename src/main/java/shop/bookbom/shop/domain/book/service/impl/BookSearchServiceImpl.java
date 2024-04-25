@@ -14,13 +14,14 @@ import shop.bookbom.shop.domain.book.dto.SearchCondition;
 import shop.bookbom.shop.domain.book.dto.SortCondition;
 import shop.bookbom.shop.domain.book.repository.BookSearchRepository;
 import shop.bookbom.shop.domain.book.service.BookSearchService;
-import shop.bookbom.shop.domain.review.repository.ReviewRepository;
+import shop.bookbom.shop.domain.book.service.BookService;
 
 @Service
 @RequiredArgsConstructor
 public class BookSearchServiceImpl implements BookSearchService {
+    private final BookService bookService;
     private final BookSearchRepository bookSearchRepository;
-    private final ReviewRepository reviewRepository;
+
 
     @Override
     @Transactional(readOnly = true)
@@ -29,20 +30,6 @@ public class BookSearchServiceImpl implements BookSearchService {
         SearchCondition searchCondition = SearchCondition.valueOf(searchCond.toUpperCase());
         Page<BookDocument> result = bookSearchRepository.search(pageable, keyword, searchCondition, sortCondition);
         return result.map(this::documentToResponse);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public long getReviewCount(Long bookId) {
-        return reviewRepository.countByBookId(bookId)
-                .orElse(0L);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public double getReviewRating(Long bookId) {
-        return reviewRepository.avgRateByBookId(bookId)
-                .orElse(0.0);
     }
 
     /**
@@ -76,7 +63,7 @@ public class BookSearchServiceImpl implements BookSearchService {
      * @param content elasticsearch 검색 결과
      * @return 검색 결과 DTO
      */
-    private BookSearchResponse documentToResponse(BookDocument content) {
+    public BookSearchResponse documentToResponse(BookDocument content) {
         List<AuthorResponse> authors = getAuthors(content);
 
         return BookSearchResponse.builder()
@@ -89,8 +76,8 @@ public class BookSearchServiceImpl implements BookSearchService {
                 .pubDate(content.getPubDate())
                 .price(content.getCost())
                 .discountPrice(content.getDiscountCost())
-                .reviewRating(getReviewRating(content.getBookId()))
-                .reviewCount(getReviewCount(content.getBookId()))
+                .reviewRating(bookService.getReviewRating(content.getBookId()))
+                .reviewCount(bookService.getReviewCount(content.getBookId()))
                 .build();
     }
 }
