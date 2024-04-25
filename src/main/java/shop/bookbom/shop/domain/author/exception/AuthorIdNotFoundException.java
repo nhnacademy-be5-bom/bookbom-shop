@@ -16,7 +16,7 @@ import shop.bookbom.shop.common.exception.ErrorCode;
  */
 public class AuthorIdNotFoundException extends BaseException {
     public AuthorIdNotFoundException() {
-        super(ErrorCode.BOOK_ID_AND_PATH_VARIABLE_DOES_NOT_MATCH);
+        super(ErrorCode.ID_AND_PATH_VARIABLE_DOES_NOT_MATCH);
     }
 
     public AuthorIdNotFoundException(ErrorCode errorCode) {

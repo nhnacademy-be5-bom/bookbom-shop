@@ -9,6 +9,8 @@ import shop.bookbom.shop.domain.bookcategory.entity.BookCategory;
 import shop.bookbom.shop.domain.bookfile.entity.BookFile;
 import shop.bookbom.shop.domain.booktag.entity.BookTag;
 import shop.bookbom.shop.domain.category.dto.CategoryDTO;
+import shop.bookbom.shop.domain.category.dto.response.CategoryNameAndChildResponse;
+import shop.bookbom.shop.domain.category.entity.Category;
 import shop.bookbom.shop.domain.file.dto.FileDTO;
 import shop.bookbom.shop.domain.review.dto.BookReviewStatisticsInformation;
 import shop.bookbom.shop.domain.review.entity.Review;
@@ -45,10 +47,18 @@ public class DtoToListHandler {
         return tagList;
     }
 
-    public static List<CategoryDTO> processCategories(List<BookCategory> bookCategories) {
+    public static List<CategoryDTO> processBookCategories(List<BookCategory> bookCategories) {
         List<CategoryDTO> categoryList = new ArrayList<>();
         for (BookCategory bookCategory : bookCategories) {
             categoryList.add(CategoryDTO.from(bookCategory));
+        }
+        return categoryList;
+    }
+
+    public static List<CategoryNameAndChildResponse> processCategories(List<Category> categories) {
+        List<CategoryNameAndChildResponse> categoryList = new ArrayList<>();
+        for (Category category : categories) {
+            categoryList.add(CategoryNameAndChildResponse.from(category));
         }
         return categoryList;
     }

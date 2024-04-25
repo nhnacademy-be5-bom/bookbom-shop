@@ -5,11 +5,14 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import shop.bookbom.shop.domain.category.dto.CategoryDTO;
 import shop.bookbom.shop.domain.category.entity.Category;
 import shop.bookbom.shop.domain.category.entity.Status;
+import shop.bookbom.shop.domain.category.repository.custom.CategoryRepositoryCustom;
 
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+@Repository
+public interface CategoryRepository extends JpaRepository<Category, Long>, CategoryRepositoryCustom {
 
     Optional<Category> findByName(String name);
 

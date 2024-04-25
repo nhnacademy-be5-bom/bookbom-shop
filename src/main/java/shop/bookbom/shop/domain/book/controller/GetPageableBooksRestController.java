@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
@@ -48,8 +49,8 @@ public class GetPageableBooksRestController {
     @CrossOrigin(origins = "*")
     public CommonResponse<Page<BookSearchResponse>> getByCategoryId(
             @PathVariable("categoryId") Long categoryId,
-            String sortCondition,
-            Pageable pageable) {
+            Pageable pageable,
+            @RequestParam String sortCondition) {
 
         return CommonResponse.successWithData(
                 bookService.getPageableBookListByCategoryId(categoryId, sortCondition, pageable));

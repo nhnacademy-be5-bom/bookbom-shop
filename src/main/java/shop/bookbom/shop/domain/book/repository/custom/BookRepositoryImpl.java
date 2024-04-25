@@ -173,22 +173,22 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
         switch (sortCondition) {
             case "POPULAR":
-                entityList = query.orderBy(book.views.desc()).fetch();
+                entityList = query.orderBy(bookCategory.book.views.desc()).fetch();
                 break;
             case "LATEST":
-                entityList = query.orderBy(book.pubDate.desc()).fetch();
+                entityList = query.orderBy(bookCategory.book.pubDate.desc()).fetch();
                 break;
             case "LOWEST_PRICE":
-                entityList = query.orderBy(book.discountCost.asc()).fetch();
+                entityList = query.orderBy(bookCategory.book.discountCost.asc()).fetch();
                 break;
             case "HIGHEST_PRICE":
-                entityList = query.orderBy(book.discountCost.desc()).fetch();
+                entityList = query.orderBy(bookCategory.book.discountCost.desc()).fetch();
                 break;
             case "OLDEST":
-                entityList = query.orderBy(book.pubDate.asc()).fetch();
+                entityList = query.orderBy(bookCategory.book.pubDate.asc()).fetch();
                 break;
             case "NONE":
-                entityList = query.orderBy(book.title.asc()).fetch();
+                entityList = query.orderBy(bookCategory.book.title.asc()).fetch();
                 break;
             default:
                 entityList = query.fetch();

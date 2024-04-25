@@ -1,7 +1,7 @@
 package shop.bookbom.shop.domain.book.dto.response;
 
 import static shop.bookbom.shop.domain.book.DtoToListHandler.processAuthors;
-import static shop.bookbom.shop.domain.book.DtoToListHandler.processCategories;
+import static shop.bookbom.shop.domain.book.DtoToListHandler.processBookCategories;
 import static shop.bookbom.shop.domain.book.DtoToListHandler.processFiles;
 import static shop.bookbom.shop.domain.book.DtoToListHandler.processReviews;
 import static shop.bookbom.shop.domain.book.DtoToListHandler.processTags;
@@ -123,7 +123,7 @@ public class BookDetailResponse {
                         .build())
                 .authors(processAuthors(authors))
                 .tags(processTags(tags))
-                .categories(processCategories(categories))
+                .categories(processBookCategories(categories))
                 .files(processFiles(files))
                 .reviewStatistics(processReviews(reviews))
                 .build();
