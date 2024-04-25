@@ -25,6 +25,9 @@ import shop.bookbom.shop.domain.tag.dto.TagDTO;
  * 2024-04-24        UuLaptop       최초 생성
  */
 public class DtoToListHandler {
+    private DtoToListHandler() {
+    }
+
     public static List<AuthorDTO> processAuthors(List<BookAuthor> bookAuthors) {
         List<AuthorDTO> authorList = new ArrayList<>();
         for (BookAuthor bookAuthor : bookAuthors) {
