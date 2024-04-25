@@ -7,7 +7,6 @@ import static shop.bookbom.shop.domain.cartitem.entity.QCartItem.cartItem;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Optional;
-import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import shop.bookbom.shop.domain.cart.entity.Cart;
 import shop.bookbom.shop.domain.cart.repository.CartRepositoryCustom;

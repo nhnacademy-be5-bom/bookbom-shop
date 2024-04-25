@@ -10,6 +10,7 @@ import static shop.bookbom.shop.common.TestUtils.getRank;
 import static shop.bookbom.shop.common.TestUtils.getRole;
 
 import java.util.List;
+import java.util.Objects;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +62,8 @@ class CartRepositoryTest {
         cart.addItem(item1);
         cart.addItem(item2);
         // when
-        Cart result = cartRepository.getCartFetchItems(member).get();
-        List<CartItem> cartItems = result.getCartItems();
+        Cart result = cartRepository.getCartFetchItems(member).orElse(null);
+        List<CartItem> cartItems = Objects.requireNonNull(result).getCartItems();
         // then
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(cartItems.size()).isEqualTo(2);
