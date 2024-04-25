@@ -10,7 +10,7 @@ public class CartInfoResponse {
     private List<CartItemDto> cartItems;
 
     @Builder
-    public CartInfoResponse(Long cartId, List<CartItemDto> cartItems) {
+    private CartInfoResponse(Long cartId, List<CartItemDto> cartItems) {
         this.cartId = cartId;
         this.cartItems = cartItems;
     }
