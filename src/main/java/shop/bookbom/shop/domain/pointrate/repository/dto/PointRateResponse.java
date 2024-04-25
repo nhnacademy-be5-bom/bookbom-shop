@@ -4,7 +4,6 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import shop.bookbom.shop.domain.pointrate.entity.EarnPointType;
-import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 
 @Getter
 public class PointRateResponse {
@@ -20,14 +19,5 @@ public class PointRateResponse {
         this.name = name;
         this.earnType = earnType;
         this.earnPoint = earnPoint;
-    }
-
-    public static PointRateResponse from(PointRate pointRate) {
-        return PointRateResponse.builder()
-                .id(pointRate.getId())
-                .name(pointRate.getName())
-                .earnType(pointRate.getEarnType())
-                .earnPoint(pointRate.getEarnPoint())
-                .build();
     }
 }
