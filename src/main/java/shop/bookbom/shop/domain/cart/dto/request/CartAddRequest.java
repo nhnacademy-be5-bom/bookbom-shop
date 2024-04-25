@@ -1,8 +1,12 @@
 package shop.bookbom.shop.domain.cart.dto.request;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CartAddRequest {
     private Long bookId;
     private int quantity;
