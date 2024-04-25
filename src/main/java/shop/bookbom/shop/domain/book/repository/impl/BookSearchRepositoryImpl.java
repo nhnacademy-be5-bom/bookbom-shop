@@ -23,7 +23,7 @@ import shop.bookbom.shop.domain.book.repository.BookSearchRepository;
 @RequiredArgsConstructor
 public class BookSearchRepositoryImpl implements BookSearchRepository {
     private static final String NORI_FIELD = ".nori";
-    private static final String NGRAM_FIELD = ".ngra";
+    private static final String NGRAM_FIELD = ".ngram";
     private final ElasticsearchOperations operations;
 
     /**
