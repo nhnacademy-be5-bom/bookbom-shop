@@ -89,7 +89,7 @@ public class Book {
     @OneToMany(mappedBy = "book")
     private List<BookTag> tags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "book")
     private List<BookCategory> categories = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")

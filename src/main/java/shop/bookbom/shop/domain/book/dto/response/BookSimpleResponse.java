@@ -1,11 +1,15 @@
 package shop.bookbom.shop.domain.book.dto.response;
 
+import static shop.bookbom.shop.domain.book.DtoToListHandler.processFiles;
+
 import com.querydsl.core.annotations.QueryProjection;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.domain.book.entity.Book;
+import shop.bookbom.shop.domain.bookfile.entity.BookFile;
 import shop.bookbom.shop.domain.file.dto.FileDTO;
 import shop.bookbom.shop.domain.pointrate.dto.PointRateSimpleInformation;
 
@@ -36,5 +40,21 @@ public class BookSimpleResponse {
         this.discountCost = discountCost;
         this.pointRate = pointRate;
         this.files = files;
+    }
+
+    public static BookSimpleResponse of(Book book,
+                                        List<BookFile> files) {
+        return BookSimpleResponse.builder()
+                .id(book.getId())
+                .title(book.getTitle())
+                .cost(book.getCost())
+                .discountCost(book.getDiscountCost())
+                .pointRate(PointRateSimpleInformation.builder()
+                        .earnType(book.getPointRate().getEarnType().getValue())
+                        .earnPoint(book.getPointRate().getEarnPoint())
+                        .build()
+                )
+                .files(processFiles(files))
+                .build();
     }
 }

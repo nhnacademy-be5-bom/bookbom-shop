@@ -1,13 +1,7 @@
 package shop.bookbom.shop.domain.book.repository.custom;
 
 
-import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
-import static com.querydsl.core.group.GroupBy.map;
-
-import com.querydsl.core.types.Projections;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -22,7 +16,6 @@ import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.entity.BookStatus;
 import shop.bookbom.shop.domain.book.entity.QBook;
-import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
 import shop.bookbom.shop.domain.bookauthor.entity.QBookAuthor;
 import shop.bookbom.shop.domain.bookcategory.entity.QBookCategory;
@@ -31,7 +24,6 @@ import shop.bookbom.shop.domain.bookfile.entity.QBookFile;
 import shop.bookbom.shop.domain.bookfiletype.entity.QBookFileType;
 import shop.bookbom.shop.domain.booktag.entity.BookTag;
 import shop.bookbom.shop.domain.booktag.entity.QBookTag;
-import shop.bookbom.shop.domain.category.dto.CategoryDTO;
 import shop.bookbom.shop.domain.category.entity.QCategory;
 import shop.bookbom.shop.domain.file.dto.FileDTO;
 import shop.bookbom.shop.domain.file.entity.QFile;
@@ -74,139 +66,49 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
     @Override
     public Optional<BookDetailResponse> getBookDetailInfoById(Long bookId) {
 
-        List<BookDetailResponse> result = from(book)
-                .join(book.publisher)
-                .join(book.pointRate)
-
-                .leftJoin(book.authors, bookAuthor)
-                .leftJoin(bookAuthor.author, author)
-
-                .leftJoin(book.tags, bookTag)
-                .leftJoin(bookTag.tag, tag)
-
-                .leftJoin(book.categories, bookCategory)
-                .leftJoin(bookCategory.category, category)
-
-                .leftJoin(book.bookFiles, bookFiles)
-                .leftJoin(bookFiles.file, file)
-                .leftJoin(bookFiles.bookFileType, fileType)
-
+        Book bookEntity = from(book)
                 .where(book.id.eq(bookId).and(book.status.ne(BookStatus.DEL)))
-                .transform(groupBy(book.id).list(
-                        Projections.constructor(BookDetailResponse.class,
-                                book.id,
-                                book.title,
-                                book.description,
-                                book.index,
-                                book.pubDate,
-                                book.isbn10,
-                                book.isbn13,
-                                book.cost,
-                                book.discountCost,
-                                book.packagable,
-                                book.stock,
-                                Projections.constructor(PublisherSimpleInformation.class, book.publisher.name),
-                                Projections.constructor(PointRateSimpleInformation.class,
-                                        book.pointRate.earnType.stringValue(),
-                                        book.pointRate.earnPoint),
-                                list(Projections.constructor(AuthorDTO.class, author.id, bookAuthor.role, author.name)),
-                                list(Projections.constructor(TagDTO.class, tag.id, tag.name)),
-                                list(Projections.constructor(CategoryDTO.class, category.id, category.name)),
-                                list(Projections.constructor(FileDTO.class, file.url, file.extension))
-                        )
-                ));
+                .select(book)
+                .fetchOne();
 
-        if (result.size() == 1) {// 항상 1
-            return Optional.of(result.get(0));
-        } else {// 중복된 결과 조회 오류
-            throw new BookNotFoundException();
-        }
+        BookDetailResponse response = BookDetailResponse.of(bookEntity,
+                bookEntity.getAuthors(),
+                bookEntity.getTags(),
+                bookEntity.getCategories(),
+                bookEntity.getBookFiles(),
+                bookEntity.getReviews());
+
+        return Optional.ofNullable(response);
     }
 
     @Override
     public Optional<BookMediumResponse> getBookMediumInfoById(Long bookId) {
-        List<BookMediumResponse> result = from(book)
-                .join(book.pointRate)
 
-                .leftJoin(book.authors, bookAuthor)
-                .leftJoin(bookAuthor.author, author)
-
-                .leftJoin(book.tags, bookTag)
-                .leftJoin(bookTag.tag, tag)
-
-                .leftJoin(book.categories, bookCategory)
-                .leftJoin(bookCategory.category, category)
-
-                .leftJoin(book.bookFiles, bookFiles)
-                .leftJoin(bookFiles.file, file)
-                .leftJoin(bookFiles.bookFileType, fileType)
-
-                .leftJoin(book.reviews, review)
-
+        Book bookEntity = from(book)
                 .where(book.id.eq(bookId).and(book.status.ne(BookStatus.DEL)))
-                .transform(groupBy(book.id).list(
-                        Projections.constructor(BookMediumResponse.class,
-                                book.id,
-                                book.title,
-                                book.pubDate,
-                                book.cost,
-                                book.discountCost,
-                                Projections.constructor(PublisherSimpleInformation.class, book.publisher.name),
-                                Projections.constructor(PointRateSimpleInformation.class,
-                                        book.pointRate.earnType.stringValue(),
-                                        book.pointRate.earnPoint),
-                                map(author.id, Projections.constructor(AuthorDTO.class, author.id, bookAuthor.role,
-                                        author.name)),
-                                map(tag.id, Projections.constructor(TagDTO.class, tag.id, tag.name)),
-                                map(file.id, Projections.constructor(FileDTO.class, file.url, file.extension)),
-                                map(review.id, Projections.constructor(ReviewSimpleInformation.class, review.id,
-                                        review.rate, review.content)
-                                )
-                        )));
+                .select(book)
+                .fetchOne();
 
-        if (result.size() == 1) {// 항상 1
-            return Optional.of(result.get(0));
-        } else {// #todo 중복된 결과 조회 오류로 변경
-            throw new BookNotFoundException();
-        }
+        BookMediumResponse response = BookMediumResponse.of(bookEntity,
+                bookEntity.getAuthors(),
+                bookEntity.getTags(),
+                bookEntity.getBookFiles(),
+                bookEntity.getReviews());
+
+        return Optional.ofNullable(response);
     }
 
     @Override
     public Optional<BookSimpleResponse> getBookSimpleInfoById(Long bookId) {
 
-        List<BookSimpleResponse> result = from(book)
-                .join(book.pointRate)
-
-                .leftJoin(book.bookFiles, bookFiles)
-                .leftJoin(bookFiles.file, file)
-                .leftJoin(bookFiles.bookFileType, fileType)
-
+        Book bookEntity = from(book)
                 .where(book.id.eq(bookId).and(book.status.ne(BookStatus.DEL)))
-                .transform(groupBy(book.id).list(
-                        Projections.constructor(BookSimpleResponse.class,
-                                book.id,
-                                book.title,
-                                book.cost,
-                                book.discountCost,
-                                Projections.constructor(PointRateSimpleInformation.class,
-                                        book.pointRate.earnType.stringValue(),
-                                        book.pointRate.earnPoint),
-                                list(Projections.constructor(FileDTO.class, file.url, file.extension))
-                        )
-                ));
-
-        if (result.size() == 1) {// 항상 1
-            return Optional.of(result.get(0));
-        } else {// 중복된 결과 조회 오류
-            throw new BookNotFoundException();
-        }
-    }
-
-    @Override
-    public Book findByIdFetch(Long bookId) {
-        return from(book).fetchJoin()
-                .where(book.id.eq(bookId))
+                .select(book)
                 .fetchOne();
+
+        BookSimpleResponse response = BookSimpleResponse.of(bookEntity, bookEntity.getBookFiles());
+
+        return Optional.ofNullable(response);
     }
 
     @Override
@@ -307,13 +209,13 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
         List<BookMediumResponse> responseList = new ArrayList<>();
 
         for (Book entity : bookList) {
-            HashMap<Long, AuthorDTO> authors = new HashMap<>();
-            HashMap<Long, TagDTO> tags = new HashMap<>();
-            HashMap<Long, FileDTO> files = new HashMap<>();
-            HashMap<Long, ReviewSimpleInformation> reviews = new HashMap<>();
+            List<AuthorDTO> authors = new ArrayList<>();
+            List<TagDTO> tags = new ArrayList<>();
+            List<FileDTO> files = new ArrayList<>();
+            List<ReviewSimpleInformation> reviews = new ArrayList<>();
 
             for (BookAuthor element : entity.getAuthors()) {
-                authors.put(element.getAuthor().getId(), AuthorDTO.builder()
+                authors.add(AuthorDTO.builder()
                         .id(element.getAuthor().getId())
                         .role(element.getRole())
                         .name(element.getAuthor().getName())
@@ -321,21 +223,21 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
             }
 
             for (BookTag element : entity.getTags()) {
-                tags.put(element.getTag().getId(), TagDTO.builder()
+                tags.add(TagDTO.builder()
                         .id(element.getTag().getId())
                         .name(element.getTag().getName())
                         .build());
             }
 
             for (BookFile element : entity.getBookFiles()) {
-                files.put(element.getFile().getId(), FileDTO.builder()
+                files.add(FileDTO.builder()
                         .url(element.getFile().getUrl())
                         .extension(element.getBookFileType().getName())
                         .build());
             }
 
             for (Review element : entity.getReviews()) {
-                reviews.put(element.getId(), ReviewSimpleInformation.builder()
+                reviews.add(ReviewSimpleInformation.builder()
                         .id(element.getId())
                         .rate(element.getRate())
                         .content(element.getContent())
@@ -367,7 +269,6 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
                             .build()
             );
         }
-
 
         return responseList;
     }

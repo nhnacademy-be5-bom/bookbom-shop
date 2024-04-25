@@ -4,6 +4,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
 
 /**
  * packageName    : shop.bookbom.shop.domain.author.dto
@@ -30,4 +31,13 @@ public class AuthorDTO {
         this.role = role;
         this.name = name;
     }
+
+    public static AuthorDTO from(BookAuthor bookAuthor) {
+        return AuthorDTO.builder()
+                .id(bookAuthor.getAuthor().getId())
+                .role(bookAuthor.getRole())
+                .name(bookAuthor.getAuthor().getName())
+                .build();
+    }
+
 }

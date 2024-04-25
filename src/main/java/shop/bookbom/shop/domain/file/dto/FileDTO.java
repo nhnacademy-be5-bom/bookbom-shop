@@ -3,6 +3,7 @@ package shop.bookbom.shop.domain.file.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.domain.bookfile.entity.BookFile;
 
 /**
  * packageName    : shop.bookbom.shop.domain.file.entity.dto
@@ -26,5 +27,12 @@ public class FileDTO {
     public FileDTO(String url, String extension) {
         this.url = url;
         this.extension = extension;
+    }
+
+    public static FileDTO from(BookFile bookFile) {
+        return FileDTO.builder()
+                .url(bookFile.getFile().getUrl())
+                .extension(bookFile.getFile().getExtension())
+                .build();
     }
 }

@@ -315,7 +315,8 @@ public class BookService {
     }
 
     private void handleThumbnail(MultipartFile thumbnail, Book book) {
-        String objectName = book.getTitle().substring(1, 7) + "_thumbnail";
+        String objectName = book.getTitle().length() > 7 ? (book.getTitle().substring(1, 7) + "_thumbnail") :
+                (book.getTitle().substring(1, book.getTitle().length() - 1) + "_thumbnail");
 
         objectService.uploadFile(thumbnail, CONTAINER_NAME, objectName);
 
