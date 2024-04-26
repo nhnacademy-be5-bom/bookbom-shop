@@ -118,7 +118,7 @@ public class BookDetailResponse {
                                 .build()
                 )
                 .pointRate(PointRateSimpleInformation.builder()
-                        .earnType(book.getPointRate().getEarnType().getValue())
+                        .earnType(book.getPointRate().getEarnType().name())
                         .earnPoint(book.getPointRate().getEarnPoint())
                         .build())
                 .authors(processAuthors(authors))
