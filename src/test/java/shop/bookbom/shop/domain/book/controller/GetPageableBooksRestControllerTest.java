@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static shop.bookbom.shop.domain.book.utils.BookTestUtils.getBookMediumResponse;
+import static shop.bookbom.shop.domain.book.utils.BookTestUtils.getBookSearchResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
+import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
 import shop.bookbom.shop.domain.book.service.BookService;
 
 /**
@@ -51,12 +51,12 @@ class GetPageableBooksRestControllerTest {
     BookService bookService;
     ObjectMapper mapper;
 
-    List<BookMediumResponse> result = new ArrayList<>();
+    List<BookSearchResponse> result = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
         for (int i = 0; i < 20; i++) {
-            result.add(getBookMediumResponse((long) i, "제목" + i));
+            result.add(getBookSearchResponse());
         }
     }
 
@@ -64,7 +64,7 @@ class GetPageableBooksRestControllerTest {
     @DisplayName("pageable 조회: 베스트 도서")
     void getBestAsPageable() throws Exception {
         PageRequest pageable = PageRequest.of(0, 20);
-        PageImpl<BookMediumResponse> pageResponse = new PageImpl<>(result, pageable, 1234);
+        PageImpl<BookSearchResponse> pageResponse = new PageImpl<>(result, pageable, 1234);
 
         when(bookService.getPageableEntireBookListOrderByCount(pageable)).thenReturn(pageResponse);
 
@@ -92,7 +92,7 @@ class GetPageableBooksRestControllerTest {
     @DisplayName("pageable 조회: 전체")
     void getAllAsPageable() throws Exception {
         PageRequest pageable = PageRequest.of(0, 20);
-        PageImpl<BookMediumResponse> pageResponse = new PageImpl<>(result, pageable, 3433);
+        PageImpl<BookSearchResponse> pageResponse = new PageImpl<>(result, pageable, 3433);
 
         when(bookService.getPageableEntireBookList(pageable)).thenReturn(pageResponse);
 
@@ -120,9 +120,9 @@ class GetPageableBooksRestControllerTest {
     @DisplayName("pageable 조회: 카테고리 id")
     void getByCategoryIdAsPageable() throws Exception {
         PageRequest pageable = PageRequest.of(0, 20);
-        PageImpl<BookMediumResponse> pageResponse = new PageImpl<>(result, pageable, 1234);
+        PageImpl<BookSearchResponse> pageResponse = new PageImpl<>(result, pageable, 1234);
 
-        when(bookService.getPageableBookListByCategoryId(1L, pageable)).thenReturn(pageResponse);
+        when(bookService.getPageableBookListByCategoryId(1L, "", pageable)).thenReturn(pageResponse);
 
         ResultActions perform =
                 mockMvc.perform(get("/shop/books/category/{id}", 1)
@@ -130,7 +130,7 @@ class GetPageableBooksRestControllerTest {
                         .param("size", "20")
                         .contentType(MediaType.APPLICATION_JSON));
 
-        verify(bookService, times(1)).getPageableBookListByCategoryId(1L, pageable);
+        verify(bookService, times(1)).getPageableBookListByCategoryId(1L, "", pageable);
 
         perform
                 .andExpect(status().isOk())

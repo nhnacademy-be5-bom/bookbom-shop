@@ -18,6 +18,7 @@ import shop.bookbom.shop.domain.author.dto.AuthorSimpleInfo;
 import shop.bookbom.shop.domain.author.entity.Author;
 import shop.bookbom.shop.domain.author.exception.AuthorIdNotFoundException;
 import shop.bookbom.shop.domain.author.repository.AuthorRepository;
+import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
 import shop.bookbom.shop.domain.book.dto.request.BookAddRequest;
 import shop.bookbom.shop.domain.book.dto.request.BookUpdateRequest;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
@@ -25,8 +26,8 @@ import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.entity.BookStatus;
-import shop.bookbom.shop.domain.book.exception.BookIdMismatchException;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
+import shop.bookbom.shop.domain.book.exception.IdMismatchException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
 import shop.bookbom.shop.domain.bookauthor.repository.BookAuthorRepository;
@@ -84,21 +85,23 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BookMediumResponse> getPageableEntireBookList(Pageable pageable) {
+    public Page<BookSearchResponse> getPageableEntireBookList(Pageable pageable) {
 
         return bookRepository.getPageableListBookMediumInfos(pageable);
     }
 
     @Transactional(readOnly = true)
-    public Page<BookMediumResponse> getPageableEntireBookListOrderByCount(Pageable pageable) {
+    public Page<BookSearchResponse> getPageableEntireBookListOrderByCount(Pageable pageable) {
 
         return bookRepository.getPageableAndOrderByViewCountListBookMediumInfos(pageable);
     }
 
     @Transactional(readOnly = true)
-    public Page<BookMediumResponse> getPageableBookListByCategoryId(Long categoryId, Pageable pageable) {
+    public Page<BookSearchResponse> getPageableBookListByCategoryId(Long categoryId,
+                                                                    String sortCondition,
+                                                                    Pageable pageable) {
 
-        return bookRepository.getPageableBookMediumInfosByCategoryId(categoryId, pageable);
+        return bookRepository.getPageableBookMediumInfosByCategoryId(categoryId, sortCondition, pageable);
     }
 
     @Transactional
@@ -165,7 +168,7 @@ public class BookService {
             updateThumbnail(bookUpdateRequest.getThumbnail(), thumbnail);
 
         } else {
-            throw new BookIdMismatchException();
+            throw new IdMismatchException();
         }
 
     }
@@ -175,6 +178,7 @@ public class BookService {
     public void updateBookViewCount(Long bookId, Long hits) {
         Book bookToUpdate = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
         bookToUpdate.updateViewCount(hits);
+        bookRepository.save(bookToUpdate);
     }
 
     @Transactional
@@ -182,12 +186,14 @@ public class BookService {
     public void updateBookStock(Long bookId, Integer newStock) {
         Book bookToUpdate = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
         bookToUpdate.updateStock(newStock);
+        bookRepository.save(bookToUpdate);
     }
 
     @Transactional
     public void deleteBook(Long bookId) {
         Book bookToDelete = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
         bookToDelete.updateStatus(BookStatus.DEL);
+        bookRepository.save(bookToDelete);
     }
 
     @Transactional
@@ -195,6 +201,7 @@ public class BookService {
     public void reviveBook(Long bookId) {
         Book bookToRevive = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
         bookToRevive.updateStatus(BookStatus.FS);
+        bookRepository.save(bookToRevive);
     }
 
     private Publisher handleNewPublisher(String publisherName) {

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.shop.domain.bookcategory.entity.BookCategory;
+import shop.bookbom.shop.domain.category.entity.Category;
 
 @Getter
 @NoArgsConstructor
@@ -23,6 +24,13 @@ public class CategoryDTO {
         return CategoryDTO.builder()
                 .id(bookCategory.getCategory().getId())
                 .name(bookCategory.getCategory().getName())
+                .build();
+    }
+
+    public static CategoryDTO from(Category category) {
+        return CategoryDTO.builder()
+                .id(category.getId())
+                .name(category.getName())
                 .build();
     }
 
