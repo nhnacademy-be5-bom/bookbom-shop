@@ -21,7 +21,6 @@ import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.entity.BookStatus;
 import shop.bookbom.shop.domain.book.entity.QBook;
-import shop.bookbom.shop.domain.book.exception.ExceedOffsetLimitException;
 import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
 import shop.bookbom.shop.domain.bookauthor.entity.QBookAuthor;
 import shop.bookbom.shop.domain.bookcategory.entity.QBookCategory;
@@ -57,7 +56,6 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
     QBookFileType fileType = QBookFileType.bookFileType;
     QBookFile bookFiles = QBookFile.bookFile;
     QReview review = QReview.review;
-    public static final int BEST_LIMIT = 100;
 
     public BookRepositoryImpl() {
         super(Book.class);
@@ -114,8 +112,9 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
     @Override
     public Page<BookSearchResponse> getPageableAndOrderByViewCountListBookMediumInfos(Pageable pageable) {
         List<BookSearchResponse> orderdList = getAllBookMediumInfosOrderByViewCount(pageable);
+        long count = getTotalCount();
 
-        return new PageImpl<>(orderdList, pageable, BEST_LIMIT);
+        return new PageImpl<>(orderdList, pageable, count);
     }
 
     @Override
@@ -137,24 +136,13 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
     }
 
     private List<BookSearchResponse> getAllBookMediumInfosOrderByViewCount(Pageable pageable) {
-
-        List<Book> entityList;
-
-        JPQLQuery<Book> query = from(book)
+        List<Book> entityList = from(book)
                 .where(book.status.ne(BookStatus.DEL))
+                .offset(pageable.getOffset())   // 페이지 번호
+                .limit(pageable.getPageSize())  // 페이지 사이즈
                 .orderBy(book.views.desc())
-                .select(book);
-
-        if ((pageable.getOffset() + pageable.getPageSize()) > BEST_LIMIT) {
-
-            if (BEST_LIMIT - pageable.getOffset() <= 0) {
-                throw new ExceedOffsetLimitException();
-            } else {
-                entityList = query
-                        .offset(pageable.getOffset())   // 페이지 번호
-                        .limit(BEST_LIMIT - pageable.getOffset())  // 페이지 사이즈
-                        .fetch();
-            }
+                .select(book)
+                .fetch();
 
         return convertBookToSearch(entityList);
     }
