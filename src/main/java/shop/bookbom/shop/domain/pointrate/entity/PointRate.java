@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -41,6 +42,7 @@ public class PointRate {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Builder
     public PointRate(
             String name,
             EarnPointType earnType,
@@ -53,5 +55,10 @@ public class PointRate {
         this.earnPoint = earnPoint;
         this.applyType = applyType;
         this.createdAt = createdAt;
+    }
+
+    public void updatePolicy(EarnPointType earnType, int earnPoint) {
+        this.earnType = earnType;
+        this.earnPoint = earnPoint;
     }
 }
