@@ -16,22 +16,4 @@ public interface BookSearchService {
      * @return 검색 결과
      */
     Page<BookSearchResponse> search(Pageable pageable, String keyword, String searchCond, String sortCond);
-
-    /**
-     * 책 ID에 해당하는 리뷰 개수를 반환합니다.
-     * // todo bookService로 이동
-     *
-     * @param bookId
-     * @return 리뷰 개수
-     */
-    long getReviewCount(Long bookId);
-
-    /**
-     * 책 ID에 해당하는 리뷰 평균 평점을 반환합니다.
-     * // todo bookService로 이동
-     *
-     * @param bookId
-     * @return 리뷰 평균 평점
-     */
-    double getReviewRating(Long bookId);
 }

@@ -4,6 +4,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
+import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
@@ -62,7 +63,7 @@ public interface BookRepositoryCustom {
      * @param pageable 그거
      * @return page 조회순 정렬/pageable 된 도서 DTO
      */
-    Page<BookMediumResponse> getPageableAndOrderByViewCountListBookMediumInfos(Pageable pageable);
+    Page<BookSearchResponse> getPageableAndOrderByViewCountListBookMediumInfos(Pageable pageable);
 
     /**
      * methodName : getPageableListBookMediumInfos
@@ -72,7 +73,7 @@ public interface BookRepositoryCustom {
      * @param pageable 그거
      * @return page pageable 된 도서 DTO
      */
-    Page<BookMediumResponse> getPageableListBookMediumInfos(Pageable pageable);
+    Page<BookSearchResponse> getPageableListBookMediumInfos(Pageable pageable);
 
     /**
      * methodName : getPageableBookMediumInfosByCategoryId
@@ -83,5 +84,7 @@ public interface BookRepositoryCustom {
      * @param pageable   그거
      * @return page
      */
-    Page<BookMediumResponse> getPageableBookMediumInfosByCategoryId(Long categoryId, Pageable pageable);
+    Page<BookSearchResponse> getPageableBookMediumInfosByCategoryId(Long categoryId,
+                                                                    String sortCondition,
+                                                                    Pageable pageable);
 }

@@ -1,29 +1,29 @@
-package shop.bookbom.shop.domain.author.exception;
+package shop.bookbom.shop.domain.book.exception;
 
 import shop.bookbom.shop.common.exception.BaseException;
 import shop.bookbom.shop.common.exception.ErrorCode;
 
 /**
  * packageName    : shop.bookbom.shop.domain.book.exception
- * fileName       : BookIdMismatchException
+ * fileName       : ExceedOffsetLimitException
  * author         : UuLaptop
- * date           : 2024-04-17
+ * date           : 2024-04-26
  * description    :
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------
- * 2024-04-17        UuLaptop       최초 생성
+ * 2024-04-26        UuLaptop       최초 생성
  */
-public class AuthorIdNotFoundException extends BaseException {
-    public AuthorIdNotFoundException() {
-        super(ErrorCode.ID_AND_PATH_VARIABLE_DOES_NOT_MATCH);
+public class ExceedOffsetLimitException extends BaseException {
+    public ExceedOffsetLimitException() {
+        super(ErrorCode.EXCEEDS_OFFSET_RANGE);
     }
 
-    public AuthorIdNotFoundException(ErrorCode errorCode) {
+    public ExceedOffsetLimitException(ErrorCode errorCode) {
         super(errorCode);
     }
 
-    public AuthorIdNotFoundException(ErrorCode errorCode, String message) {
+    public ExceedOffsetLimitException(ErrorCode errorCode, String message) {
         super(errorCode, message);
     }
 }
