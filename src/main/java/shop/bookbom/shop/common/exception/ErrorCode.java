@@ -40,7 +40,11 @@ public enum ErrorCode {
     // file
     FILE_NOT_FOUND(400, "해당 파일을 찾을 수 없습니다."),
     // author
-    AUTHOR_ID_NOT_FOUND(404, "일치하는 작가 ID가 없습니다.");;
+    AUTHOR_ID_NOT_FOUND(404, "일치하는 작가 ID가 없습니다."),
+    // point_rate
+    POINT_RATE_NOT_FOUND(400,"해당 포인트 정책이 존재하지 않습니다."),
+    ;
+
     private final int code;
     private final String message;
 }

@@ -1,5 +1,7 @@
 package shop.bookbom.shop.config;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,5 +45,10 @@ public class DataSourceConfig {
                 .password(secureManager.getValue(password))
                 .driverClassName(MYSQL_DRIVER_NAME)
                 .build();
+    }
+
+    @Bean
+    public JPAQueryFactory jpaQueryFactory(EntityManager em) {
+        return new JPAQueryFactory(em);
     }
 }
