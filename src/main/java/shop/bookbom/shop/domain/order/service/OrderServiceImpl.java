@@ -35,10 +35,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public BeforeOrderResponse getOrderBookInfo(BeforeOrderRequestList beforeOrderRequestList) {
-        int TotalOrderCount = 0;
+        int totalOrderCount = 0;
         List<BeforeOrderBookResponse> beforeOrderBookResponseList = new ArrayList<>();
         //각 책에 대한 정보를 list로부터 가져와서 foreach문 돌림
-        for (BeforeOrderRequest bookRequest : beforeOrderRequestList.getBeforeOrderRequestList()) {
+        for (BeforeOrderRequest bookRequest : beforeOrderRequestList.getBeforeOrderRequests()) {
             //bookId로 책 가져옴
             BookTitleAndCostResponse titleAndCostById = bookRepository.getTitleAndCostById(bookRequest.getBookId())
                     .orElseThrow(BookNotFoundException::new);
@@ -58,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
 
             beforeOrderBookResponseList.add(beforeOrderBookResponse);
             //총 주문 개수 다 더함
-            TotalOrderCount += quantity;
+            totalOrderCount += quantity;
         }
         //모든 포장지 list 가져옴
         List<Wrapper> wrapperList = wrapperRepository.findAll();
@@ -71,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
         //주문 응답 객체 생성 후 정보 저장
         return BeforeOrderResponse.builder()
                 .beforeOrderBookResponseList(beforeOrderBookResponseList)
-                .totalOrderCount(TotalOrderCount)
+                .totalOrderCount(totalOrderCount)
                 .wrapperList(wrapperDtoList)
                 .build();
 
