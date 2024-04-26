@@ -56,4 +56,9 @@ public class PointRate {
         this.applyType = applyType;
         this.createdAt = createdAt;
     }
+
+    public void updatePolicy(EarnPointType earnType, int earnPoint) {
+        this.earnType = earnType;
+        this.earnPoint = earnPoint;
+    }
 }

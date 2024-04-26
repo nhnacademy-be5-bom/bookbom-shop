@@ -48,6 +48,7 @@ import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 import shop.bookbom.shop.domain.pointrate.repository.PointRateRepository;
 import shop.bookbom.shop.domain.publisher.entity.Publisher;
 import shop.bookbom.shop.domain.publisher.repository.PublisherRepository;
+import shop.bookbom.shop.domain.review.repository.ReviewRepository;
 import shop.bookbom.shop.domain.tag.entity.Tag;
 import shop.bookbom.shop.domain.tag.repository.TagRepository;
 
@@ -66,6 +67,7 @@ public class BookService {
     private final FileRepository fileRepository;
     private final BookFileTypeRepository bookFileTypeRepository;
     private final BookFileRepository bookFileRepository;
+    private final ReviewRepository reviewRepository;
     private final ObjectService objectService;
     private static final String CONTAINER_NAME = "bookbom/book_thumbnail";
 
@@ -352,5 +354,18 @@ public class BookService {
         originalThumbnail.update(objectService.getUrl(CONTAINER_NAME, objectName),
                 StringUtils.getFilenameExtension(newThumbnail.getOriginalFilename()),
                 LocalDateTime.now());
+    }
+
+    @Transactional(readOnly = true)
+    public long getReviewCount(Long bookId) {
+        return reviewRepository.countByBookId(bookId)
+                .orElse(0L);
+    }
+
+    @Transactional(readOnly = true)
+    public double getReviewRating(Long bookId) {
+        double avgRate = reviewRepository.avgRateByBookId(bookId)
+                .orElse(0.0);
+        return Math.round(avgRate * 10) / 10.0;
     }
 }

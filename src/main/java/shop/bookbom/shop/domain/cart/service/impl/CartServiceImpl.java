@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
+import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartInfoResponse;
+import shop.bookbom.shop.domain.cart.dto.repsonse.CartItemDto;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartUpdateResponse;
 import shop.bookbom.shop.domain.cart.dto.request.CartAddRequest;
 import shop.bookbom.shop.domain.cart.entity.Cart;
@@ -25,10 +27,11 @@ public class CartServiceImpl implements CartService {
     private final CartFindService cartFindService;
     private final BookRepository bookRepository;
     private final CartItemRepository cartItemRepository;
+    private final BookFileRepository bookFileRepository;
 
     @Override
     @Transactional
-    public CartInfoResponse addCart(List<CartAddRequest> addItems, Long userId) {
+    public List<Long> addCart(List<CartAddRequest> addItems, Long userId) {
         Cart cart = cartFindService.getCart(userId);
         addItems.forEach(c -> {
             Book book = bookRepository.findById(c.getBookId())
@@ -49,14 +52,22 @@ public class CartServiceImpl implements CartService {
                 cart.addItem(cartItem);
             }
         });
-        return cartToCartInfoResponse(cart);
+        return cart.getCartItems().stream()
+                .map(CartItem::getId)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public CartInfoResponse getCartInfo(Long userId) {
         Cart cart = cartFindService.getCart(userId);
-        return cartToCartInfoResponse(cart);
+        List<CartItemDto> cartItems = cart.getCartItems().stream()
+                .map(cartItem -> {
+                    String thumbnail = bookFileRepository.getBookImageUrl(cartItem.getBook().getId());
+                    return CartItemDto.from(cartItem, thumbnail);
+                })
+                .collect(Collectors.toList());
+        return CartInfoResponse.of(cart.getId(), cartItems);
     }
 
     @Override
@@ -76,20 +87,5 @@ public class CartServiceImpl implements CartService {
         CartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(CartItemNotFoundException::new);
         cartItemRepository.delete(cartItem);
-    }
-
-    private CartInfoResponse cartToCartInfoResponse(Cart cart) {
-        List<CartInfoResponse.CartItemInfo> cartItems = cart.getCartItems().stream()
-                .map(ci -> CartInfoResponse.CartItemInfo.builder()
-                        .cartItemId(ci.getId())
-                        .bookId(ci.getBook().getId())
-                        .quantity(ci.getQuantity())
-                        .build())
-                .collect(Collectors.toList());
-
-        return CartInfoResponse.builder()
-                .cartId(cart.getId())
-                .cartItems(cartItems)
-                .build();
     }
 }

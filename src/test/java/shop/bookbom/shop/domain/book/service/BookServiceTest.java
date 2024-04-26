@@ -1,5 +1,6 @@
 package shop.bookbom.shop.domain.book.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,6 +37,7 @@ import shop.bookbom.shop.domain.category.repository.CategoryRepository;
 import shop.bookbom.shop.domain.file.repository.FileRepository;
 import shop.bookbom.shop.domain.pointrate.repository.PointRateRepository;
 import shop.bookbom.shop.domain.publisher.repository.PublisherRepository;
+import shop.bookbom.shop.domain.review.repository.ReviewRepository;
 import shop.bookbom.shop.domain.tag.repository.TagRepository;
 
 /**
@@ -75,6 +77,8 @@ class BookServiceTest {
     BookFileTypeRepository bookFileTypeRepository;
     @Mock
     BookFileRepository bookFileRepository;
+    @Mock
+    ReviewRepository reviewRepository;
     @Mock
     ObjectService objectService;
     @InjectMocks
@@ -181,5 +185,57 @@ class BookServiceTest {
 
     @Test
     void reviveBook() {
+    }
+
+    @Test
+    @DisplayName("리뷰 개수 조회")
+    void getReviewCount() throws Exception {
+        //given
+        when(reviewRepository.countByBookId(anyLong())).thenReturn(Optional.of(10L));
+
+        //when
+        Long reviewCount = bookService.getReviewCount(1L);
+
+        //then
+        assertThat(reviewCount).isEqualTo(10L);
+    }
+
+    @Test
+    @DisplayName("리뷰가 없을 때  개수 조회")
+    void getNoneReviewCount() throws Exception {
+        //given
+        when(reviewRepository.countByBookId(anyLong())).thenReturn(Optional.empty());
+
+        //when
+        Long reviewCount = bookService.getReviewCount(1L);
+
+        //then
+        assertThat(reviewCount).isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("리뷰 평점 조회")
+    void getReviewRating() throws Exception {
+        //given
+        when(reviewRepository.avgRateByBookId(anyLong())).thenReturn(Optional.of(4.5));
+
+        //when
+        double reviewRating = bookService.getReviewRating(1L);
+
+        //then
+        assertThat(reviewRating).isEqualTo(4.5);
+    }
+
+    @Test
+    @DisplayName("리뷰가 없을 때 리뷰 평점 조회")
+    void getNoneReviewRating() throws Exception {
+        //given
+        when(reviewRepository.avgRateByBookId(anyLong())).thenReturn(Optional.empty());
+
+        //when
+        double reviewRating = bookService.getReviewRating(1L);
+
+        //then
+        assertThat(reviewRating).isEqualTo(0.0);
     }
 }
