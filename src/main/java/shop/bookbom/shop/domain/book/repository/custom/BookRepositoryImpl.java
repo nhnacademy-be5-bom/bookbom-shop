@@ -156,13 +156,6 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
                         .fetch();
             }
 
-        } else {
-            entityList = query
-                    .offset(pageable.getOffset())   // 페이지 번호
-                    .limit(pageable.getPageSize())  // 페이지 사이즈
-                    .fetch();
-        }
-
         return convertBookToSearch(entityList);
     }
 
