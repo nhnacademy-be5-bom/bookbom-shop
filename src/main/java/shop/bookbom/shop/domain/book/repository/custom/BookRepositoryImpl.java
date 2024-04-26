@@ -207,28 +207,12 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
     }
 
     private long getCount(Long categoryId) {
-        return from(book)
-                .join(book.pointRate)
+        return from(bookCategory)
 
-                .leftJoin(book.authors, bookAuthor)
-                .leftJoin(bookAuthor.author, author)
-
-                .leftJoin(book.tags, bookTag)
-                .leftJoin(bookTag.tag, tag)
-
-                .leftJoin(book.categories, bookCategory)
-                .leftJoin(bookCategory.category, category)
-
-                .leftJoin(book.bookFiles, bookFiles)
-                .leftJoin(bookFiles.file, file)
-                .leftJoin(bookFiles.bookFileType, fileType)
-
-                .leftJoin(book.reviews, review)
-
-                .where(bookCategory.category.id.eq(categoryId).and(book.status.ne(BookStatus.DEL)))
+                .where(bookCategory.category.id.eq(categoryId)
+                        .and(bookCategory.book.status.ne(BookStatus.DEL)))
 
                 .select(book.count())
-                .distinct()
                 .fetchOne();
     }
 
