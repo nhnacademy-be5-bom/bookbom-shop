@@ -122,15 +122,16 @@ class GetPageableBooksRestControllerTest {
         PageRequest pageable = PageRequest.of(0, 20);
         PageImpl<BookSearchResponse> pageResponse = new PageImpl<>(result, pageable, 1234);
 
-        when(bookService.getPageableBookListByCategoryId(1L, "", pageable)).thenReturn(pageResponse);
+        when(bookService.getPageableBookListByCategoryId(1L, "test", pageable)).thenReturn(pageResponse);
 
         ResultActions perform =
                 mockMvc.perform(get("/shop/books/category/{id}", 1)
                         .param("page", "0")
                         .param("size", "20")
+                        .param("sortCondition", "test")
                         .contentType(MediaType.APPLICATION_JSON));
 
-        verify(bookService, times(1)).getPageableBookListByCategoryId(1L, "", pageable);
+        verify(bookService, times(1)).getPageableBookListByCategoryId(1L, "test", pageable);
 
         perform
                 .andExpect(status().isOk())
