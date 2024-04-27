@@ -71,4 +71,12 @@ public class User {
     public void resetPassword(String password) {
         this.password = password;
     }
+
+    public void addOrder(Order order) {
+        if (orders == null) {
+            orders = new ArrayList<>();
+        }
+        orders.add(order);
+        order.setUser(this);
+    }
 }
