@@ -13,6 +13,7 @@ import shop.bookbom.shop.domain.cart.dto.repsonse.CartUpdateResponse;
 import shop.bookbom.shop.domain.cart.dto.request.CartAddRequest;
 import shop.bookbom.shop.domain.cart.dto.request.CartUpdateRequest;
 import shop.bookbom.shop.domain.cart.entity.Cart;
+import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.entity.MemberStatus;
 import shop.bookbom.shop.domain.order.entity.Order;
@@ -67,6 +68,7 @@ public class TestUtils {
                 .birthDate(LocalDate.now())
                 .registered(true)
                 .role(role)
+                .point(1000)
                 .status(MemberStatus.ACTIVE)
                 .rank(rank)
                 .build();
@@ -163,6 +165,16 @@ public class TestUtils {
         return Wish.builder()
                 .member(member)
                 .book(book)
+                .build();
+    }
+
+    public static MemberInfoResponse getMemberInfoResponse(Rank rank, Member member) {
+        return MemberInfoResponse.builder()
+                .rank(rank.getName())
+                .nickname(member.getNickname())
+                .point(member.getPoint())
+                .wishCount(2)
+                .couponCount(0)
                 .build();
     }
 }

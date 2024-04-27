@@ -28,7 +28,6 @@ import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 import shop.bookbom.shop.domain.publisher.entity.Publisher;
 import shop.bookbom.shop.domain.rank.entity.Rank;
 import shop.bookbom.shop.domain.role.entity.Role;
-import shop.bookbom.shop.domain.wish.entity.Wish;
 
 @Import(TestQuerydslConfig.class)
 @DataJpaTest
@@ -41,7 +40,7 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("마이 페이지 회원 정보 조회")
-    void findMemberInfo() throws Exception {
+    void findMemberInfo() {
         Role role = em.persist(getRole());
         PointRate pointRate = em.persist(getPointRate());
         Rank rank = em.persist(getRank(pointRate));
@@ -54,8 +53,8 @@ class MemberRepositoryTest {
         Publisher publisher = em.persist(getPublisher());
         Book book1 = em.persist(getBook("title1", pointRate, publisher));
         Book book2 = em.persist(getBook("title2", pointRate, publisher));
-        Wish wish1 = em.persist(getWish(member, book1));
-        Wish wish2 = em.persist(getWish(member, book2));
+        em.persist(getWish(member, book1));
+        em.persist(getWish(member, book2));
         //when
         MemberInfoResponse response =
                 memberRepository.findMemberInfo(member.getId())
@@ -71,7 +70,7 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("존재하지 않는 회원 정보 요청")
-    void findNoneMemberInfo() throws Exception {
+    void findNoneMemberInfo() {
         //when
         Optional<MemberInfoResponse> response = memberRepository.findMemberInfo(1L);
         //then
