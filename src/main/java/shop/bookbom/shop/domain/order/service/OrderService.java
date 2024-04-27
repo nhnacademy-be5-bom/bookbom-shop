@@ -23,4 +23,6 @@ public interface OrderService {
      * @return 포장지 선택 request 와 userId를 내보냄
      */
     WrapperSelectResponse selectWrapper(Long userId, WrapperSelectRequest wrapperSelectRequest);
+
+    Boolean checkStock(BeforeOrderRequestList beforeOrderRequestList);
 }

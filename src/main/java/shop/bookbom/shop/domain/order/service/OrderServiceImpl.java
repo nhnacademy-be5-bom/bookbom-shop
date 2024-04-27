@@ -39,32 +39,19 @@ public class OrderServiceImpl implements OrderService {
         List<BeforeOrderBookResponse> beforeOrderBookResponseList = new ArrayList<>();
         //각 책에 대한 정보를 list로부터 가져와서 foreach문 돌림
         for (BeforeOrderRequest bookRequest : beforeOrderRequestList.getBeforeOrderRequests()) {
-            //bookId로 책 가져옴
-            BookTitleAndCostResponse titleAndCostById = bookRepository.getTitleAndCostById(bookRequest.getBookId())
-                    .orElseThrow(BookNotFoundException::new);
-            String title = titleAndCostById.getTitle();
-            Integer cost = titleAndCostById.getCost();
-            Integer quantity = bookRequest.getQuantity();
-            String imageUrl = bookFileRepository.getBookImageUrl(bookRequest.getBookId());
 
-            //새로운 주문 도서 응답 빌더 생성
-            BeforeOrderBookResponse beforeOrderBookResponse = BeforeOrderBookResponse.builder()
-                    .bookId(bookRequest.getBookId())
-                    .title(title)
-                    .imageUrl(imageUrl)
-                    .cost(cost)
-                    .quantity(quantity)
-                    .build();
-
+            BeforeOrderBookResponse beforeOrderBookResponse =
+                    getBookDetailInfo(bookRequest.getBookId(), bookRequest.getQuantity());
             beforeOrderBookResponseList.add(beforeOrderBookResponse);
             //총 주문 개수 다 더함
-            totalOrderCount += quantity;
+            totalOrderCount += bookRequest.getQuantity();
         }
         //모든 포장지 list 가져옴
         List<Wrapper> wrapperList = wrapperRepository.findAll();
         List<WrapperDto> wrapperDtoList = new ArrayList<>();
         for (Wrapper wrapper : wrapperList) {
-            WrapperDto wrapperDto = new WrapperDto(wrapper.getId(), wrapper.getName(), wrapper.getCost());
+            WrapperDto wrapperDto =
+                    new WrapperDto(wrapper.getId(), wrapper.getName(), wrapper.getCost(), wrapper.getFile().getUrl());
             wrapperDtoList.add(wrapperDto);
 
         }
@@ -141,5 +128,40 @@ public class OrderServiceImpl implements OrderService {
             default:
                 return null;
         }
+
     }
+
+    private BeforeOrderBookResponse getBookDetailInfo(Long bookId, Integer bookQuantity) {
+        //bookId로 책 가져옴
+        BookTitleAndCostResponse titleAndCostById = bookRepository.getTitleAndCostById(bookId)
+                .orElseThrow(BookNotFoundException::new);
+        String title = titleAndCostById.getTitle();
+        Integer cost = titleAndCostById.getCost();
+        String imageUrl = bookFileRepository.getBookImageUrl(bookId);
+        Integer discountCost = bookRepository.getDiscountCostById(bookId);
+
+
+        //새로운 주문 도서 응답 빌더 생성
+        return BeforeOrderBookResponse.builder()
+                .bookId(bookId)
+                .title(title)
+                .imageUrl(imageUrl)
+                .cost(cost)
+                .discountCost(discountCost)
+                .quantity(bookQuantity)
+                .build();
+    }
+
+    @Override
+    public Boolean checkStock(BeforeOrderRequestList beforeOrderRequestList) {
+        for (BeforeOrderRequest beforeOrderRequest : beforeOrderRequestList.getBeforeOrderRequests()) {
+            Integer stock = bookRepository.getStockById(beforeOrderRequest.getBookId());
+            if (beforeOrderRequest.getQuantity() > stock) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }

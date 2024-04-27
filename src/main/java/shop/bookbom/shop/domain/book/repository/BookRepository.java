@@ -12,6 +12,12 @@ public interface BookRepository extends JpaRepository<Book, Long>, BookRepositor
     @Query("SELECT new shop.bookbom.shop.domain.order.dto.response.BookTitleAndCostResponse(b.title, b.cost) FROM Book b WHERE b.id = :bookId")
     Optional<BookTitleAndCostResponse> getTitleAndCostById(@Param("bookId") Long bookId);
 
+    @Query("SELECT b.discountCost from Book b where b.id = :bookId")
+    Integer getDiscountCostById(@Param("bookId") Long bookId);
+
+    @Query("SELECT b.stock from Book b where b.id = :bookId")
+    Integer getStockById(@Param("bookId") Long bookId);
+
     /** 최대크기 DTO 단건조회
      BookDetailResponse getBookDetailInfoById(Long bookId);
      * 중간크기 DTO 단건조회
