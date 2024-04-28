@@ -8,6 +8,7 @@ import static shop.bookbom.shop.domain.rank.entity.QRank.rank;
 import static shop.bookbom.shop.domain.wish.entity.QWish.wish;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.repository.MemberRepositoryCustom;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
+import shop.bookbom.shop.domain.order.entity.Order;
 
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberRepositoryCustom {
@@ -47,8 +49,10 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .where(wish.member.eq(memberResult))
                 .fetchOne();
 
-        List<OrderInfoResponse> orders =
+        List<OrderInfoResponse> lastOrders =
                 memberResult.getOrders().stream()
+                        .sorted(Comparator.comparing(Order::getOrderDate).reversed())
+                        .limit(5)
                         .map(OrderInfoResponse::of)
                         .collect(Collectors.toList());
 
@@ -56,7 +60,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .id(memberResult.getId())
                 .nickname(memberResult.getNickname())
                 .rank(memberResult.getRank().getName())
-                .lastOrders(orders)
+                .lastOrders(lastOrders)
                 .point(memberResult.getPoint())
                 .couponCount((couponCount != null) ? couponCount : 0L)
                 .wishCount((wishCount != null) ? wishCount : 0L)
