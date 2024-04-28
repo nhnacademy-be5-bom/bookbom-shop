@@ -64,53 +64,91 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+//    @Override
+//    @Transactional
+//    public WrapperSelectResponse selectWrapper(Long userId, WrapperSelectRequest wrapperSelectRequest) {
+//        //request을 가져와서 총 주문 갯수와 포장지 선택 리스트를 받아옴
+//        int totalOrderCount = wrapperSelectRequest.getTotalOrderCount();
+//        List<WrapperSelectBookRequest> wrapperSelectBookRequestList =
+//                wrapperSelectRequest.getWrapperSelectBookRequestList();
+//        //포장지 셀렉 응답 리스트를 만듬
+//        List<WrapperSelectBookResponse> wrapperSelectBookResponseList = new ArrayList<>();
+//        for (WrapperSelectBookRequest selectBookRequest : wrapperSelectBookRequestList) {
+//            WrapperSelectBookResponse wrapperSelectBookResponse =
+//                    WrapperSelectBookResponse.builder()
+//                            .bookId(selectBookRequest.getBookId())
+//                            .bookTitle(selectBookRequest.getBookTitle())
+//                            .wrapperName(selectBookRequest.getWrapperName())
+//                            .imgUrl(selectBookRequest.getImgUrl())
+//                            .quantity(selectBookRequest.getQuantity())
+//                            .cost(selectBookRequest.getCost())
+//                            .build();
+//            wrapperSelectBookResponseList.add(wrapperSelectBookResponse);
+//
+//        }
+//
+//        List<String> estimatedDateList = new ArrayList<>();
+//        int daysToAdd = 1;
+//        while (estimatedDateList.size() < 5) {
+//            LocalDate localDate = LocalDate.now().plusDays(daysToAdd);
+//            DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+//            if (!(dayOfWeek.equals(DayOfWeek.SATURDAY) ||
+//                    dayOfWeek.equals(DayOfWeek.SUNDAY))) {
+//                String dateString = localDate.format(DateTimeFormatter.ofPattern("M/d"));
+//                String dayofWeekKorean = getDayofWeekKorean(dayOfWeek);
+//                String estimatedDate = dayofWeekKorean + "(" + dateString + ")";
+//
+//                estimatedDateList.add(estimatedDate);
+//            }
+//            daysToAdd++;
+//        }
+//
+//        //응답 반환
+//        return WrapperSelectResponse.builder()
+//                .userId(userId)
+//                .totalOrderCount(totalOrderCount)
+//                .wrapperSelectResponseList(wrapperSelectBookResponseList)
+//                .estimatedDateList(estimatedDateList)
+//                .build();
+//
+//    }
+
     @Override
-    @Transactional
-    public WrapperSelectResponse selectWrapper(Long userId, WrapperSelectRequest wrapperSelectRequest) {
+    public WrapperSelectResponse selectWrapper(WrapperSelectRequest wrapperSelectRequest) {
+        int totalOrderCount = 0;
+        int wrapCost = 0;
         //request을 가져와서 총 주문 갯수와 포장지 선택 리스트를 받아옴
-        int totalOrderCount = wrapperSelectRequest.getTotalOrderCount();
-        List<WrapperSelectBookRequest> wrapperSelectBookRequestList =
-                wrapperSelectRequest.getWrapperSelectBookRequestList();
         //포장지 셀렉 응답 리스트를 만듬
         List<WrapperSelectBookResponse> wrapperSelectBookResponseList = new ArrayList<>();
-        for (WrapperSelectBookRequest selectBookRequest : wrapperSelectBookRequestList) {
+        for (WrapperSelectBookRequest selectBookRequest : wrapperSelectRequest.getWrapperSelectBookRequestList()) {
+            BeforeOrderBookResponse bookDetailInfo =
+                    getBookDetailInfo(selectBookRequest.getBookId(), selectBookRequest.getQuantity());
             WrapperSelectBookResponse wrapperSelectBookResponse =
                     WrapperSelectBookResponse.builder()
-                            .bookId(selectBookRequest.getBookId())
-                            .bookTitle(selectBookRequest.getBookTitle())
+                            .bookId(bookDetailInfo.getBookId())
+                            .bookTitle(bookDetailInfo.getTitle())
+                            .cost(bookDetailInfo.getCost())
+                            .discountCost(bookDetailInfo.getDiscountCost())
+                            .imgUrl(bookDetailInfo.getImageUrl())
+                            .quantity(bookDetailInfo.getQuantity())
                             .wrapperName(selectBookRequest.getWrapperName())
-                            .imgUrl(selectBookRequest.getImgUrl())
-                            .quantity(selectBookRequest.getQuantity())
-                            .cost(selectBookRequest.getCost())
                             .build();
+
             wrapperSelectBookResponseList.add(wrapperSelectBookResponse);
+            totalOrderCount += bookDetailInfo.getQuantity();
+            Integer costByName = wrapperRepository.getCostByName(selectBookRequest.getWrapperName());
+            wrapCost += costByName * bookDetailInfo.getQuantity();
 
         }
+        List<String> estimatedDateList = createEstimatedDateList();
 
-        List<String> estimatedDateList = new ArrayList<>();
-        int daysToAdd = 1;
-        while (estimatedDateList.size() < 5) {
-            LocalDate localDate = LocalDate.now().plusDays(daysToAdd);
-            DayOfWeek dayOfWeek = localDate.getDayOfWeek();
-            if (!(dayOfWeek.equals(DayOfWeek.SATURDAY) ||
-                    dayOfWeek.equals(DayOfWeek.SUNDAY))) {
-                String dateString = localDate.format(DateTimeFormatter.ofPattern("M/d"));
-                String dayofWeekKorean = getDayofWeekKorean(dayOfWeek);
-                String estimatedDate = dayofWeekKorean + "(" + dateString + ")";
-
-                estimatedDateList.add(estimatedDate);
-            }
-            daysToAdd++;
-        }
-
-        //응답 반환
         return WrapperSelectResponse.builder()
-                .userId(userId)
                 .totalOrderCount(totalOrderCount)
                 .wrapperSelectResponseList(wrapperSelectBookResponseList)
                 .estimatedDateList(estimatedDateList)
+                .deliveryCost(5000)
+                .wrapCost(wrapCost)
                 .build();
-
     }
 
     private static String getDayofWeekKorean(DayOfWeek dayOfWeek) {
@@ -152,7 +190,6 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    @Override
     public Boolean checkStock(BeforeOrderRequestList beforeOrderRequestList) {
         for (BeforeOrderRequest beforeOrderRequest : beforeOrderRequestList.getBeforeOrderRequests()) {
             Integer stock = bookRepository.getStockById(beforeOrderRequest.getBookId());
@@ -163,5 +200,25 @@ public class OrderServiceImpl implements OrderService {
         return true;
     }
 
+    private List<String> createEstimatedDateList() {
+        List<String> estimatedDateList = new ArrayList<>();
+        int daysToAdd = 1;
+        while (estimatedDateList.size() < 5) {
+            LocalDate localDate = LocalDate.now().plusDays(daysToAdd);
+            DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+            if (!(dayOfWeek.equals(DayOfWeek.SATURDAY) ||
+                    dayOfWeek.equals(DayOfWeek.SUNDAY))) {
+                String dateString = localDate.format(DateTimeFormatter.ofPattern("M/d"));
+                String dayofWeekKorean = getDayofWeekKorean(dayOfWeek);
+                String estimatedDate = dayofWeekKorean + "(" + dateString + ")";
+
+                estimatedDateList.add(estimatedDate);
+            }
+            daysToAdd++;
+        }
+        return estimatedDateList;
+    }
+
 
 }
+

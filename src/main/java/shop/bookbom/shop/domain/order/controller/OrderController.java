@@ -64,7 +64,7 @@ public class OrderController {
             throw new OrderInfoInvalidException();
         }
         //포장지 선택 메소드
-        WrapperSelectResponse wrapperSelectResponse = orderService.selectWrapper(userId, wrapperSelectRequest);
+        WrapperSelectResponse wrapperSelectResponse = orderService.selectWrapper(wrapperSelectRequest);
         //응답 반환
         return CommonResponse.successWithData(wrapperSelectResponse);
     }

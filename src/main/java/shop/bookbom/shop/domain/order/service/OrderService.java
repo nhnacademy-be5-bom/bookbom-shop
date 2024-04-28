@@ -18,11 +18,11 @@ public interface OrderService {
     /**
      * 포장지 선택 정보를 처리하는 메소드
      *
-     * @param userId
+     * @param
      * @param wrapperSelectRequest(책정보와 선택한 포장지 의 List와 전체 주문 갯수)
      * @return 포장지 선택 request 와 userId를 내보냄
      */
-    WrapperSelectResponse selectWrapper(Long userId, WrapperSelectRequest wrapperSelectRequest);
+    WrapperSelectResponse selectWrapper(WrapperSelectRequest wrapperSelectRequest);
 
     Boolean checkStock(BeforeOrderRequestList beforeOrderRequestList);
 }
