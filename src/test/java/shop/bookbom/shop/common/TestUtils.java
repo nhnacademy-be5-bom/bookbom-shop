@@ -15,6 +15,7 @@ import shop.bookbom.shop.domain.cart.dto.request.CartUpdateRequest;
 import shop.bookbom.shop.domain.cart.entity.Cart;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.entity.MemberStatus;
+import shop.bookbom.shop.domain.pointhistory.dto.response.PointHistoryResponse;
 import shop.bookbom.shop.domain.pointhistory.entity.ChangeReason;
 import shop.bookbom.shop.domain.pointhistory.entity.PointHistory;
 import shop.bookbom.shop.domain.pointhistory.entity.PointHistoryDetail;
@@ -145,6 +146,16 @@ public class TestUtils {
                 .changeReason(changeReason)
                 .detail(PointHistoryDetail.ORDER_EARN)
                 .changeDate(LocalDateTime.now())
+                .build();
+    }
+
+    public static PointHistoryResponse getPointHistoryResponse() {
+        return PointHistoryResponse.builder()
+                .id(1L)
+                .reason(ChangeReason.USE.name())
+                .changeDate(LocalDateTime.now())
+                .detail(PointHistoryDetail.ORDER_EARN.name())
+                .changePoint(1000)
                 .build();
     }
 }
