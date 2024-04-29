@@ -25,13 +25,16 @@ public class PointHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "point_history_id", nullable = false)
-    private Long pointHistoryId;
+    private Long id;
 
     @Column(name = "change_point", nullable = false)
     private int changePoint;
 
     @Column(name = "change_reason", nullable = false, length = 50)
-    private String changeReason;
+    private ChangeReason changeReason;
+
+    @Column(name = "detail", nullable = false, length = 100)
+    private PointHistoryDetail detail;
 
     @Column(name = "change_date", nullable = false)
     private LocalDateTime changeDate;
@@ -43,7 +46,7 @@ public class PointHistory {
     @Builder
     public PointHistory(
             int changePoint,
-            String changeReason,
+            ChangeReason changeReason,
             LocalDateTime changeDate,
             Member member
     ) {
