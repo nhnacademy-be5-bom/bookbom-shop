@@ -10,11 +10,11 @@ import static shop.bookbom.shop.domain.wish.entity.QWish.wish;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.member.entity.Member;
+import shop.bookbom.shop.domain.member.exception.MemberNotFoundException;
 import shop.bookbom.shop.domain.member.repository.MemberRepositoryCustom;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.order.entity.Order;
@@ -24,7 +24,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<MemberInfoResponse> findMemberInfo(Long id) {
+    public MemberInfoResponse findMemberInfo(Long id) {
         Member memberResult = queryFactory
                 .selectFrom(member)
                 .join(member.rank, rank).fetchJoin()
@@ -34,7 +34,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .fetchOne();
 
         if (memberResult == null) {
-            return Optional.empty();
+            throw new MemberNotFoundException();
         }
 
         Long couponCount = queryFactory
@@ -56,7 +56,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                         .map(OrderInfoResponse::of)
                         .collect(Collectors.toList());
 
-        return Optional.of(MemberInfoResponse.builder()
+        return MemberInfoResponse.builder()
                 .id(memberResult.getId())
                 .nickname(memberResult.getNickname())
                 .rank(memberResult.getRank().getName())
@@ -64,6 +64,6 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .point(memberResult.getPoint())
                 .couponCount((couponCount != null) ? couponCount : 0L)
                 .wishCount((wishCount != null) ? wishCount : 0L)
-                .build());
+                .build();
     }
 }
