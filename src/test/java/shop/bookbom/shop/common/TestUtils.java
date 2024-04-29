@@ -15,6 +15,9 @@ import shop.bookbom.shop.domain.cart.dto.request.CartUpdateRequest;
 import shop.bookbom.shop.domain.cart.entity.Cart;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.entity.MemberStatus;
+import shop.bookbom.shop.domain.pointhistory.entity.ChangeReason;
+import shop.bookbom.shop.domain.pointhistory.entity.PointHistory;
+import shop.bookbom.shop.domain.pointhistory.entity.PointHistoryDetail;
 import shop.bookbom.shop.domain.pointrate.entity.ApplyPointType;
 import shop.bookbom.shop.domain.pointrate.entity.EarnPointType;
 import shop.bookbom.shop.domain.pointrate.entity.PointRate;
@@ -132,6 +135,16 @@ public class TestUtils {
     public static Publisher getPublisher() {
         return Publisher.builder()
                 .name("test")
+                .build();
+    }
+
+    public static PointHistory getPointHistory(Member member, ChangeReason changeReason) {
+        return PointHistory.builder()
+                .member(member)
+                .changePoint(100)
+                .changeReason(changeReason)
+                .detail(PointHistoryDetail.ORDER_EARN)
+                .changeDate(LocalDateTime.now())
                 .build();
     }
 }
