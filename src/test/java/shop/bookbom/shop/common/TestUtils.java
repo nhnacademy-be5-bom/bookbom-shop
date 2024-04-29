@@ -149,10 +149,10 @@ public class TestUtils {
                 .build();
     }
 
-    public static PointHistoryResponse getPointHistoryResponse() {
+    public static PointHistoryResponse getPointHistoryResponse(ChangeReason changeReason) {
         return PointHistoryResponse.builder()
                 .id(1L)
-                .reason(ChangeReason.USE.name())
+                .reason(changeReason.name())
                 .changeDate(LocalDateTime.now())
                 .detail(PointHistoryDetail.ORDER_EARN.name())
                 .changePoint(1000)

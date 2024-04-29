@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
@@ -17,6 +18,7 @@ import shop.bookbom.shop.domain.pointhistory.service.PointHistoryService;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/shop")
 public class PointHistoryController {
     private final PointHistoryService pointHistoryService;
 
@@ -33,7 +35,7 @@ public class PointHistoryController {
                 .orElseThrow(InvalidChangeReasonException::new);
     }
 
-    @GetMapping("/point-history")
+    @GetMapping("/member/point-history")
     public CommonResponse<Page<PointHistoryResponse>> getPointHistory(
             @RequestParam Long userId,
             Pageable pageable,
