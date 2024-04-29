@@ -3,6 +3,8 @@ package shop.bookbom.shop.domain.pointhistory.entity;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,9 +33,11 @@ public class PointHistory {
     private int changePoint;
 
     @Column(name = "change_reason", nullable = false, length = 50)
+    @Enumerated(EnumType.STRING)
     private ChangeReason changeReason;
 
     @Column(name = "detail", nullable = false, length = 100)
+    @Enumerated(EnumType.STRING)
     private PointHistoryDetail detail;
 
     @Column(name = "change_date", nullable = false)
@@ -48,11 +52,13 @@ public class PointHistory {
             int changePoint,
             ChangeReason changeReason,
             LocalDateTime changeDate,
+            PointHistoryDetail detail,
             Member member
     ) {
         this.changePoint = changePoint;
         this.changeReason = changeReason;
         this.changeDate = changeDate;
+        this.detail = detail;
         this.member = member;
     }
 }
