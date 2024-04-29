@@ -45,7 +45,7 @@ class PointHistoryServiceTest {
         //given
         when(memberRepository.findById(any())).thenReturn(
                 Optional.of(getMember("email@test.com", getRole(), getRank(getPointRate()))));
-        PointHistoryResponse response = getPointHistoryResponse(ChangeReason.EARN);
+        PointHistoryResponse response = getPointHistoryResponse(ChangeReason.USE);
         PageRequest pageRequest = PageRequest.of(0, 5);
         when(pointHistoryRepository.getPointHistory(any(), any(), any()))
                 .thenReturn(new PageImpl<>(List.of(response), pageRequest, 1));
