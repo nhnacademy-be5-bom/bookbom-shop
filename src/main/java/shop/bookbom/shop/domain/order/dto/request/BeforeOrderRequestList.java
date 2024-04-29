@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BeforeOrderRequestList {
     @Valid
-    private List<BeforeOrderRequest> beforeOrderRequestList;
+    private List<BeforeOrderRequest> beforeOrderRequests;
 }

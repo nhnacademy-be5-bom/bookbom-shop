@@ -7,7 +7,7 @@ import shop.bookbom.shop.domain.wrapper.dto.WrapperDto;
 
 @Getter
 public class BeforeOrderResponse {
-    private int TotalOrderCount;
+    private int totalOrderCount;
     private List<BeforeOrderBookResponse> beforeOrderBookResponseList;
 
     private List<WrapperDto> wrapperList;
@@ -15,7 +15,7 @@ public class BeforeOrderResponse {
     @Builder
     public BeforeOrderResponse(int totalOrderCount, List<BeforeOrderBookResponse> beforeOrderBookResponseList,
                                List<WrapperDto> wrapperList) {
-        TotalOrderCount = totalOrderCount;
+        this.totalOrderCount = totalOrderCount;
         this.beforeOrderBookResponseList = beforeOrderBookResponseList;
         this.wrapperList = wrapperList;
     }

@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.domain.category.dto.request.CategoryUpdateRequest;
 
 @Entity
 @Getter
@@ -61,5 +62,13 @@ public class Category {
     public void addChildCategory(Category child) {
         this.child.add(child);
         child.assignParent(this);
+    }
+
+    public void update(CategoryUpdateRequest categoryUpdateRequest) {
+        this.name = categoryUpdateRequest.getName();
+    }
+
+    public void delete() {
+        this.status = Status.DEL;
     }
 }
