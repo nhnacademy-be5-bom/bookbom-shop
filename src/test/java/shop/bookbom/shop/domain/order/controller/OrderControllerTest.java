@@ -140,7 +140,17 @@ public class OrderControllerTest {
         wrapperSelectBookResponseList.add(
                 WrapperSelectBookResponse.builder().bookTitle("test book").imgUrl("http://img.jpg").wrapperName("포장지 3")
                         .quantity(3).cost(5000).build());
-        WrapperSelectResponse response = new WrapperSelectResponse(3, userId, wrapperSelectBookResponseList);
+        List<String> estimatedDateList = new ArrayList<>();
+        estimatedDateList.add("4/26(금)");
+        estimatedDateList.add("4/29(월)");
+        estimatedDateList.add("4/30(화)");
+        estimatedDateList.add("5/1(수)");
+        estimatedDateList.add("5/2(목)");
+
+        WrapperSelectResponse response = WrapperSelectResponse.builder().totalOrderCount(3)
+                .userId(userId)
+                .wrapperSelectResponseList(wrapperSelectBookResponseList)
+                .estimatedDateList(estimatedDateList).build();
         when(orderService.selectWrapper(any(), any())).thenReturn(response);
         //when
         ResultActions perform = mockMvc.perform(post("/shop/orders/wrapper")
@@ -157,7 +167,8 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.result.userId").value(20L))
                 .andExpect(jsonPath("$.result.wrapperSelectResponseList.length()").value(1))
                 .andExpect(jsonPath("$.result.wrapperSelectResponseList[0].bookTitle").value("test book"))
-                .andExpect(jsonPath("$.result.wrapperSelectResponseList[0].wrapperName").value("포장지 3"));
+                .andExpect(jsonPath("$.result.wrapperSelectResponseList[0].wrapperName").value("포장지 3"))
+                .andExpect(jsonPath("$.result.estimatedDateList[0]").value("4/26(금)"));
 
 
     }
@@ -183,7 +194,17 @@ public class OrderControllerTest {
                 WrapperSelectBookResponse.builder().bookTitle("test book2").imgUrl("http://img2.jpg")
                         .wrapperName("포장지 3")
                         .quantity(4).cost(6000).build());
-        WrapperSelectResponse response = new WrapperSelectResponse(7, userId, wrapperSelectBookResponseList);
+
+        List<String> estimatedDateList = new ArrayList<>();
+        estimatedDateList.add("4/26(금)");
+        estimatedDateList.add("4/29(월)");
+        estimatedDateList.add("4/30(화)");
+        estimatedDateList.add("5/1(수)");
+        estimatedDateList.add("5/2(목)");
+        WrapperSelectResponse response = WrapperSelectResponse.builder().totalOrderCount(7)
+                .userId(userId)
+                .wrapperSelectResponseList(wrapperSelectBookResponseList)
+                .estimatedDateList(estimatedDateList).build();
         when(orderService.selectWrapper(any(), any())).thenReturn(response);
         //when
         ResultActions perform = mockMvc.perform(post("/shop/orders/wrapper")

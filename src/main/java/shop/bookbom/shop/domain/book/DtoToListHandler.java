@@ -82,17 +82,17 @@ public class DtoToListHandler {
     }
 
     public static BookReviewStatisticsInformation processReviews(List<Review> reviews) {
-        Integer totalCount = 0;
-        Double averageRate = 0D;
+        int totalCount = 0;
+        double averageRate = 0D;
 
         for (Review review : reviews) {
             totalCount++;
             averageRate += review.getRate();
         }
-
+        double averageReviewRate = totalCount == 0 ? averageRate : (averageRate / totalCount);
         return BookReviewStatisticsInformation.builder()
                 .totalReviewCount(totalCount)
-                .averageReviewRate(totalCount == 0 ? averageRate : (averageRate / totalCount))
+                .averageReviewRate(Math.round(averageReviewRate * 10) / 10.0)
                 .build();
     }
 }
