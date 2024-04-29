@@ -112,7 +112,7 @@ public class CategoryService {
 
         if (!targetCategory.getChild().isEmpty()) {
 
-            categoryRepository.hasBookLeftInsideOf(categoryId).orElseThrow(CategoryHasBookLeftException::new);
+            categoryRepository.isBookInside(categoryId).orElseThrow(CategoryHasBookLeftException::new);
             targetCategory.delete();
 
         } else {
