@@ -14,7 +14,6 @@ public enum ErrorCode {
     COMMON_ILLEGAL_STATUS(400, "잘못된 상태값입니다."),
     // book
     BOOK_NOT_FOUND(404, "해당 책이 존재하지 않습니다."),
-    ID_AND_PATH_VARIABLE_DOES_NOT_MATCH(403, "요청 ID가 요청 경로와 다릅니다."),
     EXCEEDS_OFFSET_RANGE(403, "요청한 페이지 번호가 마지막 페이지보다 큽니다."),
     // cart
     CART_INVALID_ADD_REQUEST(400, "요청한 상품 ID와 수량이 올바르지 않습니다."),
@@ -43,7 +42,7 @@ public enum ErrorCode {
     // author
     AUTHOR_ID_NOT_FOUND(404, "일치하는 작가 ID가 없습니다."),
     // point_rate
-    POINT_RATE_NOT_FOUND(400,"해당 포인트 정책이 존재하지 않습니다."),
+    POINT_RATE_NOT_FOUND(400, "해당 포인트 정책이 존재하지 않습니다."),
     ;
 
     private final int code;
