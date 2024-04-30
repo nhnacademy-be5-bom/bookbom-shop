@@ -46,6 +46,10 @@ public enum ErrorCode {
     POINT_RATE_NOT_FOUND(400, "해당 포인트 정책이 존재하지 않습니다."),
     //order
     LOW_STOCK(400, "주문하려는 책의 재고가 부족합니다. 다시 시도해주세요"),
+    //orderstatus
+    ORDER_STATUS_NOT_FOUN(404, "해당 주문 상태가 존재하지 않습니다."),
+    //wrapper
+    WRAPPER_NOT_FOUND(404, "해당 포장지가 존재하지 않습니다."),
     ;
 
     private final int code;

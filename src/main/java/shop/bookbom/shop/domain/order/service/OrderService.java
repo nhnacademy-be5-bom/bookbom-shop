@@ -1,8 +1,10 @@
 package shop.bookbom.shop.domain.order.service;
 
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
+import shop.bookbom.shop.domain.order.dto.request.OpenOrderRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 
 public interface OrderService {
@@ -24,5 +26,9 @@ public interface OrderService {
      */
     WrapperSelectResponse selectWrapper(WrapperSelectRequest wrapperSelectRequest);
 
-    Boolean checkStock(BeforeOrderRequestList beforeOrderRequestList);
+    Boolean checkStock(Long bookId, Integer quantity);
+
+    OrderResponse processOpenOrder(OpenOrderRequest openOrderRequest);
+
+    void decreaseStock(Long bookId, Integer quantity);
 }

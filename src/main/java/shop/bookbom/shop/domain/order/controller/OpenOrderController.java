@@ -9,9 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.common.exception.ErrorCode;
+import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequest;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
+import shop.bookbom.shop.domain.order.dto.request.OpenOrderRequest;
+import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.exception.OrderInfoInvalidException;
 import shop.bookbom.shop.domain.order.service.OrderService;
@@ -32,14 +36,15 @@ public class OpenOrderController {
     @PostMapping("/orders/before-order")
     public CommonResponse<?> beforeOrder(
             @RequestBody @Valid BeforeOrderRequestList beforeOrderRequestList,
-            BindingResult bindingResult)
-            throws OrderInfoInvalidException {
+            BindingResult bindingResult) {
         //요청의 유효성 검사
         if (bindingResult.hasErrors()) {
             throw new OrderInfoInvalidException();
         }
-        if (!orderService.checkStock(beforeOrderRequestList)) {
-            return CommonResponse.fail(ErrorCode.LOW_STOCK);
+        for (BeforeOrderRequest beforeOrderRequest : beforeOrderRequestList.getBeforeOrderRequests()) {
+            if (!orderService.checkStock(beforeOrderRequest.getBookId(), beforeOrderRequest.getQuantity())) {
+                return CommonResponse.fail(ErrorCode.LOW_STOCK);
+            }
         }
         //요청에서 책 정보를 받아옴
         BeforeOrderResponse beforeOrderResponse = orderService.getOrderBookInfo(beforeOrderRequestList);
@@ -49,7 +54,6 @@ public class OpenOrderController {
     }
 
     @PostMapping("/orders/wrapper")
-    //requestparam으로 userId가 오면 회원, 안 오면 비회원(null값 들어감)
     public CommonResponse<WrapperSelectResponse> selectWrapper(
             @RequestBody @Valid
             WrapperSelectRequest wrapperSelectRequest, BindingResult bindingResult) {
@@ -61,6 +65,24 @@ public class OpenOrderController {
         WrapperSelectResponse wrapperSelectResponse = orderService.selectWrapper(wrapperSelectRequest);
         //응답 반환
         return CommonResponse.successWithData(wrapperSelectResponse);
+    }
+
+    @PostMapping("/orders")
+    public CommonResponse<?> processOrder(@RequestBody @Valid OpenOrderRequest openOrderRequest,
+                                          BindingResult bindingResult) {
+        //요청의 유효성 검사
+        if (bindingResult.hasErrors()) {
+            throw new OrderInfoInvalidException();
+        }
+        OrderResponse orderResponse = orderService.processOpenOrder(openOrderRequest);
+        for (WrapperSelectBookRequest bookRequest : openOrderRequest.getWrapperSelectRequestList()) {
+            if (!orderService.checkStock(bookRequest.getBookId(), bookRequest.getQuantity())) {
+                return CommonResponse.fail(ErrorCode.LOW_STOCK);
+            }
+            orderService.decreaseStock(bookRequest.getBookId(), bookRequest.getQuantity());
+        }
+
+        return CommonResponse.successWithData(orderResponse);
     }
 
 }
