@@ -23,4 +23,13 @@ public class MemberRequestDto {
 
     @NotBlank
     private String nickname;
+
+    @NotBlank
+    private String status;
+
+    @NotBlank
+    private String roleName;
+
+    @NotBlank
+    private String rankName;
 }
