@@ -3,6 +3,7 @@ package shop.bookbom.shop.domain.order.service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,6 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
-import shop.bookbom.shop.domain.order.dto.response.BookTitleAndCostResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
@@ -78,6 +78,7 @@ public class OrderServiceImpl implements OrderService {
             beforeOrderBookResponseList.add(beforeOrderBookResponse);
             //총 주문 개수 다 더함
             totalOrderCount += bookRequest.getQuantity();
+            checkStock(bookRequest.getBookId(), bookRequest.getQuantity());
         }
         //모든 포장지 list 가져옴
         List<Wrapper> wrapperList = wrapperRepository.findAll();
@@ -88,6 +89,8 @@ public class OrderServiceImpl implements OrderService {
             wrapperDtoList.add(wrapperDto);
 
         }
+
+
         //주문 응답 객체 생성 후 정보 저장
         return BeforeOrderResponse.builder()
                 .beforeOrderBookResponseList(beforeOrderBookResponseList)
@@ -96,55 +99,6 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
     }
-
-//    @Override
-//    @Transactional
-//    public WrapperSelectResponse selectWrapper(Long userId, WrapperSelectRequest wrapperSelectRequest) {
-//        //request을 가져와서 총 주문 갯수와 포장지 선택 리스트를 받아옴
-//        int totalOrderCount = wrapperSelectRequest.getTotalOrderCount();
-//        List<WrapperSelectBookRequest> wrapperSelectBookRequestList =
-//                wrapperSelectRequest.getWrapperSelectBookRequestList();
-//        //포장지 셀렉 응답 리스트를 만듬
-//        List<WrapperSelectBookResponse> wrapperSelectBookResponseList = new ArrayList<>();
-//        for (WrapperSelectBookRequest selectBookRequest : wrapperSelectBookRequestList) {
-//            WrapperSelectBookResponse wrapperSelectBookResponse =
-//                    WrapperSelectBookResponse.builder()
-//                            .bookId(selectBookRequest.getBookId())
-//                            .bookTitle(selectBookRequest.getBookTitle())
-//                            .wrapperName(selectBookRequest.getWrapperName())
-//                            .imgUrl(selectBookRequest.getImgUrl())
-//                            .quantity(selectBookRequest.getQuantity())
-//                            .cost(selectBookRequest.getCost())
-//                            .build();
-//            wrapperSelectBookResponseList.add(wrapperSelectBookResponse);
-//
-//        }
-//
-//        List<String> estimatedDateList = new ArrayList<>();
-//        int daysToAdd = 1;
-//        while (estimatedDateList.size() < 5) {
-//            LocalDate localDate = LocalDate.now().plusDays(daysToAdd);
-//            DayOfWeek dayOfWeek = localDate.getDayOfWeek();
-//            if (!(dayOfWeek.equals(DayOfWeek.SATURDAY) ||
-//                    dayOfWeek.equals(DayOfWeek.SUNDAY))) {
-//                String dateString = localDate.format(DateTimeFormatter.ofPattern("M/d"));
-//                String dayofWeekKorean = getDayofWeekKorean(dayOfWeek);
-//                String estimatedDate = dayofWeekKorean + "(" + dateString + ")";
-//
-//                estimatedDateList.add(estimatedDate);
-//            }
-//            daysToAdd++;
-//        }
-//
-//        //응답 반환
-//        return WrapperSelectResponse.builder()
-//                .userId(userId)
-//                .totalOrderCount(totalOrderCount)
-//                .wrapperSelectResponseList(wrapperSelectBookResponseList)
-//                .estimatedDateList(estimatedDateList)
-//                .build();
-//
-//    }
 
     @Override
     @Transactional
@@ -185,6 +139,25 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+    @Override
+    @Transactional
+    public OrderResponse processOpenOrder(OpenOrderRequest openOrderRequest) {
+        User user = saveUserInfo(openOrderRequest);
+        Order order = saveOrder(openOrderRequest, user);
+        saveDeliveryInfo(openOrderRequest, order);
+        saveOrderBookInfo(openOrderRequest, order);
+        //재고체크
+        for (WrapperSelectBookRequest bookRequest : openOrderRequest.getWrapperSelectRequestList()) {
+            checkStock(bookRequest.getBookId(), bookRequest.getQuantity());
+        }
+
+
+        return OrderResponse.builder().orderId(order.getOrderNumber())
+                .orderName(order.getOrderInfo())
+                .amount(order.getTotalCost())
+                .build();
+    }
+
     private static String getDayofWeekKorean(DayOfWeek dayOfWeek) {
         switch (dayOfWeek) {
             case MONDAY:
@@ -205,12 +178,12 @@ public class OrderServiceImpl implements OrderService {
 
     private BeforeOrderBookResponse getBookDetailInfo(Long bookId, Integer bookQuantity) {
         //bookId로 책 가져옴
-        BookTitleAndCostResponse titleAndCostById = bookRepository.getTitleAndCostById(bookId)
+        Book book = bookRepository.findById(bookId)
                 .orElseThrow(BookNotFoundException::new);
-        String title = titleAndCostById.getTitle();
-        Integer cost = titleAndCostById.getCost();
+        String title = book.getTitle();
+        Integer cost = book.getCost();
         String imageUrl = bookFileRepository.getBookImageUrl(bookId);
-        Integer discountCost = bookRepository.getDiscountCostById(bookId);
+        Integer discountCost = book.getDiscountCost();
 
 
         //새로운 주문 도서 응답 빌더 생성
@@ -224,12 +197,11 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    public Boolean checkStock(Long bookId, Integer quantity) {
+    private void checkStock(Long bookId, Integer quantity) {
         Integer stock = bookRepository.getStockById(bookId);
         if (quantity > stock) {
             throw new LowStockException();
         }
-        return true;
     }
 
     private List<String> createEstimatedDateList() {
@@ -251,19 +223,6 @@ public class OrderServiceImpl implements OrderService {
         return estimatedDateList;
     }
 
-    @Override
-    @Transactional
-    public OrderResponse processOpenOrder(OpenOrderRequest openOrderRequest) {
-        User user = saveUserInfo(openOrderRequest);
-        Order order = saveOrder(openOrderRequest, user);
-        saveDeliveryInfo(openOrderRequest, order);
-        saveOrderBookInfo(openOrderRequest, order);
-
-        return OrderResponse.builder().orderId(order.getOrderNumber())
-                .orderName(order.getOrderInfo())
-                .amount(order.getTotalCost())
-                .build();
-    }
 
     private void saveDeliveryInfo(OpenOrderRequest openOrderRequest, Order order) {
 
@@ -276,8 +235,16 @@ public class OrderServiceImpl implements OrderService {
 
 
         String estimatedDateToString = openOrderRequest.getEstimatedDateTostring();
-        LocalDate estimatedDate = LocalDate.parse(estimatedDateToString);
-        em.flush();
+        String[] parts = estimatedDateToString.split("[()]");
+        String[] dateParts = parts[1].split("/");
+
+        // 월과 일 추출
+        int month = Integer.parseInt(dateParts[0]);
+        int day = Integer.parseInt(dateParts[1]);
+
+        // LocalDate 생성
+        LocalDate estimatedDate = LocalDate.of(LocalDate.now().getYear(), Month.of(month), day);
+//        LocalDate estimatedDate = LocalDate.parse(estimatedDateToString);
         Delivery delivery = Delivery.builder().order(order)
                 .name(openOrderRequest.getName())
                 .phoneNumber(openOrderRequest.getPhoneNumber())
@@ -316,7 +283,6 @@ public class OrderServiceImpl implements OrderService {
                 .user(user)
                 .status(orderStatus)
                 .build();
-        orderRepository.save(order);
         return order;
 
     }
@@ -358,7 +324,7 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    @Override
+
     public void decreaseStock(Long bookId, Integer quantity) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(BookNotFoundException::new);

@@ -26,9 +26,6 @@ public interface OrderService {
      */
     WrapperSelectResponse selectWrapper(WrapperSelectRequest wrapperSelectRequest);
 
-    Boolean checkStock(Long bookId, Integer quantity);
 
     OrderResponse processOpenOrder(OpenOrderRequest openOrderRequest);
-
-    void decreaseStock(Long bookId, Integer quantity);
 }

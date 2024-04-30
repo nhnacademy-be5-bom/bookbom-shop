@@ -8,11 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
-import shop.bookbom.shop.common.exception.ErrorCode;
-import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequest;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
 import shop.bookbom.shop.domain.order.dto.request.OpenOrderRequest;
-import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
@@ -34,17 +31,12 @@ public class OpenOrderController {
      * @return BeforeOrderResponse(총 주문 수, 포장지 전체 리스트, 책의 수량, 이미지, 가격, 제목)
      */
     @PostMapping("/orders/before-order")
-    public CommonResponse<?> beforeOrder(
+    public CommonResponse<BeforeOrderResponse> beforeOrder(
             @RequestBody @Valid BeforeOrderRequestList beforeOrderRequestList,
             BindingResult bindingResult) {
         //요청의 유효성 검사
         if (bindingResult.hasErrors()) {
             throw new OrderInfoInvalidException();
-        }
-        for (BeforeOrderRequest beforeOrderRequest : beforeOrderRequestList.getBeforeOrderRequests()) {
-            if (!orderService.checkStock(beforeOrderRequest.getBookId(), beforeOrderRequest.getQuantity())) {
-                return CommonResponse.fail(ErrorCode.LOW_STOCK);
-            }
         }
         //요청에서 책 정보를 받아옴
         BeforeOrderResponse beforeOrderResponse = orderService.getOrderBookInfo(beforeOrderRequestList);
@@ -68,21 +60,17 @@ public class OpenOrderController {
     }
 
     @PostMapping("/orders")
-    public CommonResponse<?> processOrder(@RequestBody @Valid OpenOrderRequest openOrderRequest,
-                                          BindingResult bindingResult) {
+    public CommonResponse<OrderResponse> processOrder(@RequestBody @Valid OpenOrderRequest openOrderRequest,
+                                                      BindingResult bindingResult) {
         //요청의 유효성 검사
         if (bindingResult.hasErrors()) {
             throw new OrderInfoInvalidException();
         }
         OrderResponse orderResponse = orderService.processOpenOrder(openOrderRequest);
-        for (WrapperSelectBookRequest bookRequest : openOrderRequest.getWrapperSelectRequestList()) {
-            if (!orderService.checkStock(bookRequest.getBookId(), bookRequest.getQuantity())) {
-                return CommonResponse.fail(ErrorCode.LOW_STOCK);
-            }
-            orderService.decreaseStock(bookRequest.getBookId(), bookRequest.getQuantity());
-        }
 
-        return CommonResponse.successWithData(orderResponse);
+
+        CommonResponse<OrderResponse> orderResponseCommonResponse = CommonResponse.successWithData(orderResponse);
+        return orderResponseCommonResponse;
     }
 
 }
