@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
 import shop.bookbom.shop.domain.users.entity.User;
@@ -52,6 +53,7 @@ public class Order {
     @Column(name = "used_point", nullable = false)
     private int usedPoint;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
