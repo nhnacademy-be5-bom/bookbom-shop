@@ -2,12 +2,15 @@ package shop.bookbom.shop.domain.book;
 
 import java.util.ArrayList;
 import java.util.List;
+import shop.bookbom.shop.common.file.exception.FileNotFoundException;
 import shop.bookbom.shop.domain.author.dto.AuthorDTO;
 import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
 import shop.bookbom.shop.domain.bookcategory.entity.BookCategory;
 import shop.bookbom.shop.domain.bookfile.entity.BookFile;
 import shop.bookbom.shop.domain.booktag.entity.BookTag;
 import shop.bookbom.shop.domain.category.dto.CategoryDTO;
+import shop.bookbom.shop.domain.category.dto.response.CategoryNameAndChildResponse;
+import shop.bookbom.shop.domain.category.entity.Category;
 import shop.bookbom.shop.domain.file.dto.FileDTO;
 import shop.bookbom.shop.domain.review.dto.BookReviewStatisticsInformation;
 import shop.bookbom.shop.domain.review.entity.Review;
@@ -44,10 +47,18 @@ public class DtoToListHandler {
         return tagList;
     }
 
-    public static List<CategoryDTO> processCategories(List<BookCategory> bookCategories) {
+    public static List<CategoryDTO> processBookCategories(List<BookCategory> bookCategories) {
         List<CategoryDTO> categoryList = new ArrayList<>();
         for (BookCategory bookCategory : bookCategories) {
             categoryList.add(CategoryDTO.from(bookCategory));
+        }
+        return categoryList;
+    }
+
+    public static List<CategoryNameAndChildResponse> processCategories(List<Category> categories) {
+        List<CategoryNameAndChildResponse> categoryList = new ArrayList<>();
+        for (Category category : categories) {
+            categoryList.add(CategoryNameAndChildResponse.from(category));
         }
         return categoryList;
     }
@@ -60,18 +71,28 @@ public class DtoToListHandler {
         return fileList;
     }
 
+    public static String getThumbnailFrom(List<BookFile> bookFiles) {
+
+        BookFile thumbnailBookFile = bookFiles.stream()
+                .filter(bookFile -> "img".equals(bookFile.getBookFileType().getName()))
+                .findFirst()
+                .orElseThrow(FileNotFoundException::new);
+
+        return thumbnailBookFile.getFile().getUrl();
+    }
+
     public static BookReviewStatisticsInformation processReviews(List<Review> reviews) {
-        Integer totalCount = 0;
-        Double averageRate = 0D;
+        int totalCount = 0;
+        double averageRate = 0D;
 
         for (Review review : reviews) {
             totalCount++;
             averageRate += review.getRate();
         }
-
+        double averageReviewRate = totalCount == 0 ? averageRate : (averageRate / totalCount);
         return BookReviewStatisticsInformation.builder()
                 .totalReviewCount(totalCount)
-                .averageReviewRate(totalCount == 0 ? averageRate : (averageRate / totalCount))
+                .averageReviewRate(Math.round(averageReviewRate * 10) / 10.0)
                 .build();
     }
 }

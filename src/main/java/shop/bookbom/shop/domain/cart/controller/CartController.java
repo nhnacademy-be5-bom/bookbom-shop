@@ -1,5 +1,9 @@
 package shop.bookbom.shop.domain.cart.controller;
 
+import static shop.bookbom.shop.common.CommonListResponse.successWithList;
+import static shop.bookbom.shop.common.CommonResponse.success;
+import static shop.bookbom.shop.common.CommonResponse.successWithData;
+
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.bookbom.shop.common.CommonListResponse;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartInfoResponse;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartUpdateResponse;
@@ -30,17 +35,16 @@ public class CartController {
      *
      * @param userId   로그인한 회원 ID
      * @param requests 장바구니 추가할 상품 ID와 수량 리스트
-     * @return 장바구니 ID, 상품 ID와 수량 리스트
      */
     @PostMapping("/carts/{id}")
-    public CommonResponse<CartInfoResponse> addToCart(
+    public CommonListResponse<Long> addToCart(
             @PathVariable("id") Long userId,
             @RequestBody List<CartAddRequest> requests
     ) {
         if (!isValidAddRequest(requests)) {
             throw new CartInvalidAddRequestException();
         }
-        return CommonResponse.successWithData(cartService.addCart(requests, userId));
+        return successWithList(cartService.addCart(requests, userId));
     }
 
     /**
@@ -51,7 +55,7 @@ public class CartController {
      */
     @GetMapping("/carts/{id}")
     public CommonResponse<CartInfoResponse> getCart(@PathVariable("id") Long userId) {
-        return CommonResponse.successWithData(cartService.getCartInfo(userId));
+        return successWithData(cartService.getCartInfo(userId));
     }
 
     /**
@@ -66,7 +70,7 @@ public class CartController {
             @PathVariable("id") Long id,
             @RequestBody @Valid CartUpdateRequest request
     ) {
-        return CommonResponse.successWithData(cartService.updateQuantity(id, request.getQuantity()));
+        return successWithData(cartService.updateQuantity(id, request.getQuantity()));
     }
 
     /**
@@ -77,7 +81,7 @@ public class CartController {
     @DeleteMapping("/carts/items/{id}")
     public CommonResponse<Void> deleteItem(@PathVariable("id") Long id) {
         cartService.deleteItem(id);
-        return CommonResponse.success();
+        return success();
     }
 
     /**

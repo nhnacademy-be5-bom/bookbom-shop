@@ -24,7 +24,7 @@ public class FileDTO {
     private String extension;
 
     @Builder
-    public FileDTO(String url, String extension) {
+    private FileDTO(String url, String extension) {
         this.url = url;
         this.extension = extension;
     }

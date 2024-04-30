@@ -27,6 +27,11 @@ public class PointRateServiceImpl implements PointRateService {
                 .orElseThrow(PointRateNotFoundException::new);
         EarnPointType earnPointType = EarnPointType.valueOf(earnType);
         pointRate.updatePolicy(earnPointType, earnPoint);
-        return PointRateResponse.from(pointRate);
+        return PointRateResponse.builder()
+                .id(pointRate.getId())
+                .name(pointRate.getName())
+                .earnType(pointRate.getEarnType())
+                .earnPoint(pointRate.getEarnPoint())
+                .build();
     }
 }
