@@ -16,6 +16,7 @@ import shop.bookbom.shop.domain.cart.entity.Cart;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.entity.MemberStatus;
+import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.order.entity.Order;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
 import shop.bookbom.shop.domain.pointrate.entity.ApplyPointType;
@@ -176,5 +177,17 @@ public class TestUtils {
                 .wishCount(2)
                 .couponCount(0)
                 .build();
+    }
+
+    public static User getUser(String email, String password, Role role) {
+        return User.builder()
+                .email(email)
+                .password(password)
+                .role(role)
+                .build();
+    }
+
+    public static OrderInfoResponse getOrderInfoResponse(Order order) {
+        return OrderInfoResponse.of(order);
     }
 }
