@@ -1,5 +1,6 @@
 package shop.bookbom.shop.domain.users.controller;
 
+import java.time.LocalDate;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -103,17 +104,27 @@ public class UserController {
     /**
      * 유저의 주문 내역을 조회하는 메서드입니다.
      *
-     * @param userId    유저 아이디
-     * @param pageable  페이지 정보
-     * @param condition 주문 날짜 조건
-     * @return
+     * @param userId   유저 아이디
+     * @param pageable 페이지 정보
+     * @param dateFrom 주문 최소 날짜
+     * @param dateTo   주문 최대 날짜
      */
     @GetMapping("/orders")
     public CommonResponse<Page<OrderInfoResponse>> getOrders(
             @RequestParam("userId") Long userId,
             Pageable pageable,
-            @RequestBody OrderDateCondition condition
+            @RequestParam(value = "date_from", required = false) String dateFrom,
+            @RequestParam(value = "date_to", required = false) String dateTo
     ) {
-        return CommonResponse.successWithData(userService.getOrderInfos(userId, pageable, condition));
+        OrderDateCondition orderDateCondition =
+                new OrderDateCondition(parseLocalDate(dateFrom), parseLocalDate(dateTo));
+        return CommonResponse.successWithData(userService.getOrderInfos(userId, pageable, orderDateCondition));
+    }
+
+    public LocalDate parseLocalDate(String date) {
+        if (date.isEmpty()) {
+            return null;
+        }
+        return LocalDate.parse(date);
     }
 }

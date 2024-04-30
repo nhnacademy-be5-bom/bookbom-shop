@@ -32,6 +32,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                         orderDateMin(condition.getOrderDateMin()),
                         orderDateMax(condition.getOrderDateMax())
                 )
+                .orderBy(order.orderDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
