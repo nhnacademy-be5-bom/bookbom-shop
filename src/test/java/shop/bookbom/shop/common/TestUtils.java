@@ -141,11 +141,11 @@ public class TestUtils {
                 .build();
     }
 
-    public static Order getOrder(User user, OrderStatus orderStatus) {
+    public static Order getOrder(User user, OrderStatus orderStatus, LocalDateTime orderDate) {
         return Order.builder()
                 .orderNumber("orderNumber")
                 .orderInfo("orderInfo")
-                .orderDate(LocalDateTime.now())
+                .orderDate(orderDate)
                 .senderName("senderName")
                 .senderPhoneNumber("senderPhoneNumber")
                 .totalCost(10000)
