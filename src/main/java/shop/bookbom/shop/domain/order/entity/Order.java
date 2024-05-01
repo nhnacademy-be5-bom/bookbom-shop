@@ -45,7 +45,10 @@ public class Order {
     @Column(name = "total_cost", nullable = false, columnDefinition = "int default 0")
     private Integer totalCost;
 
-    @Column(name = "used_point", nullable = false, columnDefinition = "int default 0")
+    @Column(name = "discount_cost", nullable = false)
+    private Integer discountCost;
+
+    @Column(name = "used_point", nullable = false)
     private int usedPoint;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,6 +67,7 @@ public class Order {
             String senderName,
             String senderPhoneNumber,
             Integer totalCost,
+            Integer discountCost,
             int usedPoint,
             User user,
             OrderStatus status
@@ -74,6 +78,7 @@ public class Order {
         this.senderName = senderName;
         this.senderPhoneNumber = senderPhoneNumber;
         this.totalCost = totalCost;
+        this.discountCost = discountCost;
         this.usedPoint = usedPoint;
         this.user = user;
         this.status = status;
@@ -86,5 +91,9 @@ public class Order {
 
     public void updateOrderDate(LocalDateTime orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public void updateUser(User user) {
+        this.user = user;
     }
 }

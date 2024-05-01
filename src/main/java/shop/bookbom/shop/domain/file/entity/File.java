@@ -32,7 +32,17 @@ public class File {
     private LocalDateTime createdAt;
 
     @Builder
-    public File(String url, String extension, LocalDateTime createdAt) {
+    public File(String url,
+                String extension,
+                LocalDateTime createdAt) {
+        this.url = url;
+        this.extension = extension;
+        this.createdAt = createdAt;
+    }
+
+    public void update(String url,
+                       String extension,
+                       LocalDateTime createdAt) {
         this.url = url;
         this.extension = extension;
         this.createdAt = createdAt;

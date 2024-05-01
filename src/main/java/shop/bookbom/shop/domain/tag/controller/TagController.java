@@ -4,6 +4,7 @@ import static shop.bookbom.shop.common.CommonResponse.success;
 
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
+import shop.bookbom.shop.common.exception.BaseException;
+import shop.bookbom.shop.common.exception.ErrorCode;
 import shop.bookbom.shop.domain.category.entity.Status;
 import shop.bookbom.shop.domain.tag.dto.request.TagCreateRequest;
 import shop.bookbom.shop.domain.tag.service.TagService;
@@ -23,7 +26,12 @@ public class TagController {
 
     //태그 등록
     @PostMapping("/tag")
-    public CommonResponse<Void> saveTag(final @Valid @RequestBody TagCreateRequest tagRequest) {
+    public CommonResponse<Void> saveTag(final @Valid @RequestBody TagCreateRequest tagRequest,
+                                        BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new BaseException(ErrorCode.COMMON_INVALID_PARAMETER);
+        }
+
         String name = tagRequest.getName();
         Status status = tagRequest.getStatus();
         //태그 등록함수 실행

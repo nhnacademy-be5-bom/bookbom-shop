@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import shop.bookbom.shop.domain.membercoupon.entity.MemberCoupon;
 import shop.bookbom.shop.domain.rank.entity.Rank;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.users.entity.User;
@@ -53,10 +54,12 @@ public class Member extends User {
     @OneToMany(mappedBy = "member")
     private List<Wish> wishList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member")
+    private List<MemberCoupon> memberCoupons = new ArrayList<>();
+
     public Member(
             String email,
             String password,
-            Boolean registered,
             Role role,
             String name,
             String phoneNumber,
@@ -66,7 +69,7 @@ public class Member extends User {
             MemberStatus status,
             Rank rank
     ) {
-        super(email, password, registered, role);
+        super(email, password, role);
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;

@@ -1,5 +1,7 @@
 package shop.bookbom.shop.domain.category.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -18,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.domain.category.dto.request.CategoryUpdateRequest;
 
 @Entity
 @Getter
@@ -38,9 +41,11 @@ public class Category {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
+    @JsonBackReference
     private Category parent;
 
     @OneToMany(mappedBy = "parent")
+    @JsonManagedReference
     private List<Category> child = new ArrayList<>();
 
     @Builder
@@ -57,5 +62,13 @@ public class Category {
     public void addChildCategory(Category child) {
         this.child.add(child);
         child.assignParent(this);
+    }
+
+    public void update(CategoryUpdateRequest categoryUpdateRequest) {
+        this.name = categoryUpdateRequest.getName();
+    }
+
+    public void delete() {
+        this.status = Status.DEL;
     }
 }

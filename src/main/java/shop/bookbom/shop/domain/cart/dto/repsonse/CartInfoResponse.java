@@ -7,25 +7,18 @@ import lombok.Getter;
 @Getter
 public class CartInfoResponse {
     private Long cartId;
-    private List<CartItemInfo> cartItems;
+    private List<CartItemDto> cartItems;
 
     @Builder
-    public CartInfoResponse(Long cartId, List<CartItemInfo> cartItems) {
+    private CartInfoResponse(Long cartId, List<CartItemDto> cartItems) {
         this.cartId = cartId;
         this.cartItems = cartItems;
     }
 
-    @Getter
-    public static class CartItemInfo {
-        private Long cartItemId;
-        private Long bookId;
-        private int quantity;
-
-        @Builder
-        public CartItemInfo(Long cartItemId, Long bookId, int quantity) {
-            this.cartItemId = cartItemId;
-            this.bookId = bookId;
-            this.quantity = quantity;
-        }
+    public static CartInfoResponse of(Long cartId, List<CartItemDto> cartItems) {
+        return CartInfoResponse.builder()
+                .cartId(cartId)
+                .cartItems(cartItems)
+                .build();
     }
 }

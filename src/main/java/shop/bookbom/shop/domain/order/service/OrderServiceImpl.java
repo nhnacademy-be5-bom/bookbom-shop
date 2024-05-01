@@ -1,5 +1,8 @@
 package shop.bookbom.shop.domain.order.service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +35,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public BeforeOrderResponse getOrderBookInfo(BeforeOrderRequestList beforeOrderRequestList) {
-        int TotalOrderCount = 0;
+        int totalOrderCount = 0;
         List<BeforeOrderBookResponse> beforeOrderBookResponseList = new ArrayList<>();
         //각 책에 대한 정보를 list로부터 가져와서 foreach문 돌림
-        for (BeforeOrderRequest bookRequest : beforeOrderRequestList.getBeforeOrderRequestList()) {
+        for (BeforeOrderRequest bookRequest : beforeOrderRequestList.getBeforeOrderRequests()) {
             //bookId로 책 가져옴
             BookTitleAndCostResponse titleAndCostById = bookRepository.getTitleAndCostById(bookRequest.getBookId())
                     .orElseThrow(BookNotFoundException::new);
@@ -55,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
 
             beforeOrderBookResponseList.add(beforeOrderBookResponse);
             //총 주문 개수 다 더함
-            TotalOrderCount += quantity;
+            totalOrderCount += quantity;
         }
         //모든 포장지 list 가져옴
         List<Wrapper> wrapperList = wrapperRepository.findAll();
@@ -68,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
         //주문 응답 객체 생성 후 정보 저장
         return BeforeOrderResponse.builder()
                 .beforeOrderBookResponseList(beforeOrderBookResponseList)
-                .totalOrderCount(TotalOrderCount)
+                .totalOrderCount(totalOrderCount)
                 .wrapperList(wrapperDtoList)
                 .build();
 
@@ -97,11 +100,45 @@ public class OrderServiceImpl implements OrderService {
 
         }
 
+        List<String> estimatedDateList = new ArrayList<>();
+        int daysToAdd = 1;
+        while (estimatedDateList.size() < 5) {
+            LocalDate localDate = LocalDate.now().plusDays(daysToAdd);
+            DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+            if (!(dayOfWeek.equals(DayOfWeek.SATURDAY) ||
+                    dayOfWeek.equals(DayOfWeek.SUNDAY))) {
+                String dateString = localDate.format(DateTimeFormatter.ofPattern("M/d"));
+                String dayofWeekKorean = getDayofWeekKorean(dayOfWeek);
+                String estimatedDate = dayofWeekKorean + "(" + dateString + ")";
+
+                estimatedDateList.add(estimatedDate);
+            }
+            daysToAdd++;
+        }
+
         //응답 반환
         return WrapperSelectResponse.builder()
                 .userId(userId)
                 .totalOrderCount(totalOrderCount)
                 .wrapperSelectResponseList(wrapperSelectBookResponseList)
+                .estimatedDateList(estimatedDateList)
                 .build();
+    }
+
+    private static String getDayofWeekKorean(DayOfWeek dayOfWeek) {
+        switch (dayOfWeek) {
+            case MONDAY:
+                return "월";
+            case TUESDAY:
+                return "화";
+            case WEDNESDAY:
+                return "수";
+            case THURSDAY:
+                return "목";
+            case FRIDAY:
+                return "금";
+            default:
+                return null;
+        }
     }
 }
