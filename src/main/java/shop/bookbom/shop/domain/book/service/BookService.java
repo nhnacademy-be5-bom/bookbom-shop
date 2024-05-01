@@ -209,13 +209,20 @@ public class BookService {
     }
 
     private Publisher handleNewPublisher(String publisherName) {
-        Publisher publisherEntity = Publisher.builder()
-                .name(publisherName)
-                .build();
+        Optional<Publisher> publisherOptional = publisherRepository.findByName(publisherName);
 
-        publisherRepository.save(publisherEntity);
+        if (publisherOptional.isEmpty()) {
+            Publisher publisherEntity = Publisher.builder()
+                    .name(publisherName)
+                    .build();
 
-        return publisherEntity;
+            publisherRepository.save(publisherEntity);
+
+            return publisherEntity;
+
+        } else {
+            return publisherOptional.get();
+        }
     }
 
     private void handleNewAuthor(List<AuthorSimpleInfo> authors, Book book) {
@@ -329,7 +336,7 @@ public class BookService {
         String objectName = book.getTitle().length() > 7 ? (book.getTitle().substring(1, 7) + "_thumbnail") :
                 (book.getTitle().substring(1, book.getTitle().length() - 1) + "_thumbnail");
 
-        if (thumbnail.isEmpty()) {
+        if (thumbnail == null) {
             BookFile bookFile = BookFile.builder()
                     .book(book)
                     .bookFileType(bookFileTypeRepository.getReferenceById(1L))//= "img"
