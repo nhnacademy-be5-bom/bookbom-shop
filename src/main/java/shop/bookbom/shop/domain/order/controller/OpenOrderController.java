@@ -69,8 +69,7 @@ public class OpenOrderController {
         OrderResponse orderResponse = orderService.processOpenOrder(openOrderRequest);
 
 
-        CommonResponse<OrderResponse> orderResponseCommonResponse = CommonResponse.successWithData(orderResponse);
-        return orderResponseCommonResponse;
+        return CommonResponse.successWithData(orderResponse);
     }
 
 }
