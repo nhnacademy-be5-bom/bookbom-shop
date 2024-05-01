@@ -70,10 +70,19 @@ public class Order {
 
 
     @Builder
-    public Order(String orderNumber, String orderInfo, LocalDateTime orderDate, String senderName,
-                 String senderPhoneNumber,
-                 Integer totalCost, Integer discountCost, int usedPoint, User user, OrderStatus status,
-                 List<OrderBook> orderBooks) {
+    public Order(
+            String orderNumber,
+            String orderInfo,
+            LocalDateTime orderDate,
+            String senderName,
+            String senderPhoneNumber,
+            Integer totalCost,
+            Integer discountCost,
+            int usedPoint,
+            User user,
+            OrderStatus status,
+            List<OrderBook> orderBooks
+    ) {
         this.orderNumber = orderNumber;
         this.orderInfo = orderInfo;
         this.orderDate = orderDate;
@@ -86,9 +95,6 @@ public class Order {
         this.status = status;
         this.orderBooks = orderBooks;
     }
-
-    @Builder
-
 
     public void updateStatus(OrderStatus status) {
         this.status = status;
