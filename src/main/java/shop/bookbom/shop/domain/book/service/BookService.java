@@ -329,21 +329,30 @@ public class BookService {
         String objectName = book.getTitle().length() > 7 ? (book.getTitle().substring(1, 7) + "_thumbnail") :
                 (book.getTitle().substring(1, book.getTitle().length() - 1) + "_thumbnail");
 
-        objectService.uploadFile(thumbnail, CONTAINER_NAME, objectName);
+        if (thumbnail.isEmpty()) {
+            BookFile bookFile = BookFile.builder()
+                    .book(book)
+                    .bookFileType(bookFileTypeRepository.getReferenceById(1L))//= "img"
+                    .file(fileRepository.getReferenceById(1L))//="NONE"
+                    .build();
+            bookFileRepository.save(bookFile);
+        } else {
+            objectService.uploadFile(thumbnail, CONTAINER_NAME, objectName);
 
-        File file = File.builder()
-                .url(objectService.getUrl(CONTAINER_NAME, objectName))
-                .extension(StringUtils.getFilenameExtension(thumbnail.getOriginalFilename()))
-                .createdAt(LocalDateTime.now())
-                .build();
-        fileRepository.save(file);
+            File file = File.builder()
+                    .url(objectService.getUrl(CONTAINER_NAME, objectName))
+                    .extension(StringUtils.getFilenameExtension(thumbnail.getOriginalFilename()))
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            fileRepository.save(file);
 
-        BookFile bookFile = BookFile.builder()
-                .book(book)
-                .bookFileType(bookFileTypeRepository.getReferenceById(1L))//= "img"
-                .file(file)
-                .build();
-        bookFileRepository.save(bookFile);
+            BookFile bookFile = BookFile.builder()
+                    .book(book)
+                    .bookFileType(bookFileTypeRepository.getReferenceById(1L))//= "img"
+                    .file(file)
+                    .build();
+            bookFileRepository.save(bookFile);
+        }
     }
 
     private void updateThumbnail(MultipartFile newThumbnail, File originalThumbnail) {
