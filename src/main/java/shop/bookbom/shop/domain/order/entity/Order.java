@@ -50,6 +50,9 @@ public class Order {
     @Column(name = "total_cost", nullable = false)
     private Integer totalCost;
 
+    @Column(name = "discount_cost", nullable = false)
+    private Integer discountCost;
+
     @Column(name = "used_point", nullable = false)
     private int usedPoint;
 
@@ -67,27 +70,25 @@ public class Order {
 
 
     @Builder
-    public Order(
-            String orderNumber,
-            String orderInfo,
-            LocalDateTime orderDate,
-            String senderName,
-            String senderPhoneNumber,
-            Integer totalCost,
-            int usedPoint,
-            User user,
-            OrderStatus status
-    ) {
+    public Order(String orderNumber, String orderInfo, LocalDateTime orderDate, String senderName,
+                 String senderPhoneNumber,
+                 Integer totalCost, Integer discountCost, int usedPoint, User user, OrderStatus status,
+                 List<OrderBook> orderBooks) {
         this.orderNumber = orderNumber;
         this.orderInfo = orderInfo;
         this.orderDate = orderDate;
         this.senderName = senderName;
         this.senderPhoneNumber = senderPhoneNumber;
         this.totalCost = totalCost;
+        this.discountCost = discountCost;
         this.usedPoint = usedPoint;
         this.user = user;
         this.status = status;
+        this.orderBooks = orderBooks;
     }
+
+    @Builder
+
 
     public void updateStatus(OrderStatus status) {
         this.status = status;
