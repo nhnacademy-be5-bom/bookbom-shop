@@ -6,5 +6,4 @@ import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
 
 public interface OrderStatusRepository extends JpaRepository<OrderStatus, Long> {
     Optional<OrderStatus> findByName(String name);
-
 }

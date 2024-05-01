@@ -27,7 +27,7 @@ public class Order {
     @Column(name = "order_id", nullable = false)
     private Long id;
 
-    @Column(name = "order_number", nullable = false, length = 64)
+    @Column(name = "order_number", nullable = false, length = 32)
     private String orderNumber;
 
     @Column(name = "order_info", nullable = false, length = 100)
@@ -60,18 +60,9 @@ public class Order {
     private OrderStatus status;
 
     @Builder
-    public Order(
-            String orderNumber,
-            String orderInfo,
-            LocalDateTime orderDate,
-            String senderName,
-            String senderPhoneNumber,
-            Integer totalCost,
-            Integer discountCost,
-            int usedPoint,
-            User user,
-            OrderStatus status
-    ) {
+    public Order(String orderNumber, String orderInfo, LocalDateTime orderDate, String senderName,
+                 String senderPhoneNumber,
+                 Integer totalCost, Integer discountCost, int usedPoint, User user, OrderStatus status) {
         this.orderNumber = orderNumber;
         this.orderInfo = orderInfo;
         this.orderDate = orderDate;
@@ -84,16 +75,16 @@ public class Order {
         this.status = status;
     }
 
+
     public void updateStatus(OrderStatus status) {
         this.status = status;
     }
 
+    public void updateUser(User user) {
+        this.user = user;
+    }
 
     public void updateOrderDate(LocalDateTime orderDate) {
         this.orderDate = orderDate;
-    }
-
-    public void updateUser(User user) {
-        this.user = user;
     }
 }

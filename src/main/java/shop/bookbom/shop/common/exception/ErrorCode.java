@@ -13,10 +13,9 @@ public enum ErrorCode {
     COMMON_ENTITY_NOT_FOUND(400, "존재하지 않는 엔티티입니다."),
     COMMON_ILLEGAL_STATUS(400, "잘못된 상태값입니다."),
     // book
-    BOOK_NOT_FOUND(400, "해당 책이 존재하지 않습니다."),
+    BOOK_NOT_FOUND(404, "해당 책이 존재하지 않습니다."),
     ID_AND_PATH_VARIABLE_DOES_NOT_MATCH(403, "요청 ID가 요청 경로와 다릅니다."),
     EXCEEDS_OFFSET_RANGE(403, "요청한 페이지 번호가 마지막 페이지보다 큽니다."),
-
     // cart
     CART_INVALID_ADD_REQUEST(400, "요청한 상품 ID와 수량이 올바르지 않습니다."),
     // cart_item
@@ -40,7 +39,7 @@ public enum ErrorCode {
     TAG_NOT_FOUND(400, "해당 태그가 존재하지 않습니다."),
     TAG_ALREADY_EXIST(400, "해당 태그가 이미 존재합니다."),
     //order
-    ORDER_NOT_FOUNT(400, "해당 주문이 존재하지 않습니다."),
+    ORDER_NOT_FOUND(400, "해당 주문이 존재하지 않습니다."),
     //payment
     PAYMENT_VERIFY_FAIL(400, "결제 검증 실패: 요청이 유효하지 않습니다."),
     PAYMENT_NOT_ALLOWED(400, "결제가 허용되지 않습니다. 다시 시도해 주세요."),
@@ -65,6 +64,12 @@ public enum ErrorCode {
     AUTHOR_ID_NOT_FOUND(404, "일치하는 작가 ID가 없습니다."),
     // point_rate
     POINT_RATE_NOT_FOUND(400, "해당 포인트 정책이 존재하지 않습니다."),
+    //order
+    LOW_STOCK(400, "주문하려는 책의 재고가 부족합니다. 다시 시도해주세요"),
+    //orderstatus
+    ORDER_STATUS_NOT_FOUND(404, "해당 주문 상태가 존재하지 않습니다."),
+    //wrapper
+    WRAPPER_NOT_FOUND(404, "해당 포장지가 존재하지 않습니다."),
     ;
 
     private final int code;

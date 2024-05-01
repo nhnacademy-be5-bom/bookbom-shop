@@ -1,6 +1,7 @@
 package shop.bookbom.shop.domain.delivery.entity;
 
 import java.time.LocalDate;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,7 +28,7 @@ public class Delivery {
 
     @MapsId
     @JoinColumn(name = "order_id", nullable = false)
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Order order;
 
     @Column(nullable = false, length = 50)
@@ -51,14 +52,15 @@ public class Delivery {
 
     @Builder
     public Delivery(Order order, String name, String phoneNumber, DeliveryAddress deliveryAddress, Integer cost,
-                    LocalDate estimatedDate, LocalDate completeDate) {
+                    LocalDate estimatedDate) {
+        this.id = order.getId();
         this.order = order;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.deliveryAddress = deliveryAddress;
         this.cost = cost;
         this.estimatedDate = estimatedDate;
-        this.completeDate = completeDate;
+        this.completeDate = null;
     }
 
     public void complete(LocalDate completeDate) {

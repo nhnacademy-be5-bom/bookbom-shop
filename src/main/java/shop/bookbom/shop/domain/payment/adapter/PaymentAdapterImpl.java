@@ -21,7 +21,8 @@ public class PaymentAdapterImpl implements PaymentAdapter {
     private final TossPayConfig tossPayConfig;
 
     public PaymentResponse requestPaymentConfirm(PaymentRequest paymentRequest) {
-        String authorization = Base64.getEncoder().encodeToString(tossPayConfig.getSecretKey().getBytes());
+        String secretKey = tossPayConfig.getSecretKey() + ":";
+        String authorization = Base64.getEncoder().encodeToString(secretKey.getBytes());
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
