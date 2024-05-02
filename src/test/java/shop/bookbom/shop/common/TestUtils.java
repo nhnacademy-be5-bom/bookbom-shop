@@ -149,6 +149,7 @@ public class TestUtils {
                 .senderName("senderName")
                 .senderPhoneNumber("senderPhoneNumber")
                 .totalCost(10000)
+                .discountCost(10000)
                 .usedPoint(0)
                 .user(user)
                 .status(orderStatus)
