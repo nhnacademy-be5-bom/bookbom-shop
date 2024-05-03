@@ -18,8 +18,10 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.BookTitleAndCostResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderDetailResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
+import shop.bookbom.shop.domain.order.repository.OrderRepository;
 import shop.bookbom.shop.domain.wrapper.dto.WrapperDto;
 import shop.bookbom.shop.domain.wrapper.entity.Wrapper;
 import shop.bookbom.shop.domain.wrapper.repository.WrapperRepository;
@@ -30,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
     private final BookRepository bookRepository;
     private final BookFileRepository bookFileRepository;
     private final WrapperRepository wrapperRepository;
+    private final OrderRepository orderRepository;
 
 
     @Override
@@ -124,6 +127,15 @@ public class OrderServiceImpl implements OrderService {
                 .estimatedDateList(estimatedDateList)
                 .build();
 
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrderDetailResponse getOrderDetail(Long id) {
+//        Order order = orderRepository.findById(id)
+//                .orElseThrow(OrderNotFoundException::new);
+//        return OrderDetailResponse.of(order);
+        return orderRepository.getOrderById(id);
     }
 
     private static String getDayofWeekKorean(DayOfWeek dayOfWeek) {
