@@ -36,6 +36,9 @@ public class OrderBook {
     private boolean packaging;
 
     @Column(nullable = false)
+    private int price;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderBookStatus status;
 
@@ -58,12 +61,14 @@ public class OrderBook {
             OrderBookStatus status,
             Book book,
             Order order,
+            int price,
             Wrapper wrapper
     ) {
         this.quantity = quantity;
         this.packaging = packaging;
         this.status = status;
         this.book = book;
+        this.price = price;
         this.order = order;
         this.wrapper = wrapper;
     }
