@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
 import shop.bookbom.shop.domain.users.entity.User;
@@ -49,9 +50,13 @@ public class Order {
     @Column(name = "total_cost", nullable = false)
     private Integer totalCost;
 
+    @Column(name = "discount_cost", nullable = false)
+    private Integer discountCost;
+
     @Column(name = "used_point", nullable = false)
     private int usedPoint;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -72,9 +77,11 @@ public class Order {
             String senderName,
             String senderPhoneNumber,
             Integer totalCost,
+            Integer discountCost,
             int usedPoint,
             User user,
-            OrderStatus status
+            OrderStatus status,
+            List<OrderBook> orderBooks
     ) {
         this.orderNumber = orderNumber;
         this.orderInfo = orderInfo;
@@ -82,9 +89,11 @@ public class Order {
         this.senderName = senderName;
         this.senderPhoneNumber = senderPhoneNumber;
         this.totalCost = totalCost;
+        this.discountCost = discountCost;
         this.usedPoint = usedPoint;
         this.user = user;
         this.status = status;
+        this.orderBooks = orderBooks;
     }
 
     public void updateStatus(OrderStatus status) {
