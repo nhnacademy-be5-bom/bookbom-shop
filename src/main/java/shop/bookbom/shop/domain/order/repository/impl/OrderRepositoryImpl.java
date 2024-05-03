@@ -8,7 +8,9 @@ import static shop.bookbom.shop.domain.deliveryaddress.entity.QDeliveryAddress.d
 import static shop.bookbom.shop.domain.file.entity.QFile.file;
 import static shop.bookbom.shop.domain.order.entity.QOrder.order;
 import static shop.bookbom.shop.domain.orderbook.entity.QOrderBook.orderBook;
+import static shop.bookbom.shop.domain.orderstatus.entity.QOrderStatus.orderStatus;
 import static shop.bookbom.shop.domain.payment.entity.QPayment.payment;
+import static shop.bookbom.shop.domain.wrapper.entity.QWrapper.wrapper;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -30,6 +32,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         Order orderResult = queryFactory.select(order)
                 .from(order)
                 .join(order.payment, payment).fetchJoin()
+                .join(order.status, orderStatus).fetchJoin()
                 .join(order.delivery, delivery).fetchJoin()
                 .join(delivery.deliveryAddress, deliveryAddress1).fetchJoin()
                 .where(order.id.eq(id))
@@ -42,6 +45,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         List<OrderBook> orderBookResults = queryFactory.select(orderBook)
                 .from(orderBook)
                 .join(orderBook.book, book).fetchJoin()
+                .leftJoin(orderBook.wrapper, wrapper).fetchJoin()
                 .join(book.bookFiles, bookFile).fetchJoin()
                 .join(bookFile.bookFileType, bookFileType).fetchJoin()
                 .join(bookFile.file, file).fetchJoin()

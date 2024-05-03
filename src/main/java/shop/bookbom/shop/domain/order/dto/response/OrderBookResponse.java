@@ -13,8 +13,10 @@ public class OrderBookResponse {
     private Long id;
     private String thumbnail;
     private String title;
-    private int price;
+    private int bookPrice;
     private int quantity;
+    private boolean isPackaging;
+    private int wrapperCost;
     private String status;
 
     public static OrderBookResponse of(OrderBook orderBook) {
@@ -29,8 +31,10 @@ public class OrderBookResponse {
                 orderBook.getBook().getId(),
                 thumbnail,
                 orderBook.getBook().getTitle(),
-                orderBook.getPrice(),
+                orderBook.getBookPrice(),
                 orderBook.getQuantity(),
+                orderBook.isPackaging(),
+                orderBook.getWrapper().getCost(),
                 orderBook.getStatus().name()
         );
     }

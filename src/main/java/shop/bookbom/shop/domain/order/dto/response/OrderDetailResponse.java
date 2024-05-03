@@ -24,9 +24,16 @@ public class OrderDetailResponse {
     private int totalPrice;
     private int discountPrice;
     private int paymentPrice;
-    private int accumulatedPoint;
+    private int wrapperPrice;
+    private int usedPoint;
+    private int deliveryFee;
+    private String status;
 
     public static OrderDetailResponse of(Order order, List<OrderBookResponse> orderBooks) {
+        int wrapperCost = orderBooks.stream()
+                .filter(OrderBookResponse::isPackaging)
+                .mapToInt(OrderBookResponse::getWrapperCost)
+                .sum();
         return new OrderDetailResponse(
                 order.getId(),
                 order.getOrderDate(),
@@ -41,7 +48,10 @@ public class OrderDetailResponse {
                 order.getTotalCost(),
                 order.getDiscountCost(),
                 order.getPayment().getCost(),
-                order.getUsedPoint()
+                wrapperCost,
+                order.getUsedPoint(),
+                order.getDelivery().getCost(),
+                order.getStatus().getName()
         );
     }
 }
