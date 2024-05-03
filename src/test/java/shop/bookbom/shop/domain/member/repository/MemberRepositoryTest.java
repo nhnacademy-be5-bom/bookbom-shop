@@ -12,6 +12,7 @@ import static shop.bookbom.shop.common.TestUtils.getRank;
 import static shop.bookbom.shop.common.TestUtils.getRole;
 import static shop.bookbom.shop.common.TestUtils.getWish;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +48,8 @@ class MemberRepositoryTest {
         Rank rank = em.persist(getRank(pointRate));
         OrderStatus orderStatus = em.persist(getOrderStatus());
         Member member = em.persist(getMember("email@email.com", role, rank));
-        Order order1 = em.persist(getOrder(member, orderStatus));
-        Order order2 = em.persist(getOrder(member, orderStatus));
+        Order order1 = em.persist(getOrder(member, orderStatus, LocalDateTime.now()));
+        Order order2 = em.persist(getOrder(member, orderStatus, LocalDateTime.now()));
         member.addOrder(order1);
         member.addOrder(order2);
         Publisher publisher = em.persist(getPublisher());

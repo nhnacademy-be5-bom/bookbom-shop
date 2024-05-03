@@ -16,6 +16,7 @@ import shop.bookbom.shop.domain.cart.entity.Cart;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.entity.MemberStatus;
+import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.order.entity.Order;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
 import shop.bookbom.shop.domain.pointhistory.dto.response.PointHistoryResponse;
@@ -145,11 +146,11 @@ public class TestUtils {
                 .build();
     }
 
-    public static Order getOrder(User user, OrderStatus orderStatus) {
+    public static Order getOrder(User user, OrderStatus orderStatus, LocalDateTime orderDate) {
         return Order.builder()
                 .orderNumber("orderNumber")
                 .orderInfo("orderInfo")
-                .orderDate(LocalDateTime.now())
+                .orderDate(orderDate)
                 .senderName("senderName")
                 .senderPhoneNumber("senderPhoneNumber")
                 .totalCost(10000)
@@ -181,6 +182,18 @@ public class TestUtils {
                 .wishCount(2)
                 .couponCount(0)
                 .build();
+    }
+
+    public static User getUser(String email, String password, Role role) {
+        return User.builder()
+                .email(email)
+                .password(password)
+                .role(role)
+                .build();
+    }
+
+    public static OrderInfoResponse getOrderInfoResponse(Order order) {
+        return OrderInfoResponse.of(order);
     }
 
     public static PointHistory getPointHistory(Member member, ChangeReason changeReason) {
