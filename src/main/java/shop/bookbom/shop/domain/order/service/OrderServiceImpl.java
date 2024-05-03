@@ -132,9 +132,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public OrderDetailResponse getOrderDetail(Long id) {
-//        Order order = orderRepository.findById(id)
-//                .orElseThrow(OrderNotFoundException::new);
-//        return OrderDetailResponse.of(order);
         return orderRepository.getOrderById(id);
     }
 
