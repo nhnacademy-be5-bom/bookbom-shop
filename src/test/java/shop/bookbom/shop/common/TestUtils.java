@@ -19,6 +19,10 @@ import shop.bookbom.shop.domain.member.entity.MemberStatus;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.order.entity.Order;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
+import shop.bookbom.shop.domain.pointhistory.dto.response.PointHistoryResponse;
+import shop.bookbom.shop.domain.pointhistory.entity.ChangeReason;
+import shop.bookbom.shop.domain.pointhistory.entity.PointHistory;
+import shop.bookbom.shop.domain.pointhistory.entity.PointHistoryDetail;
 import shop.bookbom.shop.domain.pointrate.entity.ApplyPointType;
 import shop.bookbom.shop.domain.pointrate.entity.EarnPointType;
 import shop.bookbom.shop.domain.pointrate.entity.PointRate;
@@ -150,6 +154,7 @@ public class TestUtils {
                 .senderName("senderName")
                 .senderPhoneNumber("senderPhoneNumber")
                 .totalCost(10000)
+                .discountCost(10000)
                 .usedPoint(0)
                 .user(user)
                 .status(orderStatus)
@@ -189,5 +194,25 @@ public class TestUtils {
 
     public static OrderInfoResponse getOrderInfoResponse(Order order) {
         return OrderInfoResponse.of(order);
+    }
+
+    public static PointHistory getPointHistory(Member member, ChangeReason changeReason) {
+        return PointHistory.builder()
+                .member(member)
+                .changePoint(100)
+                .changeReason(changeReason)
+                .detail(PointHistoryDetail.ORDER_EARN)
+                .changeDate(LocalDateTime.now())
+                .build();
+    }
+
+    public static PointHistoryResponse getPointHistoryResponse(ChangeReason changeReason) {
+        return PointHistoryResponse.builder()
+                .id(1L)
+                .reason(changeReason.name())
+                .changeDate(LocalDateTime.now())
+                .detail(PointHistoryDetail.ORDER_EARN.name())
+                .changePoint(1000)
+                .build();
     }
 }
