@@ -94,8 +94,7 @@ public class OrderServiceImpl implements OrderService {
             wrapperDtoList.add(wrapperDto);
 
         }
-
-
+        
         //주문 응답 객체 생성 후 정보 저장
         return BeforeOrderResponse.builder()
                 .beforeOrderBookResponseList(beforeOrderBookResponseList)
@@ -400,6 +399,7 @@ public class OrderServiceImpl implements OrderService {
                     .book(book)
                     .order(order)
                     .wrapper(wrapper)
+                    .bookPrice(book.getDiscountCost())
                     .build();
 
             orderBookRepository.save(orderBook);
@@ -413,7 +413,7 @@ public class OrderServiceImpl implements OrderService {
      * @param bookId
      * @param quantity
      */
-    public void decreaseStock(Long bookId, Integer quantity) {
+    private void decreaseStock(Long bookId, Integer quantity) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(BookNotFoundException::new);
         //재고 감소
