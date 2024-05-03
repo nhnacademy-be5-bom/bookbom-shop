@@ -45,4 +45,8 @@ public class BookFile {
         this.bookFileType = bookFileType;
         this.file = file;
     }
+
+    public boolean isThumbnail() {
+        return this.getBookFileType().getName().equals("img");
+    }
 }

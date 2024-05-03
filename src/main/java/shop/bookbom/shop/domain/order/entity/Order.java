@@ -12,14 +12,17 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import shop.bookbom.shop.domain.delivery.entity.Delivery;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
+import shop.bookbom.shop.domain.payment.entity.Payment;
 import shop.bookbom.shop.domain.users.entity.User;
 
 @Entity
@@ -64,6 +67,12 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_status_id", nullable = false)
     private OrderStatus status;
+
+    @OneToOne(mappedBy = "order")
+    private Delivery delivery;
+
+    @OneToOne(mappedBy = "order")
+    private Payment payment;
 
     @OneToMany(mappedBy = "order")
     private List<OrderBook> orderBooks = new ArrayList<>();
