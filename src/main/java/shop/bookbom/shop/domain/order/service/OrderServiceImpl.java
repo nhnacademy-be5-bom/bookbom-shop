@@ -64,7 +64,12 @@ public class OrderServiceImpl implements OrderService {
     private final OrderBookRepository orderBookRepository;
     private final EntityManager em;
 
-
+    /**
+     * 주문 전에 bookId로 책 정보를 불러오고 포장지 전체 List를 받아오는 메소드
+     *
+     * @param beforeOrderRequestList(bookId,quantity)
+     * @return 책 제목, 책 이미지, 수량, 가격 그리고 전체 주문 갯수, 포장지 전체 List
+     */
     @Override
     @Transactional(readOnly = true)
     public BeforeOrderResponse getOrderBookInfo(BeforeOrderRequestList beforeOrderRequestList) {
@@ -100,6 +105,13 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    /**
+     * 포장지 선택 정보를 처리하는 메소드
+     *
+     * @param
+     * @param wrapperSelectRequest(책정보와 선택한 포장지 의 List와 전체 주문 갯수)
+     * @return 포장지 선택 request 와 userId를 내보냄
+     */
     @Override
     @Transactional
     public WrapperSelectResponse selectWrapper(WrapperSelectRequest wrapperSelectRequest) {
@@ -128,6 +140,7 @@ public class OrderServiceImpl implements OrderService {
             wrapCost += costByName * bookDetailInfo.getQuantity();
 
         }
+        //배송 예정일 리스트 생성
         List<String> estimatedDateList = createEstimatedDateList();
 
         return WrapperSelectResponse.builder()
@@ -139,25 +152,42 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+    /**
+     * 주문 처리
+     *
+     * @param openOrderRequest
+     * @return 주문번호, 주문가격, 주문이름
+     */
     @Override
     @Transactional
     public OrderResponse processOpenOrder(OpenOrderRequest openOrderRequest) {
+        //비회원 주문자 정보 저장
         User user = saveUserInfo(openOrderRequest);
+        //주문 정보 저장
         Order order = saveOrder(openOrderRequest, user);
+        //배송 관련 정보 저장
         saveDeliveryInfo(openOrderRequest, order);
+        //주문 책 정보 저장
         saveOrderBookInfo(openOrderRequest, order);
-        //재고체크
+        //재고체크 후 재고 감소
         for (WrapperSelectBookRequest bookRequest : openOrderRequest.getWrapperSelectRequestList()) {
             checkStock(bookRequest.getBookId(), bookRequest.getQuantity());
+            decreaseStock(bookRequest.getBookId(), bookRequest.getQuantity());
         }
 
-
+        //응답 반환
         return OrderResponse.builder().orderId(order.getOrderNumber())
                 .orderName(order.getOrderInfo())
                 .amount(order.getTotalCost())
                 .build();
     }
 
+    /**
+     * 영어 요일을 한글로 바꿔주는 메소드 ex) monday -> 월
+     *
+     * @param dayOfWeek
+     * @return string
+     */
     private static String getDayofWeekKorean(DayOfWeek dayOfWeek) {
         switch (dayOfWeek) {
             case MONDAY:
@@ -176,13 +206,24 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    /**
+     * 책id와 수량으로 책 정보 찾음
+     *
+     * @param bookId
+     * @param bookQuantity
+     * @return
+     */
     private BeforeOrderBookResponse getBookDetailInfo(Long bookId, Integer bookQuantity) {
         //bookId로 책 가져옴
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(BookNotFoundException::new);
+        //title 가져옴
         String title = book.getTitle();
+        //cost 가져옴
         Integer cost = book.getCost();
+        //썸네일 찾음
         String imageUrl = bookFileRepository.getBookImageUrl(bookId);
+        //할인가 가져옴
         Integer discountCost = book.getDiscountCost();
 
 
@@ -197,21 +238,36 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+    /**
+     * 재고체크 메소드
+     *
+     * @param bookId
+     * @param quantity
+     */
     private void checkStock(Long bookId, Integer quantity) {
+        //책id로 책의 재고 가져와서 사려는 수량이 재고보다 크면 exception
         Integer stock = bookRepository.getStockById(bookId);
         if (quantity > stock) {
             throw new LowStockException();
         }
     }
 
+    /**
+     * 배송 예정일 리스트 생성
+     *
+     * @return
+     */
     private List<String> createEstimatedDateList() {
         List<String> estimatedDateList = new ArrayList<>();
         int daysToAdd = 1;
         while (estimatedDateList.size() < 5) {
+            //오늘 날짜를 불러와서 내일부터 배송가능 날짜 5개를 받음
             LocalDate localDate = LocalDate.now().plusDays(daysToAdd);
             DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+            //토, 일 제외
             if (!(dayOfWeek.equals(DayOfWeek.SATURDAY) ||
                     dayOfWeek.equals(DayOfWeek.SUNDAY))) {
+                // ex) 금(5/3) 형식
                 String dateString = localDate.format(DateTimeFormatter.ofPattern("M/d"));
                 String dayofWeekKorean = getDayofWeekKorean(dayOfWeek);
                 String estimatedDate = dayofWeekKorean + "(" + dateString + ")";
@@ -223,17 +279,22 @@ public class OrderServiceImpl implements OrderService {
         return estimatedDateList;
     }
 
-
+    /**
+     * 배송정보 저장
+     *
+     * @param openOrderRequest
+     * @param order
+     */
     private void saveDeliveryInfo(OpenOrderRequest openOrderRequest, Order order) {
-
+        //delivery address 빌더
         DeliveryAddress deliveryAddress = DeliveryAddress.builder().zipCode(openOrderRequest.getZipCode())
                 .deliveryAddress(openOrderRequest.getDeliveryAddress())
                 .addressDetail(openOrderRequest.getAddressDetail())
                 .build();
-
+        // 저장
         deliveryAddressRepository.save(deliveryAddress);
 
-
+        //string의 배송예정일을 localdate로 변환
         String estimatedDateToString = openOrderRequest.getEstimatedDateTostring();
         String[] parts = estimatedDateToString.split("[()]");
         String[] dateParts = parts[1].split("/");
@@ -244,7 +305,7 @@ public class OrderServiceImpl implements OrderService {
 
         // LocalDate 생성
         LocalDate estimatedDate = LocalDate.of(LocalDate.now().getYear(), Month.of(month), day);
-//        LocalDate estimatedDate = LocalDate.parse(estimatedDateToString);
+        //delivery 빌더
         Delivery delivery = Delivery.builder().order(order)
                 .name(openOrderRequest.getName())
                 .phoneNumber(openOrderRequest.getPhoneNumber())
@@ -252,26 +313,34 @@ public class OrderServiceImpl implements OrderService {
                 .estimatedDate(estimatedDate)
                 .deliveryAddress(deliveryAddress)
                 .build();
-
+        //저장
         deliveryRepository.save(delivery);
     }
 
-
+    /**
+     * 주문 정보 저장
+     *
+     * @param openOrderRequest
+     * @param user
+     * @return order
+     */
     private Order saveOrder(OpenOrderRequest openOrderRequest, User user) {
+        //uuid로 랜덤 32자리 주문 번호 생성
         UUID uuid = UUID.randomUUID();
-        // UUID를 문자열로 변환
         String orderNumber = uuid.toString().replaceAll("-", "");
-
+        //request의 bookid로 책 찾음
         Book book = bookRepository.findById(openOrderRequest.getWrapperSelectRequestList().get(0).getBookId())
                 .orElseThrow(BookNotFoundException::new);
         int totalOrderCount = 0;
         for (WrapperSelectBookRequest bookrequest : openOrderRequest.getWrapperSelectRequestList()) {
             totalOrderCount += bookrequest.getQuantity();
         }
+        //주문 이름 생성
         String orderInfo = book.getTitle() + " 외 " + totalOrderCount + "건";
-
+        //주문상태 = "결제전"
         OrderStatus orderStatus = orderStatusRepository.findByName("결제전")
                 .orElseThrow(OrderStatusNotFoundException::new);
+        //order 빌더
         Order order = Order.builder().orderNumber(orderNumber)
                 .orderInfo(orderInfo)
                 .orderDate(LocalDateTime.now())
@@ -287,9 +356,16 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    /**
+     * 비회원 정보 저장
+     *
+     * @param openOrderRequest
+     * @return
+     */
     private User saveUserInfo(OpenOrderRequest openOrderRequest) {
         Role role = roleRepository.findByName("비회원")
                 .orElseThrow(RoleNotFoundException::new);
+        //user 빌더
         User user = User.builder().email(openOrderRequest.getEmail())
                 .password(openOrderRequest.getPassword())
                 .registered(false)
@@ -299,6 +375,12 @@ public class OrderServiceImpl implements OrderService {
         return user;
     }
 
+    /**
+     * 주문책 저장
+     *
+     * @param openOrderRequest
+     * @param order
+     */
     private void saveOrderBookInfo(OpenOrderRequest openOrderRequest, Order order) {
 
         for (WrapperSelectBookRequest bookRequest : openOrderRequest.getWrapperSelectRequestList()) {
@@ -308,6 +390,7 @@ public class OrderServiceImpl implements OrderService {
                     .orElseThrow(WrapperNotFoundException::new);
 
             boolean packaging = true;
+            //포장지 이름이 "안함"이면 packaging이 false
             if (bookRequest.getWrapperName().equals("안함")) {
                 packaging = false;
             }
@@ -324,11 +407,23 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-
+    /**
+     * 재고 감소 메소드
+     *
+     * @param bookId
+     * @param quantity
+     */
     public void decreaseStock(Long bookId, Integer quantity) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(BookNotFoundException::new);
-        book.updateStock(book.getStock() - quantity);
+        //재고 감소
+        int NowStock = book.getStock() - quantity;
+        //재고가 마이너스가 되면 exception
+        if (NowStock < 0) {
+            throw new LowStockException();
+        }
+        book.updateStock(NowStock);
+
         bookRepository.save(book);
     }
 

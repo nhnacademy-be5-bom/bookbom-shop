@@ -17,6 +17,9 @@ import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.exception.OrderInfoInvalidException;
 import shop.bookbom.shop.domain.order.service.OrderService;
 
+/**
+ * 비회원 주문 controller
+ */
 @RestController
 @RequestMapping("/shop/open")
 @RequiredArgsConstructor
@@ -45,6 +48,13 @@ public class OpenOrderController {
         return CommonResponse.successWithData(beforeOrderResponse);
     }
 
+    /**
+     * 포장지 선택한 request를 받고 주문서 작성 페이지에 필요한 데이터를 넘겨줌
+     *
+     * @param wrapperSelectRequest
+     * @param bindingResult
+     * @return 주문서 작성에 필요한 데이터
+     */
     @PostMapping("/orders/wrapper")
     public CommonResponse<WrapperSelectResponse> selectWrapper(
             @RequestBody @Valid
@@ -53,12 +63,19 @@ public class OpenOrderController {
         if (bindingResult.hasErrors()) {
             throw new OrderInfoInvalidException();
         }
-        //포장지 선택 메소드
+        //포장지 선택 요청으로 포장지 응답 데이터 찾기
         WrapperSelectResponse wrapperSelectResponse = orderService.selectWrapper(wrapperSelectRequest);
         //응답 반환
         return CommonResponse.successWithData(wrapperSelectResponse);
     }
 
+    /**
+     * 주문 처리 메소드
+     *
+     * @param openOrderRequest
+     * @param bindingResult
+     * @return 결제 요청에 필요한 데이터
+     */
     @PostMapping("/orders")
     public CommonResponse<OrderResponse> processOrder(@RequestBody @Valid OpenOrderRequest openOrderRequest,
                                                       BindingResult bindingResult) {
@@ -66,6 +83,7 @@ public class OpenOrderController {
         if (bindingResult.hasErrors()) {
             throw new OrderInfoInvalidException();
         }
+        //주문 처리 메소드
         OrderResponse orderResponse = orderService.processOpenOrder(openOrderRequest);
 
 

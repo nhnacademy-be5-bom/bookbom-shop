@@ -20,12 +20,20 @@ import shop.bookbom.shop.domain.payment.exception.PaymentFailException;
 public class PaymentAdapterImpl implements PaymentAdapter {
     private final TossPayConfig tossPayConfig;
 
+    /**
+     * tosspay에게 결제 승인 요청 보냄
+     *
+     * @param paymentRequest
+     * @return PaymentResponse
+     */
     public PaymentResponse requestPaymentConfirm(PaymentRequest paymentRequest) {
+        //secretkey를 가지고 authorization 만듬
         String secretKey = tossPayConfig.getSecretKey() + ":";
         String authorization = Base64.getEncoder().encodeToString(secretKey.getBytes());
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
+        //header에 authorization 넣음
         headers.add("Authorization", "Basic " + authorization);
         headers.setContentType(MediaType.APPLICATION_JSON);
 

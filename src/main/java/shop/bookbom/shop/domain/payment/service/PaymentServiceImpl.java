@@ -68,19 +68,28 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderCouponRepository orderCouponRepository;
     private final MemberCouponRepository memberCouponRepository;
 
-
+    /**
+     * 토스페이 결제 승인 요청 보낸 후 받은 데이터로 결제 완료 응답 구성
+     *
+     * @param paymentRequest
+     * @return
+     */
     @Transactional
     @Override
     public PaymentSuccessResponse getPaymnetConfirm(PaymentRequest paymentRequest) {
+        //토스페이에 결제 승인 요청 보냄
         PaymentResponse paymentResponse = paymentAdapter.requestPaymentConfirm(paymentRequest);
+        //받은 데이터 중 결제 금액이 order의 결제금액과 같은지 비교 검증
         Order order = verifyRequest(paymentResponse.getOrderId(), paymentResponse.getTotalAmount());
+        //payment 저장
         Payment payment = savePaymentInfo(paymentResponse, order);
-
-
+        //회원이면
         if (order.getUser().isRegistered()) {
+            //포인트 감소
             if (order.getUsedPoint() != 0) {
                 decreasePoints(order);
             }
+            //쿠폰 사용
             if (orderCouponRepository.existsByOrder(order)) {
                 OrderCoupon orderCoupon = orderCouponRepository.findByOrder(order)
                         .orElseThrow(OrderCouponNotFoundException::new);
@@ -91,7 +100,13 @@ public class PaymentServiceImpl implements PaymentService {
         return orderComplete(payment);
     }
 
-
+    /**
+     * 결제 검증
+     *
+     * @param orderId
+     * @param amount
+     * @return
+     */
     private Order verifyRequest(String orderId, Integer amount) {
         Order order = orderRepository.findByOrderNumber(orderId)
                 .orElseThrow(OrderNotFoundException::new);
@@ -103,8 +118,15 @@ public class PaymentServiceImpl implements PaymentService {
 
     }
 
+    /**
+     * 결제 정보 저장
+     *
+     * @param paymentResponse
+     * @param order
+     * @return
+     */
     private Payment savePaymentInfo(PaymentResponse paymentResponse, Order order) {
-
+        //결제 정보의 결제 수단에 따라 payment에 결제수단 저장
         PaymentMethod paymentMethod;
         if (paymentResponse.getMethod().equals("카드")) {
             paymentMethod =
@@ -116,11 +138,12 @@ public class PaymentServiceImpl implements PaymentService {
         } else {
             throw new PaymentNotAllowedException();
         }
+        //주문시간
         LocalDateTime localDateTime =
                 OffsetDateTime.parse(paymentResponse.getApprovedAt(), DateTimeFormatter.ISO_OFFSET_DATE_TIME)
                         .toLocalDateTime();
         order.updateOrderDate(localDateTime);
-
+        //주문 상태를 대기로 바꿈
         order.updateStatus(orderStatusRepository.findByName("대기")
                 .orElseThrow(OrderStatusNotFoundException::new));
 
@@ -130,6 +153,12 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRepository.save(payment);
     }
 
+    /**
+     * payment로 주문 완료 페이지에 불러올 데이터 찾고 반환
+     *
+     * @param payment
+     * @return
+     */
     private PaymentSuccessResponse orderComplete(Payment payment) {
         Order order = orderRepository.findById(payment.getOrder().getId())
                 .orElseThrow(OrderNotFoundException::new);
@@ -176,6 +205,11 @@ public class PaymentServiceImpl implements PaymentService {
 
     }
 
+    /**
+     * 포인트 감소 메소드
+     *
+     * @param order
+     */
     private void decreasePoints(Order order) {
         Member member = memberRepository.findById(order.getUser().getId())
                 .orElseThrow(MemberNotFoundException::new);
@@ -189,6 +223,11 @@ public class PaymentServiceImpl implements PaymentService {
         pointHistoryRepository.save(pointHistory);
     }
 
+    /**
+     * 쿠폰 사용 메소드
+     *
+     * @param orderCoupon
+     */
     private void useCoupon(OrderCoupon orderCoupon) {
         MemberCoupon memberCoupon = memberCouponRepository.findByCoupon(orderCoupon.getCoupon())
                 .orElseThrow(MemberCouponNotFoundException::new);

@@ -17,7 +17,12 @@ import shop.bookbom.shop.domain.payment.service.PaymentService;
 public class PaymentController {
     private final PaymentService paymentService;
 
-
+    /**
+     * 토스페이에 결제 승인 요청 보냄
+     *
+     * @param paymentRequest
+     * @return
+     */
     @Transactional
     @PostMapping("/payment/tosspay/confirm")
     public CommonResponse<PaymentSuccessResponse> getPaymentConfirm(@RequestBody PaymentRequest paymentRequest) {

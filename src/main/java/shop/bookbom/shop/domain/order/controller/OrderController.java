@@ -16,6 +16,9 @@ import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.exception.OrderInfoInvalidException;
 import shop.bookbom.shop.domain.order.service.OrderService;
 
+/**
+ * 회원 주문 controller
+ */
 @RestController
 @RequestMapping("/shop")
 @RequiredArgsConstructor
