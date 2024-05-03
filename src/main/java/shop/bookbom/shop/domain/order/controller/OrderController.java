@@ -72,6 +72,12 @@ public class OrderController {
         return CommonResponse.successWithData(wrapperSelectResponse);
     }
 
+    /**
+     * 주문 상세 정보를 불러오는 메서드입니다.
+     *
+     * @param id 주문 id
+     * @return 주문 상세 정보
+     */
     @GetMapping("/orders/{id}")
     public CommonResponse<OrderDetailResponse> getOrderDetail(@PathVariable("id") Long id) {
         OrderDetailResponse orderDetailResponse = orderService.getOrderDetail(id);
