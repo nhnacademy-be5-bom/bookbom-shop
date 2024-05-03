@@ -44,6 +44,8 @@ public enum ErrorCode {
     AUTHOR_ID_NOT_FOUND(404, "일치하는 작가 ID가 없습니다."),
     // point_rate
     POINT_RATE_NOT_FOUND(400, "해당 포인트 정책이 존재하지 않습니다."),
+    // point_history
+    POINT_INVALID_REASON(400, "요청하신 포인트 변동사유가 올바르지 않습니다."),
     // order
     ORDER_NOT_FOUND(404, "해당 주문이 존재하지 않습니다."),
     ;
