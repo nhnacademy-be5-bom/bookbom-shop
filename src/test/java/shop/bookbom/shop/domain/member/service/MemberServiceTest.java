@@ -11,6 +11,7 @@ import static shop.bookbom.shop.common.TestUtils.getPointRate;
 import static shop.bookbom.shop.common.TestUtils.getRank;
 import static shop.bookbom.shop.common.TestUtils.getRole;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +38,7 @@ class MemberServiceTest {
         //given
         Rank rank = getRank(getPointRate());
         Member member = getMember("test@email.com", getRole(), rank);
-        member.addOrder(getOrder(member, getOrderStatus()));
+        member.addOrder(getOrder(member, getOrderStatus(), LocalDateTime.now()));
         MemberInfoResponse response =
                 getMemberInfoResponse(rank, member);
         when(memberRepository.findMemberInfo(any())).thenReturn(response);

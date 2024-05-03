@@ -35,7 +35,7 @@ import shop.bookbom.shop.domain.order.service.OrderService;
 import shop.bookbom.shop.domain.wrapper.dto.WrapperDto;
 
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(OpenOrderControllerTest.class)
+@WebMvcTest(OpenOrderController.class)
 public class OpenOrderControllerTest {
 
     @Autowired
@@ -83,7 +83,7 @@ public class OpenOrderControllerTest {
                 .andExpect(jsonPath("$.result.beforeOrderBookResponseList[0].quantity").value(5))
                 .andExpect(jsonPath("$.result.beforeOrderBookResponseList[0].cost").value(15000))
                 .andExpect(jsonPath("$.result.beforeOrderBookResponseList[1].title").value("testBook2"))
-                .andExpect(jsonPath("$.result.beforeOrderBookResponseList[1].disCountCost").value(5000))
+                .andExpect(jsonPath("$.result.beforeOrderBookResponseList[1].discountCost").value(5000))
                 .andExpect(jsonPath("$.result.wrapperList[0].name").value("포장지 1"))
                 .andExpect(jsonPath("$.result.wrapperList[0].cost").value(1000));
     }
@@ -97,7 +97,7 @@ public class OpenOrderControllerTest {
         BeforeOrderRequestList request = new BeforeOrderRequestList(beforeOrderRequestList);
 
         //when, then
-        ResultActions perform = mockMvc.perform(post("/shop/orders/before-order")
+        ResultActions perform = mockMvc.perform(post("/shop/open/orders/before-order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -118,7 +118,7 @@ public class OpenOrderControllerTest {
         BeforeOrderRequestList request = new BeforeOrderRequestList(beforeOrderRequestList);
 
         //when, then
-        ResultActions perform = mockMvc.perform(post("/shop/orders/before-order")
+        ResultActions perform = mockMvc.perform(post("/shop/open/orders/before-order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -181,7 +181,7 @@ public class OpenOrderControllerTest {
         //given
         List<WrapperSelectBookRequest> wrapperSelectRequestList = new ArrayList<>();
         wrapperSelectRequestList.add(
-                new WrapperSelectBookRequest(1L, "포장지 3", 3));
+                new WrapperSelectBookRequest(null, "포장지 3", 3));
         wrapperSelectRequestList.add(
                 new WrapperSelectBookRequest(2L, "포장지 3", 4));
 
