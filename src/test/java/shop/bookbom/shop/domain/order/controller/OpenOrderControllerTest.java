@@ -35,8 +35,8 @@ import shop.bookbom.shop.domain.order.service.OrderService;
 import shop.bookbom.shop.domain.wrapper.dto.WrapperDto;
 
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(OrderController.class)
-public class OrderControllerTest {
+@WebMvcTest(OpenOrderController.class)
+public class OpenOrderControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -50,20 +50,24 @@ public class OrderControllerTest {
     @DisplayName("주문 전 책 정보 불러오기")
     void showSelectWrapper() throws Exception {
         //given
+
         List<BeforeOrderRequest> beforeOrderRequestList = new ArrayList<>();
         beforeOrderRequestList.add(new BeforeOrderRequest(1L, 5));
+        beforeOrderRequestList.add(new BeforeOrderRequest(2L, 1));
         BeforeOrderRequestList request = new BeforeOrderRequestList(beforeOrderRequestList);
 
-        List<BeforeOrderBookResponse> beforeOrderBookResponseList = new ArrayList<>();
-        beforeOrderBookResponseList.add(new BeforeOrderBookResponse(1L, "http://img.jpg", "testBook", 5, 15000));
+        List<BeforeOrderBookResponse> beforeOrderBookResponses = new ArrayList<>();
+        beforeOrderBookResponses.add(new BeforeOrderBookResponse(1L, "http://img.jpg", "testBook", 5, 15000, 12000));
+        beforeOrderBookResponses.add(
+                new BeforeOrderBookResponse(2L, "http://img1.jpg", "testBook2", 1, 15000, 5000));
 
         List<WrapperDto> wrapperList = new ArrayList<>();
-        wrapperList.add(new WrapperDto(1L, "포장지 1", 1000));
+        wrapperList.add(new WrapperDto(1L, "포장지 1", 1000, "http://wrapper.img"));
 
-        BeforeOrderResponse response = new BeforeOrderResponse(5, beforeOrderBookResponseList, wrapperList);
+        BeforeOrderResponse response = new BeforeOrderResponse(6, beforeOrderBookResponses, wrapperList);
         when(orderService.getOrderBookInfo(any())).thenReturn(response);
         //when
-        ResultActions perform = mockMvc.perform(post("/shop/orders/before-order")
+        ResultActions perform = mockMvc.perform(post("/shop/open/orders/before-order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
@@ -72,16 +76,16 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.header.resultCode").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
                 .andExpect(jsonPath("$.header.successful").value(true))
-                .andExpect(jsonPath("$.result.totalOrderCount").value(5))
-                .andExpect(jsonPath("$.result.beforeOrderBookResponseList.length()").value(1))
+                .andExpect(jsonPath("$.result.totalOrderCount").value(6))
+                .andExpect(jsonPath("$.result.beforeOrderBookResponseList.length()").value(2))
                 .andExpect(jsonPath("$.result.beforeOrderBookResponseList[0].imageUrl").value("http://img.jpg"))
                 .andExpect(jsonPath("$.result.beforeOrderBookResponseList[0].title").value("testBook"))
                 .andExpect(jsonPath("$.result.beforeOrderBookResponseList[0].quantity").value(5))
                 .andExpect(jsonPath("$.result.beforeOrderBookResponseList[0].cost").value(15000))
+                .andExpect(jsonPath("$.result.beforeOrderBookResponseList[1].title").value("testBook2"))
+                .andExpect(jsonPath("$.result.beforeOrderBookResponseList[1].discountCost").value(5000))
                 .andExpect(jsonPath("$.result.wrapperList[0].name").value("포장지 1"))
                 .andExpect(jsonPath("$.result.wrapperList[0].cost").value(1000));
-
-
     }
 
     @Test
@@ -93,7 +97,7 @@ public class OrderControllerTest {
         BeforeOrderRequestList request = new BeforeOrderRequestList(beforeOrderRequestList);
 
         //when, then
-        ResultActions perform = mockMvc.perform(post("/shop/orders/before-order")
+        ResultActions perform = mockMvc.perform(post("/shop/open/orders/before-order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -114,7 +118,7 @@ public class OrderControllerTest {
         BeforeOrderRequestList request = new BeforeOrderRequestList(beforeOrderRequestList);
 
         //when, then
-        ResultActions perform = mockMvc.perform(post("/shop/orders/before-order")
+        ResultActions perform = mockMvc.perform(post("/shop/open/orders/before-order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
@@ -127,18 +131,17 @@ public class OrderControllerTest {
     }
 
     @Test
-    @DisplayName("포장지 선택 - 회원")
+    @DisplayName("포장지 선택 - 비회원")
     void selectWrapper_member() throws Exception {
         //given
         List<WrapperSelectBookRequest> wrapperSelectRequestList = new ArrayList<>();
-        wrapperSelectRequestList.add(new WrapperSelectBookRequest(1L, "test book", "http://img.jpg", "포장지 3"
-                , 3, 5000));
+        wrapperSelectRequestList.add(new WrapperSelectBookRequest(1L, "포장지 3", 3));
 
-        WrapperSelectRequest request = new WrapperSelectRequest(wrapperSelectRequestList, 3);
-        Long userId = 20L;
+        WrapperSelectRequest request = new WrapperSelectRequest(wrapperSelectRequestList);
         List<WrapperSelectBookResponse> wrapperSelectBookResponseList = new ArrayList<>();
         wrapperSelectBookResponseList.add(
                 WrapperSelectBookResponse.builder().bookTitle("test book").imgUrl("http://img.jpg").wrapperName("포장지 3")
+                        .bookId(1L).discountCost(3000)
                         .quantity(3).cost(5000).build());
         List<String> estimatedDateList = new ArrayList<>();
         estimatedDateList.add("4/26(금)");
@@ -148,66 +151,13 @@ public class OrderControllerTest {
         estimatedDateList.add("5/2(목)");
 
         WrapperSelectResponse response = WrapperSelectResponse.builder().totalOrderCount(3)
-                .userId(userId)
                 .wrapperSelectResponseList(wrapperSelectBookResponseList)
-                .estimatedDateList(estimatedDateList).build();
-        when(orderService.selectWrapper(any(), any())).thenReturn(response);
+                .estimatedDateList(estimatedDateList)
+                .deliveryCost(5000)
+                .wrapCost(15000).build();
+        when(orderService.selectWrapper(any())).thenReturn(response);
         //when
-        ResultActions perform = mockMvc.perform(post("/shop/orders/wrapper")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-                .param("userId", userId.toString()));
-        //then
-        perform.andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.header.resultCode").value(HttpStatus.OK.value()))
-                .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
-                .andExpect(jsonPath("$.header.successful").value(true))
-                .andExpect(jsonPath("$.result.totalOrderCount").value(3))
-                .andExpect(jsonPath("$.result.userId").value(20L))
-                .andExpect(jsonPath("$.result.wrapperSelectResponseList.length()").value(1))
-                .andExpect(jsonPath("$.result.wrapperSelectResponseList[0].bookTitle").value("test book"))
-                .andExpect(jsonPath("$.result.wrapperSelectResponseList[0].wrapperName").value("포장지 3"))
-                .andExpect(jsonPath("$.result.estimatedDateList[0]").value("4/26(금)"));
-
-
-    }
-
-    @Test
-    @DisplayName("포장지 선택- 비회원")
-    void selectWrapper_not_member() throws Exception {
-        //given
-        List<WrapperSelectBookRequest> wrapperSelectRequestList = new ArrayList<>();
-        wrapperSelectRequestList.add(
-                new WrapperSelectBookRequest(1L, "test book1", "http://img1.jpg", "포장지 3", 3, 5000));
-        wrapperSelectRequestList.add(
-                new WrapperSelectBookRequest(2L, "test book2", "http://img2.jpg", "포장지 3", 4, 6000));
-
-        WrapperSelectRequest request = new WrapperSelectRequest(wrapperSelectRequestList, 7);
-        Long userId = null;
-        List<WrapperSelectBookResponse> wrapperSelectBookResponseList = new ArrayList<>();
-        wrapperSelectBookResponseList.add(
-                WrapperSelectBookResponse.builder().bookTitle("test book1").imgUrl("http://img1.jpg")
-                        .wrapperName("포장지 3")
-                        .quantity(3).cost(5000).build());
-        wrapperSelectBookResponseList.add(
-                WrapperSelectBookResponse.builder().bookTitle("test book2").imgUrl("http://img2.jpg")
-                        .wrapperName("포장지 3")
-                        .quantity(4).cost(6000).build());
-
-        List<String> estimatedDateList = new ArrayList<>();
-        estimatedDateList.add("4/26(금)");
-        estimatedDateList.add("4/29(월)");
-        estimatedDateList.add("4/30(화)");
-        estimatedDateList.add("5/1(수)");
-        estimatedDateList.add("5/2(목)");
-        WrapperSelectResponse response = WrapperSelectResponse.builder().totalOrderCount(7)
-                .userId(userId)
-                .wrapperSelectResponseList(wrapperSelectBookResponseList)
-                .estimatedDateList(estimatedDateList).build();
-        when(orderService.selectWrapper(any(), any())).thenReturn(response);
-        //when
-        ResultActions perform = mockMvc.perform(post("/shop/orders/wrapper")
+        ResultActions perform = mockMvc.perform(post("/shop/open/orders/wrapper")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
@@ -216,14 +166,11 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.header.resultCode").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
                 .andExpect(jsonPath("$.header.successful").value(true))
-                .andExpect(jsonPath("$.result.totalOrderCount").value(7))
-                .andExpect(jsonPath("$.result.userId").doesNotExist())
-                .andExpect(jsonPath("$.result.wrapperSelectResponseList.length()").value(2))
-                .andExpect(jsonPath("$.result.wrapperSelectResponseList[0].bookTitle").value("test book1"))
+                .andExpect(jsonPath("$.result.totalOrderCount").value(3))
+                .andExpect(jsonPath("$.result.wrapperSelectResponseList.length()").value(1))
+                .andExpect(jsonPath("$.result.wrapperSelectResponseList[0].bookTitle").value("test book"))
                 .andExpect(jsonPath("$.result.wrapperSelectResponseList[0].wrapperName").value("포장지 3"))
-                .andExpect(jsonPath("$.result.wrapperSelectResponseList[1].wrapperName").value("포장지 3"))
-                .andExpect(jsonPath("$.result.wrapperSelectResponseList[1].quantity").value(4))
-                .andExpect(jsonPath("$.result.wrapperSelectResponseList[1].cost").value(6000));
+                .andExpect(jsonPath("$.result.estimatedDateList[0]").value("4/26(금)"));
 
 
     }
@@ -234,14 +181,14 @@ public class OrderControllerTest {
         //given
         List<WrapperSelectBookRequest> wrapperSelectRequestList = new ArrayList<>();
         wrapperSelectRequestList.add(
-                new WrapperSelectBookRequest(1L, " ", "http://img1.jpg", "포장지 3", 3, 5000));
+                new WrapperSelectBookRequest(null, "포장지 3", 3));
         wrapperSelectRequestList.add(
-                new WrapperSelectBookRequest(2L, "test book2", "http://img2.jpg", "포장지 3", 4, 6000));
+                new WrapperSelectBookRequest(2L, "포장지 3", 4));
 
-        WrapperSelectRequest request = new WrapperSelectRequest(wrapperSelectRequestList, 7);
+        WrapperSelectRequest request = new WrapperSelectRequest(wrapperSelectRequestList);
 
         //when
-        ResultActions perform = mockMvc.perform(post("/shop/orders/wrapper")
+        ResultActions perform = mockMvc.perform(post("/shop/open/orders/wrapper")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
         //then
