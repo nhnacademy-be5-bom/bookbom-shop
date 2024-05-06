@@ -1,5 +1,7 @@
 package shop.bookbom.shop.domain.order.service;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -391,11 +393,8 @@ public class OrderServiceImpl implements OrderService {
             Wrapper wrapper = wrapperRepository.findByName(bookRequest.getWrapperName())
                     .orElseThrow(WrapperNotFoundException::new);
 
-            boolean packaging = true;
+            boolean packaging = !bookRequest.getWrapperName().equals("안함");
             //포장지 이름이 "안함"이면 packaging이 false
-            if (bookRequest.getWrapperName().equals("안함")) {
-                packaging = false;
-            }
             OrderBook orderBook = OrderBook.builder().quantity(bookRequest.getQuantity())
                     .packaging(packaging)
                     .status(OrderBookStatus.NONE)
@@ -434,7 +433,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public Page<OrderManagementResponse> getOrderManagements(Pageable pageable, LocalDate dateFrom, LocalDate dateTo,
                                                              String sort, String status) {
-        OrderStatus orderStatus = orderStatusRepository.findByName(status)
+        OrderStatus orderStatus = orderStatusRepository.findByName(URLDecoder.decode(status, StandardCharsets.UTF_8))
                 .orElse(null);
         return orderRepository.getOrderManagement(pageable, dateFrom, dateTo, sort, orderStatus);
     }

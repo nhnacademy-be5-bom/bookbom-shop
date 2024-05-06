@@ -36,7 +36,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .where(
                         orderDateMin(dateFrom),
                         orderDateMax(dateTo),
-                        inOrderStatus(status)
+                        inOrderStatus(status),
+                        order.status.name.ne("결제전")
                 )
                 .orderBy(orderSortBy(sort))
                 .offset(pageable.getOffset())
