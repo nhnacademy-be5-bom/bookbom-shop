@@ -77,6 +77,6 @@ public class User {
             orders = new ArrayList<>();
         }
         orders.add(order);
-        order.setUser(this);
+        order.updateUser(this);
     }
 }

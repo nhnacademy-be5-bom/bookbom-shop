@@ -11,15 +11,17 @@ public class WrapperSelectBookResponse {
     private String wrapperName;
     private Integer quantity;
     private Integer cost;
+    private Integer discountCost;
 
     @Builder
     public WrapperSelectBookResponse(Long bookId, String bookTitle, String imgUrl, String wrapperName, Integer quantity,
-                                     Integer cost) {
+                                     Integer cost, Integer discountCost) {
         this.bookId = bookId;
         this.bookTitle = bookTitle;
         this.imgUrl = imgUrl;
         this.wrapperName = wrapperName;
         this.quantity = quantity;
         this.cost = cost;
+        this.discountCost = discountCost;
     }
 }

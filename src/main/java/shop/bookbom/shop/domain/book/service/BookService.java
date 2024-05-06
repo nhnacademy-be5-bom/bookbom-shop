@@ -202,7 +202,7 @@ public class BookService {
     @Modifying
     public void reviveBook(Long bookId) {
         Book bookToRevive = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
-        bookToRevive.updateStatus(BookStatus.FS);
+        bookToRevive.updateStatus(BookStatus.FOR_SALE);
         bookRepository.save(bookToRevive);
     }
 
