@@ -8,7 +8,7 @@ import shop.bookbom.shop.domain.couponpolicy.dto.CouponPolicyInfoDto;
 public interface CouponPolicyService {
     void addCouponPolicy(CouponPolicyAddRequest request, Long userId);
 
-    void deleteCouponPolicy(List<CouponPolicyDeleteRequest> requests, Long userId);
+    void deleteCouponPolicy(CouponPolicyDeleteRequest request, Long userId);
 
     void updateCouponPolicy(CouponPolicyInfoDto request, Long userId);
 

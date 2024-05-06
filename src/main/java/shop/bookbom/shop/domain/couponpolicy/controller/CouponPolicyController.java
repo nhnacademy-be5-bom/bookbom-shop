@@ -2,6 +2,7 @@ package shop.bookbom.shop.domain.couponpolicy.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import shop.bookbom.shop.domain.couponpolicy.dto.request.CouponPolicyAddRequest;
 import shop.bookbom.shop.domain.couponpolicy.dto.request.CouponPolicyDeleteRequest;
 import shop.bookbom.shop.domain.couponpolicy.service.CouponPolicyService;
 
+@Slf4j
 @RestController
 @RequestMapping("/shop")
 @RequiredArgsConstructor
@@ -32,8 +34,8 @@ public class CouponPolicyController {
 
     @DeleteMapping("/couponPolicy/{id}")
     public CommonResponse<Void> deleteCouponPolicy(@PathVariable("id") Long userId,
-                                                   @RequestBody List<CouponPolicyDeleteRequest> requests) {
-        couponPolicyService.deleteCouponPolicy(requests, userId);
+                                                   @RequestBody CouponPolicyDeleteRequest request) {
+        couponPolicyService.deleteCouponPolicy(request, userId);
         return CommonResponse.success();
     }
 

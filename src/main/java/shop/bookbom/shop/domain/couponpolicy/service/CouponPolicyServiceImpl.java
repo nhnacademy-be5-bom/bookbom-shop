@@ -3,6 +3,7 @@ package shop.bookbom.shop.domain.couponpolicy.service;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import shop.bookbom.shop.domain.couponpolicy.dto.request.CouponPolicyAddRequest;
 import shop.bookbom.shop.domain.couponpolicy.dto.request.CouponPolicyDeleteRequest;
@@ -11,6 +12,7 @@ import shop.bookbom.shop.domain.couponpolicy.entity.CouponPolicy;
 import shop.bookbom.shop.domain.couponpolicy.exception.CouponPolicyNotFoundException;
 import shop.bookbom.shop.domain.couponpolicy.repository.CouponPolicyRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CouponPolicyServiceImpl implements CouponPolicyService {
@@ -29,12 +31,10 @@ public class CouponPolicyServiceImpl implements CouponPolicyService {
     }
 
     @Override
-    public void deleteCouponPolicy(List<CouponPolicyDeleteRequest> requests, Long userId) {
-        requests.forEach(request -> {
-            CouponPolicy couponPolicy = couponPolicyRepository.findById(request.getCouponPolicyId())
-                    .orElseThrow(CouponPolicyNotFoundException::new);
-            couponPolicyRepository.delete(couponPolicy);
-        });
+    public void deleteCouponPolicy(CouponPolicyDeleteRequest request, Long userId) {
+        CouponPolicy couponPolicy = couponPolicyRepository.findById(request.getCouponPolicyId())
+                .orElseThrow(CouponPolicyNotFoundException::new);
+        couponPolicyRepository.delete(couponPolicy);
     }
 
     @Override
