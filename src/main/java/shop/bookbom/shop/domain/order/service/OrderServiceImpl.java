@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.UUID;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.book.entity.Book;
@@ -27,6 +29,7 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
@@ -94,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
             wrapperDtoList.add(wrapperDto);
 
         }
-        
+
         //주문 응답 객체 생성 후 정보 저장
         return BeforeOrderResponse.builder()
                 .beforeOrderBookResponseList(beforeOrderBookResponseList)
@@ -427,6 +430,12 @@ public class OrderServiceImpl implements OrderService {
         bookRepository.save(book);
     }
 
-
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderManagementResponse> getOrderManagements(Pageable pageable, LocalDate dateFrom, LocalDate dateTo,
+                                                             String sort, String status) {
+        OrderStatus orderStatus = orderStatusRepository.findByName(status)
+                .orElse(null);
+        return orderRepository.getOrderManagement(pageable, dateFrom, dateTo, sort, orderStatus);
+    }
 }
-
