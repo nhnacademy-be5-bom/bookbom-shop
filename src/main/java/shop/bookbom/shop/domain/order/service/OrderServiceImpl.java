@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.book.entity.Book;
+import shop.bookbom.shop.domain.book.entity.BookStatus;
+import shop.bookbom.shop.domain.book.exception.BookNotForSaleException;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
@@ -83,6 +85,7 @@ public class OrderServiceImpl implements OrderService {
             beforeOrderBookResponseList.add(beforeOrderBookResponse);
             //총 주문 개수 다 더함
             totalOrderCount += bookRequest.getQuantity();
+
             checkStock(bookRequest.getBookId(), bookRequest.getQuantity());
         }
         //모든 포장지 list 가져옴
@@ -224,6 +227,10 @@ public class OrderServiceImpl implements OrderService {
         String imageUrl = bookFileRepository.getBookImageUrl(bookId);
         //할인가 가져옴
         Integer discountCost = book.getDiscountCost();
+        //책의 상태가 판매 중이 아니면 오류
+        if (book.getStatus() != BookStatus.FOR_SALE) {
+            throw new BookNotForSaleException();
+        }
 
 
         //새로운 주문 도서 응답 빌더 생성
@@ -419,11 +426,17 @@ public class OrderServiceImpl implements OrderService {
     private void decreaseStock(Long bookId, Integer quantity) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(BookNotFoundException::new);
+        if (book.getStatus() != BookStatus.FOR_SALE) {
+            throw new BookNotFoundException();
+        }
         //재고 감소
         int NowStock = book.getStock() - quantity;
         //재고가 마이너스가 되면 exception
         if (NowStock < 0) {
             throw new LowStockException();
+            //재고가 0이면 품절상태로 변경
+        } else if (NowStock == 0) {
+            book.updateStatus(BookStatus.SOLD_OUT);
         }
         book.updateStock(NowStock);
 
