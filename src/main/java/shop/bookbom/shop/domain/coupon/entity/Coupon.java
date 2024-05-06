@@ -50,9 +50,6 @@ public class Coupon {
     @OneToMany(mappedBy = "coupon")
     private List<CouponBook> couponBooks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "coupon")
-    private List<OrderCoupon> orderCoupons = new ArrayList<>();
-
     @Builder
     public Coupon(
             String name,
