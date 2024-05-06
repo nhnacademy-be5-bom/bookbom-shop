@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
-import shop.bookbom.shop.domain.order.dto.request.OrderListRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
@@ -82,14 +82,15 @@ public class OrderController {
 
     @GetMapping("/admin/orders")
     public CommonResponse<Page<OrderManagementResponse>> adminOrderManagement(
-            Pageable pageable,
-            @RequestBody @Valid OrderListRequest request
-    ) {
-        LocalDate dateFrom = parseLocalDate(request.getDateFrom());
-        LocalDate dateTo = parseLocalDate(request.getDateTo());
+            @PageableDefault Pageable pageable,
+            @RequestParam(value = "date_from", required = false) String dateFrom,
+            @RequestParam(value = "date_to", required = false) String dateTo,
+            @RequestParam(value = "sorted", required = false) String sort,
+            @RequestParam(value = "status", required = false) String status) {
+        LocalDate orderDateMin = parseLocalDate(dateFrom);
+        LocalDate orderDateMax = parseLocalDate(dateTo);
         Page<OrderManagementResponse> orders =
-                orderService.getOrderManagements(pageable, dateFrom, dateTo, request.getSort(),
-                        request.getDeliveryStatus());
+                orderService.getOrderManagements(pageable, orderDateMin, orderDateMax, sort, status);
         return CommonResponse.successWithData(orders);
     }
 }
