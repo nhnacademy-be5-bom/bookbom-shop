@@ -65,7 +65,7 @@ public class OrderServiceTest {
                         .discountCost(25000)
                         .packagable(true)
                         .views(210L)
-                        .status(BookStatus.FS)
+                        .status(BookStatus.FOR_SALE)
                         .stock(10)
                         .publisher(Publisher.builder().name("행복출판").build())
                         .pointRate(PointRate.builder().name("적립").earnType(EarnPointType.COST).earnPoint(300).createdAt(
@@ -133,7 +133,7 @@ public class OrderServiceTest {
                         .discountCost(25000)
                         .packagable(true)
                         .views(210L)
-                        .status(BookStatus.FS)
+                        .status(BookStatus.FOR_SALE)
                         .stock(10)
                         .publisher(Publisher.builder().name("행복출판").build())
                         .pointRate(PointRate.builder().name("적립").earnType(EarnPointType.COST).earnPoint(300).createdAt(

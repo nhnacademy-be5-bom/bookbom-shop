@@ -9,10 +9,10 @@ import lombok.Getter;
  */
 @Getter
 public enum BookStatus {
-    FS("판매중"),
-    EOS("판매 종료"),
+    FOR_SALE("판매중"),
+    END_OF_SALE("판매 종료"),
     DEL("삭제"),
-    ;
+    SOLD_OUT("품절");
 
     private String value;
 
