@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import shop.bookbom.shop.common.exception.ErrorCode;
 import shop.bookbom.shop.domain.payment.config.TossPayConfig;
-import shop.bookbom.shop.domain.payment.dto.FailureDto;
-import shop.bookbom.shop.domain.payment.dto.PaymentRequest;
-import shop.bookbom.shop.domain.payment.dto.PaymentResponse;
+import shop.bookbom.shop.domain.payment.dto.request.PaymentRequest;
+import shop.bookbom.shop.domain.payment.dto.response.FailureDto;
+import shop.bookbom.shop.domain.payment.dto.response.PaymentResponse;
 import shop.bookbom.shop.domain.payment.exception.PaymentFailException;
 
 @Component

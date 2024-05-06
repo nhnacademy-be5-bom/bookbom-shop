@@ -1,9 +1,12 @@
 package shop.bookbom.shop.domain.payment.service;
 
-import shop.bookbom.shop.domain.payment.dto.PaymentRequest;
-import shop.bookbom.shop.domain.payment.dto.PaymentSuccessResponse;
+import shop.bookbom.shop.domain.payment.dto.request.PaymentRequest;
+import shop.bookbom.shop.domain.payment.dto.response.OrderIdResponse;
+import shop.bookbom.shop.domain.payment.dto.response.PaymentSuccessResponse;
 
 public interface PaymentService {
-    public PaymentSuccessResponse getPaymnetConfirm(PaymentRequest paymentRequest);
+    OrderIdResponse getPaymnetConfirm(PaymentRequest paymentRequest);
+
+    PaymentSuccessResponse orderComplete(Long orderId);
 
 }

@@ -1,4 +1,4 @@
-package shop.bookbom.shop.domain.payment.dto;
+package shop.bookbom.shop.domain.payment.dto.response;
 
 import java.util.List;
 import lombok.Builder;
