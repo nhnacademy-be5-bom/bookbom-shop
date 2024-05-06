@@ -49,7 +49,7 @@ public class TestUtils {
                 .cost(10000)
                 .packagable(true)
                 .views(0L)
-                .status(BookStatus.FS)
+                .status(BookStatus.FOR_SALE)
                 .stock(100)
                 .pointRate(pointRate)
                 .publisher(publisher)
