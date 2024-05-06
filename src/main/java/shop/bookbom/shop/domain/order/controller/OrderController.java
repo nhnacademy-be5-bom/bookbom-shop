@@ -1,8 +1,14 @@
 package shop.bookbom.shop.domain.order.controller;
 
+import static shop.bookbom.shop.common.DateFormatter.parseLocalDate;
+
+import java.time.LocalDate;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
+import shop.bookbom.shop.domain.order.dto.request.OrderListRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.exception.OrderInfoInvalidException;
 import shop.bookbom.shop.domain.order.service.OrderService;
@@ -70,5 +78,18 @@ public class OrderController {
         WrapperSelectResponse wrapperSelectResponse = orderService.selectWrapper(wrapperSelectRequest);
         //응답 반환
         return CommonResponse.successWithData(wrapperSelectResponse);
+    }
+
+    @GetMapping("/admin/orders")
+    public CommonResponse<Page<OrderManagementResponse>> adminOrderManagement(
+            Pageable pageable,
+            @RequestBody @Valid OrderListRequest request
+    ) {
+        LocalDate dateFrom = parseLocalDate(request.getDateFrom());
+        LocalDate dateTo = parseLocalDate(request.getDateTo());
+        Page<OrderManagementResponse> orders =
+                orderService.getOrderManagements(pageable, dateFrom, dateTo, request.getSort(),
+                        request.getDeliveryStatus());
+        return CommonResponse.successWithData(orders);
     }
 }
