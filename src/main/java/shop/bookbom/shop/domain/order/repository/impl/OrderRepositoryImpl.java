@@ -56,12 +56,23 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .where(
                         orderDateMin(dateFrom),
                         orderDateMax(dateTo),
-                        inOrderStatus(status)
+                        inOrderStatus(status),
+                        order.status.name.ne("결제전")
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
+    @Override
+    public List<Order> findAllOrdersById(List<Long> orderIds) {
+        return queryFactory.selectFrom(order)
+                .join(order.payment, payment).fetchJoin()
+                .join(order.delivery, delivery).fetchJoin()
+                .where(order.id.in(orderIds))
+                .fetch();
+    }
+
+    //
     private OrderSpecifier<?> orderSortBy(String sortCond) {
         if (sortCond.isEmpty()) {
             return order.orderDate.desc();

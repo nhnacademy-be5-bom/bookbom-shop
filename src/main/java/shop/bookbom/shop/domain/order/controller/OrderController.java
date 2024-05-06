@@ -11,12 +11,14 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
+import shop.bookbom.shop.domain.order.dto.request.OrderStatusUpdateRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
@@ -80,6 +82,16 @@ public class OrderController {
         return CommonResponse.successWithData(wrapperSelectResponse);
     }
 
+    /**
+     * 관리자 페이지에서 주문 관리 내역을 조회하는 메서드입니다.
+     *
+     * @param pageable 페이징 정보
+     * @param dateFrom 조회 시작 날짜
+     * @param dateTo   조회 종료 날짜
+     * @param sort     정렬 기준
+     * @param status   주문 상태
+     * @return 주문 관리 내역
+     */
     @GetMapping("/admin/orders")
     public CommonResponse<Page<OrderManagementResponse>> adminOrderManagement(
             @PageableDefault Pageable pageable,
@@ -92,5 +104,17 @@ public class OrderController {
         Page<OrderManagementResponse> orders =
                 orderService.getOrderManagements(pageable, orderDateMin, orderDateMax, sort, status);
         return CommonResponse.successWithData(orders);
+    }
+
+    /**
+     * 주문 상태를 변경하는 메서드입니다.
+     *
+     * @param request 주문 상태 변경 요청(변경할 주문 ID 리스트, 변경할 상태)
+     * @return 성공 응답
+     */
+    @PutMapping("/admin/orders/update-status")
+    public CommonResponse<Void> updateOrderStatus(@RequestBody @Valid OrderStatusUpdateRequest request) {
+        orderService.updateOrderStatus(request.getOrderIds(), request.getStatus());
+        return CommonResponse.success();
     }
 }

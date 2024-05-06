@@ -37,6 +37,7 @@ import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.entity.Order;
 import shop.bookbom.shop.domain.order.exception.LowStockException;
+import shop.bookbom.shop.domain.order.exception.OrderNotFoundException;
 import shop.bookbom.shop.domain.order.repository.OrderRepository;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBookStatus;
@@ -436,5 +437,22 @@ public class OrderServiceImpl implements OrderService {
         OrderStatus orderStatus = orderStatusRepository.findByName(URLDecoder.decode(status, StandardCharsets.UTF_8))
                 .orElse(null);
         return orderRepository.getOrderManagement(pageable, dateFrom, dateTo, sort, orderStatus);
+    }
+
+    @Override
+    @Transactional
+    public void updateOrderStatus(List<Long> orderIds, String status) {
+        OrderStatus orderStatus = orderStatusRepository.findByName(URLDecoder.decode(status, StandardCharsets.UTF_8))
+                .orElseThrow(OrderStatusNotFoundException::new);
+        List<Order> orders = orderRepository.findAllOrdersById(orderIds);
+        if (orderIds.size() != orders.size()) {
+            throw new OrderNotFoundException();
+        }
+        orders.forEach(o -> {
+            o.updateStatus(orderStatus);
+            if (orderStatus.getName().equals("완료")) {
+                o.getDelivery().complete(LocalDate.now());
+            }
+        });
     }
 }

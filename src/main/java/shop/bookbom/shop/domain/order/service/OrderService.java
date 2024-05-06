@@ -1,6 +1,7 @@
 package shop.bookbom.shop.domain.order.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
@@ -30,4 +31,12 @@ public interface OrderService {
      */
     Page<OrderManagementResponse> getOrderManagements(Pageable pageable, LocalDate dateFrom, LocalDate dateTo,
                                                       String sort, String deliveryStatus);
+
+    /**
+     * 주문 상태를 변경하는 메서드입니다.
+     *
+     * @param orderIds 주문 id 리스트
+     * @param status   변경할 주문 상태
+     */
+    void updateOrderStatus(List<Long> orderIds, String status);
 }
