@@ -94,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
             wrapperDtoList.add(wrapperDto);
 
         }
-        
+
         //주문 응답 객체 생성 후 정보 저장
         return BeforeOrderResponse.builder()
                 .beforeOrderBookResponseList(beforeOrderBookResponseList)
@@ -327,15 +327,18 @@ public class OrderServiceImpl implements OrderService {
         //uuid로 랜덤 32자리 주문 번호 생성
         UUID uuid = UUID.randomUUID();
         String orderNumber = uuid.toString().replaceAll("-", "");
-        //request의 bookid로 책 찾음
-        Book book = bookRepository.findById(openOrderRequest.getWrapperSelectRequestList().get(0).getBookId())
-                .orElseThrow(BookNotFoundException::new);
+
         int totalOrderCount = 0;
         for (WrapperSelectBookRequest bookrequest : openOrderRequest.getWrapperSelectRequestList()) {
             totalOrderCount += bookrequest.getQuantity();
         }
+        //request의 bookid로 책 찾음
+        Book book = bookRepository.findById(openOrderRequest.getWrapperSelectRequestList().get(0).getBookId())
+                .orElseThrow(BookNotFoundException::new);
         //주문 이름 생성
-        String orderInfo = book.getTitle() + " 외 " + totalOrderCount + "건";
+        String orderInfo =
+                book.getTitle() + " 외 " + String.valueOf(openOrderRequest.getWrapperSelectRequestList().size() - 1) +
+                        "건";
         //주문상태 = "결제전"
         OrderStatus orderStatus = orderStatusRepository.findByName("결제전")
                 .orElseThrow(OrderStatusNotFoundException::new);
