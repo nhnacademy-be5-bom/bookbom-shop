@@ -1,7 +1,7 @@
 package shop.bookbom.shop.domain.users.controller;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
+import static shop.bookbom.shop.common.DateFormatter.parseLocalDate;
+
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -120,19 +120,5 @@ public class UserController {
         OrderDateCondition orderDateCondition =
                 new OrderDateCondition(parseLocalDate(dateFrom), parseLocalDate(dateTo));
         return CommonResponse.successWithData(userService.getOrderInfos(userId, pageable, orderDateCondition));
-    }
-
-    /**
-     * String date를 LocalDate로 변환하는 메서드입니다.
-     *
-     * @param date 날짜
-     * @return LocalDate
-     */
-    public LocalDate parseLocalDate(String date) {
-        try {
-            return LocalDate.parse(date);
-        } catch (DateTimeParseException | NullPointerException e) {
-            return null;
-        }
     }
 }

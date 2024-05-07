@@ -1,12 +1,14 @@
 package shop.bookbom.shop.domain.category.service;
 
+import static shop.bookbom.shop.common.exception.ErrorCode.COMMON_INVALID_PARAMETER;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.bookbom.shop.domain.book.exception.IdMismatchException;
+import shop.bookbom.shop.common.exception.InvalidParameterException;
 import shop.bookbom.shop.domain.bookcategory.repository.BookCategoryRepository;
 import shop.bookbom.shop.domain.category.dto.CategoryDTO;
 import shop.bookbom.shop.domain.category.dto.request.CategoryAddRequest;
@@ -96,7 +98,7 @@ public class CategoryService {
                 throw new CategoryHasChildLeftException();
             }
         } else {
-            throw new IdMismatchException();
+            throw new InvalidParameterException(COMMON_INVALID_PARAMETER, "요청 ID와 경로가 일치하지 않습니다.");
         }
 
         categoryRepository.save(targetCategory);
@@ -110,7 +112,7 @@ public class CategoryService {
 
         if (!targetCategory.getChild().isEmpty()) {
 
-            categoryRepository.hasBookLeftInsideOf(categoryId).orElseThrow(CategoryHasBookLeftException::new);
+            categoryRepository.isBookInside(categoryId).orElseThrow(CategoryHasBookLeftException::new);
             targetCategory.delete();
 
         } else {

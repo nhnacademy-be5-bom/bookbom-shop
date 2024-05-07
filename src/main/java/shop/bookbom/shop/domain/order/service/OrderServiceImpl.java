@@ -1,5 +1,7 @@
 package shop.bookbom.shop.domain.order.service;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,6 +12,8 @@ import java.util.List;
 import java.util.UUID;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.book.entity.Book;
@@ -30,11 +34,13 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderDetailResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.entity.Order;
 import shop.bookbom.shop.domain.order.exception.LowStockException;
+import shop.bookbom.shop.domain.order.exception.OrderNotFoundException;
 import shop.bookbom.shop.domain.order.repository.OrderRepository;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBookStatus;
@@ -449,4 +455,31 @@ public class OrderServiceImpl implements OrderService {
     public OrderDetailResponse getOrderDetail(Long id) {
         return orderRepository.getOrderById(id);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderManagementResponse> getOrderManagements(Pageable pageable, LocalDate dateFrom, LocalDate dateTo,
+                                                             String sort, String status) {
+        OrderStatus orderStatus = orderStatusRepository.findByName(URLDecoder.decode(status, StandardCharsets.UTF_8))
+                .orElse(null);
+        return orderRepository.getOrderManagement(pageable, dateFrom, dateTo, sort, orderStatus);
+    }
+
+    @Override
+    @Transactional
+    public void updateOrderStatus(List<Long> orderIds, String status) {
+        OrderStatus orderStatus = orderStatusRepository.findByName(URLDecoder.decode(status, StandardCharsets.UTF_8))
+                .orElseThrow(OrderStatusNotFoundException::new);
+        List<Order> orders = orderRepository.findAllOrdersById(orderIds);
+        if (orderIds.size() != orders.size()) {
+            throw new OrderNotFoundException();
+        }
+        orders.forEach(o -> {
+            o.updateStatus(orderStatus);
+            if (orderStatus.getName().equals("완료")) {
+                o.getDelivery().complete(LocalDate.now());
+            }
+        });
+    }
 }
+
