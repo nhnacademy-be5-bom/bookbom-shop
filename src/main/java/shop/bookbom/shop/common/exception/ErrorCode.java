@@ -72,6 +72,7 @@ public enum ErrorCode {
     ORDER_STATUS_NOT_FOUND(404, "해당 주문 상태가 존재하지 않습니다."),
     //wrapper
     WRAPPER_NOT_FOUND(404, "해당 포장지가 존재하지 않습니다."),
+    USER_NOT_VALIDATE(400, "아이디나 비밀번호가 일치하지 않습니다."),
     ;
 
     private final int code;

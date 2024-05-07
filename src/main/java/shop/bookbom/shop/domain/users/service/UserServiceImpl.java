@@ -6,10 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.bookbom.shop.common.exception.BaseException;
+import shop.bookbom.shop.common.exception.ErrorCode;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.role.repository.RoleRepository;
 import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
+import shop.bookbom.shop.domain.users.dto.request.EmailPasswordDto;
 import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.entity.User;
@@ -53,15 +56,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Page<OrderInfoResponse> getOrderInfos(
-            Long userId,
-            Pageable pageable,
-            OrderDateCondition condition
-    ) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
-        return userRepository.getOrders(user, pageable, condition);
+    public boolean confirm(EmailPasswordDto emailPasswordDto) {
+        User user = userRepository.findByEmail(emailPasswordDto.getEmail()).orElseThrow(UserNotFoundException::new);
+        return user.getPassword().equals(emailPasswordDto.getPassword());
+    }
+
     }
 
     @Override
@@ -86,4 +85,17 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(UserNotFoundException::new);
         return user.isRegistered();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderInfoResponse> getOrderInfos(
+            Long userId,
+            Pageable pageable,
+            OrderDateCondition condition
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+        return userRepository.getOrders(user, pageable, condition);
+    }
+
 }
