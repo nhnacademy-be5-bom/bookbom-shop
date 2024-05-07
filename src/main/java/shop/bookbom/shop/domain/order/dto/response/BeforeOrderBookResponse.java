@@ -10,13 +10,16 @@ public class BeforeOrderBookResponse {
     private String title;
     private Integer quantity;
     private Integer cost;
+    private Integer discountCost;
 
     @Builder
-    public BeforeOrderBookResponse(Long bookId, String imageUrl, String title, Integer quantity, Integer cost) {
+    public BeforeOrderBookResponse(Long bookId, String imageUrl, String title, Integer quantity, Integer cost,
+                                   Integer discountCost) {
         this.bookId = bookId;
         this.imageUrl = imageUrl;
         this.title = title;
         this.quantity = quantity;
         this.cost = cost;
+        this.discountCost = discountCost;
     }
 }

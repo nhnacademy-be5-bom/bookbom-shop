@@ -69,7 +69,7 @@ public class MemberServiceTest {
         //given
         Rank rank = getRank(getPointRate());
         Member member = getMember("test@email.com", getRole(), rank);
-        member.addOrder(getOrder(member, getOrderStatus()));
+        member.addOrder(getOrder(member, getOrderStatus(), LocalDateTime.now()));
         MemberInfoResponse response =
                 getMemberInfoResponse(rank, member);
         when(memberRepository.findMemberInfo(any())).thenReturn(response);

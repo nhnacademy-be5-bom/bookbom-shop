@@ -17,7 +17,7 @@ public class KeystoreResponse {
     public static class Header {
         private Integer resultCode;
         private String resultMessage;
-        private boolean isSuccessful;
+        private boolean successful;
     }
 
     @Data

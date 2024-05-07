@@ -16,6 +16,7 @@ public enum ErrorCode {
     BOOK_NOT_FOUND(404, "해당 책이 존재하지 않습니다."),
     ID_AND_PATH_VARIABLE_DOES_NOT_MATCH(403, "요청 ID가 요청 경로와 다릅니다."),
     EXCEEDS_OFFSET_RANGE(403, "요청한 페이지 번호가 마지막 페이지보다 큽니다."),
+    BOOK_NOT_FOR_SALE(400, "해당 책은 판매상태가 아닙니다. 다시 시도해주세요"),
     // cart
     CART_INVALID_ADD_REQUEST(400, "요청한 상품 ID와 수량이 올바르지 않습니다."),
     // cart_item
@@ -25,7 +26,7 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(400, "해당 회원이 존재하지 않습니다."),
     // user
     USER_ALREADY_EXIST(400, "이미 존재하는 사용자입니다"),
-    //wish
+    // wish
     WISH_NOT_FOUND(400, "해당 찜 상품이 존재하지 않습니다."),
     WISH_DUPLICATE_VALUE(400, "이미 찜한 상품입니다."),
     // category
@@ -38,12 +39,39 @@ public enum ErrorCode {
     //tag
     TAG_NOT_FOUND(400, "해당 태그가 존재하지 않습니다."),
     TAG_ALREADY_EXIST(400, "해당 태그가 이미 존재합니다."),
+    //order
+    ORDER_NOT_FOUND(400, "해당 주문이 존재하지 않습니다."),
+    LOW_STOCK(400, "주문하려는 책의 재고가 부족합니다. 다시 시도해주세요"),
+    //payment
+    PAYMENT_VERIFY_FAIL(400, "결제 검증 실패: 요청이 유효하지 않습니다."),
+    PAYMENT_NOT_ALLOWED(400, "결제가 허용되지 않습니다. 다시 시도해 주세요."),
+    PAYMENT_FAILED(400, "결제가 실패했습니다. 다시 시도해 주세요."),
+    PAYMENT_NOT_FOUND(404, "존재하지 않는 경제 정보입니다."),
+    //paymentMethod
+    PAYMENTMETHOD_NOT_FOUND(400, "해당 결제 수단이 존재하지 않습니다."),
+    //orderStatus
+    ORDERSTATUS_NOT_FOUND(400, "해당 주문 상태가 존재하지 않습니다."),
+    //orderBook
+    ORDERBOOK_NOT_FOUND(400, "해당 주문에 책정보가 존재하지 않습니다."),
+    //delivery
+    DELIVERY_NOT_FOUNT(400, "해당 주문의 배송 정보가 존재하지 않습니다."),
+    //orderCoupon
+    ORDERCOUPON_NOT_FOUND(404, "해당 주문 쿠폰이 존재하지 않습니다."),
+    //memberCounpon
+    MEMBERCOUPON_NOT_FOUND(404, "해원이 해당 쿠폰을 가지고 있지 않습니다."),
+    MEMBERCOUPON_CANNOT_USE(400, "해당 쿠폰은 사용할 수 없습니다."),
     // file
     FILE_NOT_FOUND(400, "해당 파일을 찾을 수 없습니다."),
     // author
     AUTHOR_ID_NOT_FOUND(404, "일치하는 작가 ID가 없습니다."),
     // point_rate
-    POINT_RATE_NOT_FOUND(400,"해당 포인트 정책이 존재하지 않습니다."),
+    POINT_RATE_NOT_FOUND(400, "해당 포인트 정책이 존재하지 않습니다."),
+    // point_history
+    POINT_INVALID_REASON(400, "요청하신 포인트 변동사유가 올바르지 않습니다."),
+    //orderstatus
+    ORDER_STATUS_NOT_FOUND(404, "해당 주문 상태가 존재하지 않습니다."),
+    //wrapper
+    WRAPPER_NOT_FOUND(404, "해당 포장지가 존재하지 않습니다."),
     ;
 
     private final int code;

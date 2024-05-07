@@ -1,5 +1,7 @@
 package shop.bookbom.shop.domain.book.service;
 
+import static shop.bookbom.shop.common.exception.ErrorCode.COMMON_INVALID_PARAMETER;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import shop.bookbom.shop.common.exception.InvalidParameterException;
 import shop.bookbom.shop.common.file.ObjectService;
 import shop.bookbom.shop.domain.author.dto.AuthorDTO;
 import shop.bookbom.shop.domain.author.dto.AuthorSimpleInfo;
@@ -27,7 +30,6 @@ import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.entity.BookStatus;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
-import shop.bookbom.shop.domain.book.exception.IdMismatchException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.bookauthor.entity.BookAuthor;
 import shop.bookbom.shop.domain.bookauthor.repository.BookAuthorRepository;
@@ -170,7 +172,7 @@ public class BookService {
             updateThumbnail(bookUpdateRequest.getThumbnail(), thumbnail);
 
         } else {
-            throw new IdMismatchException();
+            throw new InvalidParameterException(COMMON_INVALID_PARAMETER, "요청 ID와 경로가 일치하지 않습니다.");
         }
 
     }
@@ -202,7 +204,7 @@ public class BookService {
     @Modifying
     public void reviveBook(Long bookId) {
         Book bookToRevive = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
-        bookToRevive.updateStatus(BookStatus.FS);
+        bookToRevive.updateStatus(BookStatus.FOR_SALE);
         bookRepository.save(bookToRevive);
     }
 
