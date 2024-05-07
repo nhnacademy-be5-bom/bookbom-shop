@@ -1,9 +1,12 @@
 package shop.bookbom.shop.domain.coupon.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.bookbom.shop.domain.coupon.dto.request.AddBookCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCategoryCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.CouponInfoRequest;
+import shop.bookbom.shop.domain.coupon.dto.response.CouponInfoResponse;
 
 public interface CouponService {
     void addGeneralCoupon(AddCouponRequest addCouponRequest);
@@ -12,5 +15,5 @@ public interface CouponService {
 
     void addCategoryCoupon(AddCategoryCouponRequest addCategoryCouponRequest);
 
-    void getCouponInfo();
+    Page<CouponInfoResponse> getCouponInfo(Pageable pageable, CouponInfoRequest couponInfoRequest);
 }

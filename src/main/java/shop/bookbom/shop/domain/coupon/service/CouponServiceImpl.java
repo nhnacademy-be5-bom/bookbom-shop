@@ -1,7 +1,10 @@
 package shop.bookbom.shop.domain.coupon.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
@@ -10,6 +13,8 @@ import shop.bookbom.shop.domain.category.repository.CategoryRepository;
 import shop.bookbom.shop.domain.coupon.dto.request.AddBookCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCategoryCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCouponRequest;
+import shop.bookbom.shop.domain.coupon.dto.request.CouponInfoRequest;
+import shop.bookbom.shop.domain.coupon.dto.response.CouponInfoResponse;
 import shop.bookbom.shop.domain.coupon.entity.Coupon;
 import shop.bookbom.shop.domain.coupon.entity.CouponType;
 import shop.bookbom.shop.domain.coupon.repository.CouponRepository;
@@ -92,7 +97,8 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public void getCouponInfo() {
-
+    @Transactional(readOnly = true)
+    public Page<CouponInfoResponse> getCouponInfo(Pageable pageable, CouponInfoRequest couponInfoRequest) {
+        return couponRepository.getCouponInfoList(pageable, CouponType.valueOf(couponInfoRequest.getType()));
     }
 }
