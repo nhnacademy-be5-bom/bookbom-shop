@@ -3,6 +3,8 @@ package shop.bookbom.shop.domain.order.controller;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,10 +14,14 @@ import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderDetailResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.exception.OrderInfoInvalidException;
 import shop.bookbom.shop.domain.order.service.OrderService;
 
+/**
+ * 회원 주문 controller
+ */
 @RestController
 @RequestMapping("/shop")
 @RequiredArgsConstructor
@@ -64,8 +70,20 @@ public class OrderController {
             throw new OrderInfoInvalidException();
         }
         //포장지 선택 메소드
-        WrapperSelectResponse wrapperSelectResponse = orderService.selectWrapper(userId, wrapperSelectRequest);
+        WrapperSelectResponse wrapperSelectResponse = orderService.selectWrapper(wrapperSelectRequest);
         //응답 반환
         return CommonResponse.successWithData(wrapperSelectResponse);
+    }
+
+    /**
+     * 주문 상세 정보를 불러오는 메서드입니다.
+     *
+     * @param id 주문 id
+     * @return 주문 상세 정보
+     */
+    @GetMapping("/orders/{id}")
+    public CommonResponse<OrderDetailResponse> getOrderDetail(@PathVariable("id") Long id) {
+        OrderDetailResponse orderDetailResponse = orderService.getOrderDetail(id);
+        return CommonResponse.successWithData(orderDetailResponse);
     }
 }

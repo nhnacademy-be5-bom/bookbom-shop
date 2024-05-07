@@ -9,4 +9,5 @@ public class WrapperDto {
     private Long id;
     private String name;
     private int cost;
+    private String imgUrl;
 }

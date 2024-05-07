@@ -2,10 +2,14 @@ package shop.bookbom.shop.domain.users.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.role.repository.RoleRepository;
+import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
 import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.entity.User;
@@ -46,6 +50,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean checkEmailCanUse(String email) {
         return !userRepository.existsUserByEmail(email);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderInfoResponse> getOrderInfos(
+            Long userId,
+            Pageable pageable,
+            OrderDateCondition condition
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+        return userRepository.getOrders(user, pageable, condition);
     }
 
     @Override
