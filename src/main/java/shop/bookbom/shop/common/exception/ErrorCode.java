@@ -25,7 +25,7 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(400, "해당 회원이 존재하지 않습니다."),
     // user
     USER_ALREADY_EXIST(400, "이미 존재하는 사용자입니다"),
-    //wish
+    // wish
     WISH_NOT_FOUND(400, "해당 찜 상품이 존재하지 않습니다."),
     WISH_DUPLICATE_VALUE(400, "이미 찜한 상품입니다."),
     // category
@@ -40,6 +40,7 @@ public enum ErrorCode {
     TAG_ALREADY_EXIST(400, "해당 태그가 이미 존재합니다."),
     //order
     ORDER_NOT_FOUND(400, "해당 주문이 존재하지 않습니다."),
+    LOW_STOCK(400, "주문하려는 책의 재고가 부족합니다. 다시 시도해주세요"),
     //payment
     PAYMENT_VERIFY_FAIL(400, "결제 검증 실패: 요청이 유효하지 않습니다."),
     PAYMENT_NOT_ALLOWED(400, "결제가 허용되지 않습니다. 다시 시도해 주세요."),
@@ -66,8 +67,6 @@ public enum ErrorCode {
     POINT_RATE_NOT_FOUND(400, "해당 포인트 정책이 존재하지 않습니다."),
     // point_history
     POINT_INVALID_REASON(400, "요청하신 포인트 변동사유가 올바르지 않습니다."),
-    //order
-    LOW_STOCK(400, "주문하려는 책의 재고가 부족합니다. 다시 시도해주세요"),
     //orderstatus
     ORDER_STATUS_NOT_FOUND(404, "해당 주문 상태가 존재하지 않습니다."),
     //wrapper
