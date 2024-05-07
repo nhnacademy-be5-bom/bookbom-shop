@@ -171,7 +171,7 @@ public class BookService {
             resetBookTag(targetBook.getTags());
             handleNewTag(bookUpdateRequest.getTags(), targetBook);
             // 작가 업데이트
-            updateAuthor(targetBook.getAuthors(), bookUpdateRequest.getAuthors());
+            updateAuthor(bookUpdateRequest.getAuthors());
             // 카테고리 업데이트
             resetBookCategory(targetBook.getCategories());
             handleNewCategory(bookUpdateRequest.getCategories(), targetBook);
@@ -296,7 +296,7 @@ public class BookService {
         }
     }
 
-    private void updateAuthor(List<BookAuthor> targetBookAuthor, List<AuthorDTO> authorUpdateInfo) {
+    private void updateAuthor(List<AuthorDTO> authorUpdateInfo) {
 
         for (AuthorDTO authorInfo : authorUpdateInfo) {
 
