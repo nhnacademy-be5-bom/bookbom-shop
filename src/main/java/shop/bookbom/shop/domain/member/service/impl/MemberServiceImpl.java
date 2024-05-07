@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.bookbom.shop.domain.address.dto.request.AddressRequest;
+import shop.bookbom.shop.domain.address.service.AddressService;
 import shop.bookbom.shop.domain.member.dto.request.MemberRequestDto;
 import shop.bookbom.shop.domain.member.dto.request.SignUpFormDto;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
@@ -17,6 +19,8 @@ import shop.bookbom.shop.domain.rank.repository.RankRepository;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.role.repository.RoleRepository;
 import shop.bookbom.shop.domain.users.exception.RoleNotFoundException;
+import shop.bookbom.shop.domain.users.exception.UserAlreadyExistException;
+import shop.bookbom.shop.domain.users.repository.UserRepository;
 
 @Service
 @Slf4j
@@ -25,6 +29,8 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final RoleRepository roleRepository;
     private final RankRepository rankRepository;
+    private final AddressService addressService;
+    private final UserRepository userRepository;
 
     /**
      * 커스텀된 사용자를 만들거나
@@ -72,6 +78,9 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public Long signUp(SignUpFormDto signUpFormDto) {
+        if(userRepository.existsUserByEmail(signUpFormDto.getEmail())){
+            throw new UserAlreadyExistException();
+        }
         log.info("role 검색");
         Role role = roleRepository.findByName("ROLE_UESR").orElseThrow(
                 RoleNotFoundException::new
@@ -100,6 +109,14 @@ public class MemberServiceImpl implements MemberService {
         Long userId = memberRepository.save(member).getId();
 
         // TODO #1 여기 address, location 관련 로직 추가!!
+        AddressRequest addressRequest = AddressRequest.builder()
+                .nickName(signUpFormDto.getNickname())
+                .zipCode(signUpFormDto.getAddressNumber())
+                .address(signUpFormDto.getAddress())
+                .addressDetail(signUpFormDto.getAddressDetail())
+                .defaultAddress(true)
+                .userId(userId).build();
+        addressService.addAddress(addressRequest);
         // TODO #3 TESTCODE 추가!
 
         return userId;
