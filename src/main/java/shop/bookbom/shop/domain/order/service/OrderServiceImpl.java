@@ -303,15 +303,22 @@ public class OrderServiceImpl implements OrderService {
 
         //string의 배송예정일을 localdate로 변환
         String estimatedDateToString = openOrderRequest.getEstimatedDateTostring();
-        String[] parts = estimatedDateToString.split("[()]");
-        String[] dateParts = parts[1].split("/");
+        LocalDate estimatedDate;
+        //선택안함일 때
+        if (estimatedDateToString.equals("none")) {
+            estimatedDate = LocalDate.now().plusDays(1);
+        } else {
+            String[] parts = estimatedDateToString.split("[()]");
+            String[] dateParts = parts[1].split("/");
 
-        // 월과 일 추출
-        int month = Integer.parseInt(dateParts[0]);
-        int day = Integer.parseInt(dateParts[1]);
+            // 월과 일 추출
+            int month = Integer.parseInt(dateParts[0]);
+            int day = Integer.parseInt(dateParts[1]);
 
-        // LocalDate 생성
-        LocalDate estimatedDate = LocalDate.of(LocalDate.now().getYear(), Month.of(month), day);
+            // LocalDate 생성
+            estimatedDate = LocalDate.of(LocalDate.now().getYear(), Month.of(month), day);
+        }
+
         //delivery 빌더
         Delivery delivery = Delivery.builder().order(order)
                 .name(openOrderRequest.getName())
