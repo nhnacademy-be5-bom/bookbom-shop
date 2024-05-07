@@ -66,7 +66,7 @@ class UpdateBookRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(bookAddRequest)));
 
-        verify(bookService, times(1)).addBook(any());
+        verify(bookService, times(1)).addBook(any(), any());
 
         perform
                 .andExpect(status().isOk())
@@ -85,7 +85,7 @@ class UpdateBookRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(bookUpdateRequest)));
 
-        verify(bookService, times(1)).updateBook(any(), anyLong());
+        verify(bookService, times(1)).updateBook(any(), any(), anyLong());
 
         perform
                 .andExpect(status().isOk())

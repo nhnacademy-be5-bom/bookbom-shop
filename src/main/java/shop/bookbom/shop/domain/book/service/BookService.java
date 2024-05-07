@@ -1,6 +1,7 @@
 package shop.bookbom.shop.domain.book.service;
 
 import static shop.bookbom.shop.common.exception.ErrorCode.COMMON_INVALID_PARAMETER;
+import static shop.bookbom.shop.domain.book.DtoToListHandler.getThumbnailBookFileFrom;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +28,7 @@ import shop.bookbom.shop.domain.book.dto.request.BookUpdateRequest;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
+import shop.bookbom.shop.domain.book.dto.response.BookUpdateResponse;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.entity.BookStatus;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
@@ -40,6 +42,7 @@ import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
 import shop.bookbom.shop.domain.bookfiletype.repository.BookFileTypeRepository;
 import shop.bookbom.shop.domain.booktag.entity.BookTag;
 import shop.bookbom.shop.domain.booktag.repository.BookTagRepository;
+import shop.bookbom.shop.domain.category.entity.Category;
 import shop.bookbom.shop.domain.category.entity.Status;
 import shop.bookbom.shop.domain.category.exception.NoSuchCategoryNameException;
 import shop.bookbom.shop.domain.category.repository.CategoryRepository;
@@ -89,6 +92,11 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
+    public BookUpdateResponse getBookUpdateInformation(Long bookId) {
+        return bookRepository.getBookUpdateInfoById(bookId).orElseThrow(BookNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
     public Page<BookSearchResponse> getPageableEntireBookList(Pageable pageable) {
 
         return bookRepository.getPageableListBookMediumInfos(pageable);
@@ -110,7 +118,7 @@ public class BookService {
 
     @Transactional
     @Modifying
-    public void addBook(BookAddRequest bookAddRequest) {
+    public void addBook(MultipartFile file, BookAddRequest bookAddRequest) {
         // 출판사 저장
         Publisher publisher = handleNewPublisher(bookAddRequest.getPublisher());
         // 포인트 적립율 저장: 도서 기본 적립율
@@ -141,14 +149,14 @@ public class BookService {
         // 책-카테고리 저장, 카테고리는 저장하지 않음: 카테고리 저장 페이지에서만 가능
         handleNewCategory(bookAddRequest.getCategories(), book);
         // 파일, 책-파일 저장
-        handleThumbnail(bookAddRequest.getThumbnail(), book);
+        handleThumbnail(file, book);
     }
 
     @Transactional
     @Modifying
-    public void updateBook(BookUpdateRequest bookUpdateRequest, Long bookId) {
+    public void updateBook(MultipartFile file, BookUpdateRequest bookUpdateRequest, Long bookId) {
 
-        if (Objects.equals(bookUpdateRequest.getBookId(), bookId)) {
+        if (Objects.equals(bookUpdateRequest.getId(), bookId)) {
             Book targetBook = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
             targetBook.update(bookUpdateRequest);
 
@@ -163,13 +171,12 @@ public class BookService {
             resetBookTag(targetBook.getTags());
             handleNewTag(bookUpdateRequest.getTags(), targetBook);
             // 작가 업데이트
-            updateAuthor(bookUpdateRequest.getAuthors());
+            updateAuthor(targetBook.getAuthors(), bookUpdateRequest.getAuthors());
             // 카테고리 업데이트
             resetBookCategory(targetBook.getCategories());
             handleNewCategory(bookUpdateRequest.getCategories(), targetBook);
             // 썸네일 업데이트
-            File thumbnail = fileRepository.findThumbnailByBookId(bookId).orElseThrow(ThumbNailNotFoundException::new);
-            updateThumbnail(bookUpdateRequest.getThumbnail(), thumbnail);
+            updateThumbnail(file, targetBook);
 
         } else {
             throw new InvalidParameterException(COMMON_INVALID_PARAMETER, "요청 ID와 경로가 일치하지 않습니다.");
@@ -246,19 +253,25 @@ public class BookService {
         if (categoryNames == null) {
             BookCategory bookCategory = BookCategory.builder()
                     .book(book)
-                    //카테고리 777= "카테고리 없음"
-                    .category(categoryRepository.findById(777L).orElseThrow())
+                    //카테고리 1 = "카테고리 없음"
+                    .category(categoryRepository.findById(1L).orElseThrow())
                     .build();
             bookCategoryRepository.save(bookCategory);
+
         } else {
             for (String categoryName : categoryNames) {
+                Optional<Category> categoryEntity = categoryRepository.findByName(categoryName);
 
-                BookCategory bookCategory = BookCategory.builder()
-                        .book(book)
-                        .category(categoryRepository.findByName(categoryName)
-                                .orElseThrow(NoSuchCategoryNameException::new))
-                        .build();
-                bookCategoryRepository.save(bookCategory);
+                if (categoryEntity.isPresent()) {
+                    if (!categoryEntity.get().hasChildren()) {
+
+                        BookCategory bookCategory = BookCategory.builder()
+                                .book(book)
+                                .category(categoryEntity.get())
+                                .build();
+                        bookCategoryRepository.save(bookCategory);
+                    }
+                }
             }
         }
     }
@@ -283,13 +296,13 @@ public class BookService {
         }
     }
 
-    private void updateAuthor(List<AuthorDTO> authorUpdateInfo) {
+    private void updateAuthor(List<BookAuthor> targetBookAuthor, List<AuthorDTO> authorUpdateInfo) {
 
         for (AuthorDTO authorInfo : authorUpdateInfo) {
 
             Optional<Author> target = authorRepository.findById(authorInfo.getId());
 
-            if (target.isPresent() && !Objects.equals(target.get().getId(), authorInfo.getId())) {
+            if (target.isPresent() && Objects.equals(target.get().getId(), authorInfo.getId())) {
                 target.get().update(authorInfo.getName());
                 authorRepository.save(target.get());
 
@@ -362,16 +375,27 @@ public class BookService {
         }
     }
 
-    private void updateThumbnail(MultipartFile newThumbnail, File originalThumbnail) {
+    private void updateThumbnail(MultipartFile newThumbnail, Book book) {
+        File originalThumbnail =
+                fileRepository.findThumbnailByBookId(book.getId())
+                        .orElseThrow(ThumbNailNotFoundException::new);
+
         String url = originalThumbnail.getUrl();
-        int index = url.indexOf(CONTAINER_NAME) + CONTAINER_NAME.length();
-        String objectName = url.substring(index);
 
-        objectService.uploadFile(newThumbnail, CONTAINER_NAME, objectName);
+        if (url.equals("NONE")) {
+            bookFileRepository.delete(getThumbnailBookFileFrom(book.getBookFiles()));
+            handleThumbnail(newThumbnail, book);
 
-        originalThumbnail.update(objectService.getUrl(CONTAINER_NAME, objectName),
-                StringUtils.getFilenameExtension(newThumbnail.getOriginalFilename()),
-                LocalDateTime.now());
+        } else {
+            int index = url.indexOf(CONTAINER_NAME) + CONTAINER_NAME.length() + 1;
+            String objectName = url.substring(index);
+
+            objectService.uploadFile(newThumbnail, CONTAINER_NAME, objectName);
+
+            originalThumbnail.update(objectService.getUrl(CONTAINER_NAME, objectName),
+                    StringUtils.getFilenameExtension(newThumbnail.getOriginalFilename()),
+                    LocalDateTime.now());
+        }
     }
 
     @Transactional(readOnly = true)

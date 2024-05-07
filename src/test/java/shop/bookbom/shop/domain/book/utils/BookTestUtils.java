@@ -8,7 +8,6 @@ import java.util.List;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHitsImpl;
 import org.springframework.data.elasticsearch.core.TotalHitsRelation;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import shop.bookbom.shop.domain.author.dto.AuthorDTO;
 import shop.bookbom.shop.domain.author.dto.AuthorResponse;
@@ -111,7 +110,7 @@ public class BookTestUtils {
         authors.add(new AuthorSimpleInfo("지은이", "전석준"));
         authors.add(new AuthorSimpleInfo("옮긴이", "전재학"));
 
-        return new BookAddRequest(new MockMultipartFile("image.jpg", new byte[123]),
+        return new BookAddRequest(
                 title,
                 new ArrayList<>(List.of(new String[] {"카테1", "카테2"})),
                 new ArrayList<>(List.of(new String[] {"태그1", "태그2"})),
@@ -133,7 +132,6 @@ public class BookTestUtils {
     public static BookUpdateRequest getBookUpdateRequest(String title) {
 
         return new BookUpdateRequest(1L,
-                new MockMultipartFile("image.jpg", new byte[123]),
                 title,
                 new ArrayList<>(List.of(new String[] {"카테1", "카테2"})),
                 new ArrayList<>(List.of(new String[] {"태그1", "태그2"})),

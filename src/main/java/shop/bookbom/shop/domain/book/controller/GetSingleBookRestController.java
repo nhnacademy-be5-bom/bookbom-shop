@@ -10,6 +10,7 @@ import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
+import shop.bookbom.shop.domain.book.dto.response.BookUpdateResponse;
 import shop.bookbom.shop.domain.book.service.BookService;
 
 @RestController
@@ -38,6 +39,13 @@ public class GetSingleBookRestController {
     public CommonResponse<BookSimpleResponse> getBookSimple(@PathVariable("id") Long bookId) {
 
         return CommonResponse.successWithData(bookService.getBookSimpleInformation(bookId));
+    }
+
+    @GetMapping("/book/update/{id}")
+    @CrossOrigin(origins = "*")
+    public CommonResponse<BookUpdateResponse> getBookUpdate(@PathVariable("id") Long bookId) {
+
+        return CommonResponse.successWithData(bookService.getBookUpdateInformation(bookId));
     }
 
 

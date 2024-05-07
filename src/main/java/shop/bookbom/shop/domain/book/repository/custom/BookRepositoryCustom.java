@@ -8,6 +8,7 @@ import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
+import shop.bookbom.shop.domain.book.dto.response.BookUpdateResponse;
 
 /**
  * packageName    : shop.bookbom.shop.domain.book.repository.custom
@@ -54,6 +55,8 @@ public interface BookRepositoryCustom {
      * @return 1 book simple response
      */
     Optional<BookSimpleResponse> getBookSimpleInfoById(Long bookId);
+
+    Optional<BookUpdateResponse> getBookUpdateInfoById(Long bookId);
 
     /**
      * methodName : getPageableAndOrderByViewCountListBookMediumInfos

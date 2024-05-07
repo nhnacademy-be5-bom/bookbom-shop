@@ -1,7 +1,7 @@
 package shop.bookbom.shop.domain.book.repository.custom;
 
 
-import static shop.bookbom.shop.domain.book.DtoToListHandler.getThumbnailFrom;
+import static shop.bookbom.shop.domain.book.DtoToListHandler.getThumbnailUrlFrom;
 import static shop.bookbom.shop.domain.book.DtoToListHandler.processReviews;
 
 import com.querydsl.jpa.JPQLQuery;
@@ -18,6 +18,7 @@ import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
+import shop.bookbom.shop.domain.book.dto.response.BookUpdateResponse;
 import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.book.entity.BookStatus;
 import shop.bookbom.shop.domain.book.entity.QBook;
@@ -107,6 +108,19 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
                 .fetchOne();
 
         BookSimpleResponse response = BookSimpleResponse.of(bookEntity, bookEntity.getBookFiles());
+
+        return Optional.ofNullable(response);
+    }
+
+    @Override
+    public Optional<BookUpdateResponse> getBookUpdateInfoById(Long bookId) {
+
+        Book bookEntity = from(book)
+                .where(book.id.eq(bookId))
+                .select(book)
+                .fetchOne();
+
+        BookUpdateResponse response = BookUpdateResponse.of(bookEntity);
 
         return Optional.ofNullable(response);
     }
@@ -254,7 +268,7 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
             responseList.add(
                     BookSearchResponse.builder()
                             .id(entity.getId())
-                            .thumbnail(getThumbnailFrom(entity.getBookFiles()))
+                            .thumbnail(getThumbnailUrlFrom(entity.getBookFiles()))
                             .title(entity.getTitle())
                             .author(authors)
                             .publisherId(entity.getPublisher().getId())
