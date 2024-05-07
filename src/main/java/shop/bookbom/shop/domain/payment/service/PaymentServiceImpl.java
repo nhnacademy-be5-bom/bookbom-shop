@@ -37,11 +37,13 @@ import shop.bookbom.shop.domain.ordercoupon.repository.OrderCouponRepository;
 import shop.bookbom.shop.domain.orderstatus.exception.OrderStatusNotFoundException;
 import shop.bookbom.shop.domain.orderstatus.repository.OrderStatusRepository;
 import shop.bookbom.shop.domain.payment.adapter.PaymentAdapter;
-import shop.bookbom.shop.domain.payment.dto.PaymentRequest;
-import shop.bookbom.shop.domain.payment.dto.PaymentResponse;
-import shop.bookbom.shop.domain.payment.dto.PaymentSuccessResponse;
+import shop.bookbom.shop.domain.payment.dto.request.PaymentRequest;
+import shop.bookbom.shop.domain.payment.dto.response.OrderIdResponse;
+import shop.bookbom.shop.domain.payment.dto.response.PaymentResponse;
+import shop.bookbom.shop.domain.payment.dto.response.PaymentSuccessResponse;
 import shop.bookbom.shop.domain.payment.entity.Payment;
 import shop.bookbom.shop.domain.payment.exception.PaymentNotAllowedException;
+import shop.bookbom.shop.domain.payment.exception.PaymentNotFoundException;
 import shop.bookbom.shop.domain.payment.exception.PaymentVerifyFailException;
 import shop.bookbom.shop.domain.payment.repository.PaymentRepository;
 import shop.bookbom.shop.domain.paymentmethod.entity.PaymentMethod;
@@ -76,7 +78,7 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Transactional
     @Override
-    public PaymentSuccessResponse getPaymnetConfirm(PaymentRequest paymentRequest) {
+    public OrderIdResponse getPaymnetConfirm(PaymentRequest paymentRequest) {
         //토스페이에 결제 승인 요청 보냄
         PaymentResponse paymentResponse = paymentAdapter.requestPaymentConfirm(paymentRequest);
         //받은 데이터 중 결제 금액이 order의 결제금액과 같은지 비교 검증
@@ -97,6 +99,16 @@ public class PaymentServiceImpl implements PaymentService {
 
             }
         }
+
+        return OrderIdResponse.builder().orderId(order.getId()).build();
+    }
+
+    @Transactional
+    @Override
+    public PaymentSuccessResponse orderComplete(Long orderId) {
+        Payment payment = paymentRepository.findById(orderId)
+                .orElseThrow(PaymentNotFoundException::new);
+
         return orderComplete(payment);
     }
 

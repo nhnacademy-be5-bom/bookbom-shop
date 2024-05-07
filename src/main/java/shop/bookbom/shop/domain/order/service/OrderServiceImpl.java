@@ -1,5 +1,7 @@
 package shop.bookbom.shop.domain.order.service;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,9 +12,13 @@ import java.util.List;
 import java.util.UUID;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.book.entity.Book;
+import shop.bookbom.shop.domain.book.entity.BookStatus;
+import shop.bookbom.shop.domain.book.exception.BookNotForSaleException;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
@@ -27,11 +33,14 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderDetailResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.entity.Order;
 import shop.bookbom.shop.domain.order.exception.LowStockException;
+import shop.bookbom.shop.domain.order.exception.OrderNotFoundException;
 import shop.bookbom.shop.domain.order.repository.OrderRepository;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBookStatus;
@@ -83,6 +92,7 @@ public class OrderServiceImpl implements OrderService {
             beforeOrderBookResponseList.add(beforeOrderBookResponse);
             //총 주문 개수 다 더함
             totalOrderCount += bookRequest.getQuantity();
+
             checkStock(bookRequest.getBookId(), bookRequest.getQuantity());
         }
         //모든 포장지 list 가져옴
@@ -94,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
             wrapperDtoList.add(wrapperDto);
 
         }
-        
+
         //주문 응답 객체 생성 후 정보 저장
         return BeforeOrderResponse.builder()
                 .beforeOrderBookResponseList(beforeOrderBookResponseList)
@@ -224,6 +234,10 @@ public class OrderServiceImpl implements OrderService {
         String imageUrl = bookFileRepository.getBookImageUrl(bookId);
         //할인가 가져옴
         Integer discountCost = book.getDiscountCost();
+        //책의 상태가 판매 중이 아니면 오류
+        if (book.getStatus() != BookStatus.FOR_SALE) {
+            throw new BookNotForSaleException();
+        }
 
 
         //새로운 주문 도서 응답 빌더 생성
@@ -327,15 +341,18 @@ public class OrderServiceImpl implements OrderService {
         //uuid로 랜덤 32자리 주문 번호 생성
         UUID uuid = UUID.randomUUID();
         String orderNumber = uuid.toString().replaceAll("-", "");
-        //request의 bookid로 책 찾음
-        Book book = bookRepository.findById(openOrderRequest.getWrapperSelectRequestList().get(0).getBookId())
-                .orElseThrow(BookNotFoundException::new);
+
         int totalOrderCount = 0;
         for (WrapperSelectBookRequest bookrequest : openOrderRequest.getWrapperSelectRequestList()) {
             totalOrderCount += bookrequest.getQuantity();
         }
+        //request의 bookid로 책 찾음
+        Book book = bookRepository.findById(openOrderRequest.getWrapperSelectRequestList().get(0).getBookId())
+                .orElseThrow(BookNotFoundException::new);
         //주문 이름 생성
-        String orderInfo = book.getTitle() + " 외 " + totalOrderCount + "건";
+        String orderInfo =
+                book.getTitle() + " 외 " + String.valueOf(openOrderRequest.getWrapperSelectRequestList().size() - 1) +
+                        "건";
         //주문상태 = "결제전"
         OrderStatus orderStatus = orderStatusRepository.findByName("결제전")
                 .orElseThrow(OrderStatusNotFoundException::new);
@@ -416,17 +433,53 @@ public class OrderServiceImpl implements OrderService {
     private void decreaseStock(Long bookId, Integer quantity) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(BookNotFoundException::new);
+        if (book.getStatus() != BookStatus.FOR_SALE) {
+            throw new BookNotFoundException();
+        }
         //재고 감소
         int NowStock = book.getStock() - quantity;
         //재고가 마이너스가 되면 exception
         if (NowStock < 0) {
             throw new LowStockException();
+            //재고가 0이면 품절상태로 변경
+        } else if (NowStock == 0) {
+            book.updateStatus(BookStatus.SOLD_OUT);
         }
         book.updateStock(NowStock);
 
         bookRepository.save(book);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public OrderDetailResponse getOrderDetail(Long id) {
+        return orderRepository.getOrderById(id);
+    }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderManagementResponse> getOrderManagements(Pageable pageable, LocalDate dateFrom, LocalDate dateTo,
+                                                             String sort, String status) {
+        OrderStatus orderStatus = orderStatusRepository.findByName(URLDecoder.decode(status, StandardCharsets.UTF_8))
+                .orElse(null);
+        return orderRepository.getOrderManagement(pageable, dateFrom, dateTo, sort, orderStatus);
+    }
+
+    @Override
+    @Transactional
+    public void updateOrderStatus(List<Long> orderIds, String status) {
+        OrderStatus orderStatus = orderStatusRepository.findByName(URLDecoder.decode(status, StandardCharsets.UTF_8))
+                .orElseThrow(OrderStatusNotFoundException::new);
+        List<Order> orders = orderRepository.findAllOrdersById(orderIds);
+        if (orderIds.size() != orders.size()) {
+            throw new OrderNotFoundException();
+        }
+        orders.forEach(o -> {
+            o.updateStatus(orderStatus);
+            if (orderStatus.getName().equals("완료")) {
+                o.getDelivery().complete(LocalDate.now());
+            }
+        });
+    }
 }
 

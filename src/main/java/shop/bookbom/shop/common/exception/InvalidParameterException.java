@@ -1,7 +1,4 @@
-package shop.bookbom.shop.domain.book.exception;
-
-import shop.bookbom.shop.common.exception.BaseException;
-import shop.bookbom.shop.common.exception.ErrorCode;
+package shop.bookbom.shop.common.exception;
 
 /**
  * packageName    : shop.bookbom.shop.domain.book.exception
@@ -14,16 +11,16 @@ import shop.bookbom.shop.common.exception.ErrorCode;
  * -----------------------------------------------------------
  * 2024-04-17        UuLaptop       최초 생성
  */
-public class IdMismatchException extends BaseException {
-    public IdMismatchException() {
-        super(ErrorCode.ID_AND_PATH_VARIABLE_DOES_NOT_MATCH);
+public class InvalidParameterException extends BaseException {
+    public InvalidParameterException() {
+        super(ErrorCode.COMMON_INVALID_PARAMETER);
     }
 
-    public IdMismatchException(ErrorCode errorCode) {
+    public InvalidParameterException(ErrorCode errorCode) {
         super(errorCode);
     }
 
-    public IdMismatchException(ErrorCode errorCode, String message) {
+    public InvalidParameterException(ErrorCode errorCode, String message) {
         super(errorCode, message);
     }
 }

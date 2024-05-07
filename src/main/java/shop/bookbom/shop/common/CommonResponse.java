@@ -21,7 +21,7 @@ public class CommonResponse<T> {
     public static CommonResponse<Void> success() {
         return CommonResponse.<Void>builder()
                 .header(ResponseHeader.builder()
-                        .isSuccessful(true)
+                        .successful(true)
                         .resultCode(HttpStatus.OK.value())
                         .resultMessage(SUCCESS_MESSAGE).build())
                 .build();
@@ -30,7 +30,7 @@ public class CommonResponse<T> {
     public static <T> CommonResponse<T> successWithData(T data) {
         return CommonResponse.<T>builder()
                 .header(ResponseHeader.builder()
-                        .isSuccessful(true)
+                        .successful(true)
                         .resultCode(HttpStatus.OK.value())
                         .resultMessage(SUCCESS_MESSAGE).build())
                 .result(data)
@@ -40,9 +40,18 @@ public class CommonResponse<T> {
     public static CommonResponse<Void> fail(ErrorCode errorCode) {
         return CommonResponse.<Void>builder()
                 .header(ResponseHeader.builder()
-                        .isSuccessful(false)
+                        .successful(false)
                         .resultCode(errorCode.getCode())
                         .resultMessage(errorCode.getMessage()).build())
+                .build();
+    }
+
+    public static CommonResponse<Void> fail(ErrorCode errorCode, String message) {
+        return CommonResponse.<Void>builder()
+                .header(ResponseHeader.builder()
+                        .successful(false)
+                        .resultCode(errorCode.getCode())
+                        .resultMessage(message).build())
                 .build();
     }
 }

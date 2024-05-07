@@ -22,7 +22,7 @@ public class CommonListResponse<T> {
     public static <T> CommonListResponse<T> successWithList(List<T> data) {
         return CommonListResponse.<T>builder()
                 .header(ResponseHeader.builder()
-                        .isSuccessful(true)
+                        .successful(true)
                         .resultCode(HttpStatus.OK.value())
                         .resultMessage(SUCCESS_MESSAGE).build())
                 .result(data)

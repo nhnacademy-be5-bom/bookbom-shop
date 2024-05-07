@@ -1,6 +1,8 @@
 package shop.bookbom.shop.domain.order.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,12 +11,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.bookbom.shop.domain.delivery.entity.Delivery;
+import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
+import shop.bookbom.shop.domain.payment.entity.Payment;
 import shop.bookbom.shop.domain.users.entity.User;
 
 @Entity
@@ -59,10 +66,29 @@ public class Order {
     @JoinColumn(name = "order_status_id", nullable = false)
     private OrderStatus status;
 
+    @OneToOne(mappedBy = "order")
+    private Delivery delivery;
+
+    @OneToOne(mappedBy = "order")
+    private Payment payment;
+
+    @OneToMany(mappedBy = "order")
+    private List<OrderBook> orderBooks = new ArrayList<>();
+
+
     @Builder
-    public Order(String orderNumber, String orderInfo, LocalDateTime orderDate, String senderName,
-                 String senderPhoneNumber,
-                 Integer totalCost, Integer discountCost, int usedPoint, User user, OrderStatus status) {
+    public Order(
+            String orderNumber,
+            String orderInfo,
+            LocalDateTime orderDate,
+            String senderName,
+            String senderPhoneNumber,
+            Integer totalCost,
+            Integer discountCost,
+            int usedPoint,
+            User user,
+            OrderStatus status
+    ) {
         this.orderNumber = orderNumber;
         this.orderInfo = orderInfo;
         this.orderDate = orderDate;
@@ -74,7 +100,6 @@ public class Order {
         this.user = user;
         this.status = status;
     }
-
 
     public void updateStatus(OrderStatus status) {
         this.status = status;

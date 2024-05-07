@@ -20,5 +20,5 @@ public interface CategoryRepositoryCustom {
 
     CategoryNameAndChildResponse getNameAndChildrenById(Long categoryId);
 
-    Optional<Boolean> hasBookLeftInsideOf(Long categoryId);
+    Optional<Boolean> isBookInside(Long categoryId);
 }
