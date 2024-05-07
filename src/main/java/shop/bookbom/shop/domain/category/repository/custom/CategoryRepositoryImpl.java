@@ -39,7 +39,7 @@ public class CategoryRepositoryImpl extends QuerydslRepositorySupport implements
     }
 
     @Override
-    public Optional<Boolean> hasBookLeftInsideOf(Long categoryId) {
+    public Optional<Boolean> isBookInside(Long categoryId) {
         long bookCount = from(bookCategory)
                 .where(bookCategory.category.id.eq(categoryId))
                 .select(bookCategory.book.count())
