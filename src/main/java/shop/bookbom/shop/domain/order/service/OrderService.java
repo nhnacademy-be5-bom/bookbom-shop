@@ -39,4 +39,12 @@ public interface OrderService {
      * @param status   변경할 주문 상태
      */
     void updateOrderStatus(List<Long> orderIds, String status);
+
+    /**
+     * 주문 상세 정보를 불러오는 메서드입니다.
+     *
+     * @param id 주문 id
+     * @return 주문 상세 정보
+     */
+    OrderDetailResponse getOrderDetail(Long id);
 }

@@ -31,6 +31,7 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderDetailResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
@@ -394,8 +395,11 @@ public class OrderServiceImpl implements OrderService {
             Wrapper wrapper = wrapperRepository.findByName(bookRequest.getWrapperName())
                     .orElseThrow(WrapperNotFoundException::new);
 
-            boolean packaging = !bookRequest.getWrapperName().equals("안함");
+            boolean packaging = true;
             //포장지 이름이 "안함"이면 packaging이 false
+            if (bookRequest.getWrapperName().equals("안함")) {
+                packaging = false;
+            }
             OrderBook orderBook = OrderBook.builder().quantity(bookRequest.getQuantity())
                     .packaging(packaging)
                     .status(OrderBookStatus.NONE)
@@ -432,6 +436,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
+    public OrderDetailResponse getOrderDetail(Long id) {
+        return orderRepository.getOrderById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<OrderManagementResponse> getOrderManagements(Pageable pageable, LocalDate dateFrom, LocalDate dateTo,
                                                              String sort, String status) {
         OrderStatus orderStatus = orderStatusRepository.findByName(URLDecoder.decode(status, StandardCharsets.UTF_8))
@@ -456,3 +466,4 @@ public class OrderServiceImpl implements OrderService {
         });
     }
 }
+

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
 import shop.bookbom.shop.domain.order.dto.request.OrderStatusUpdateRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderDetailResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.exception.OrderInfoInvalidException;
@@ -116,5 +118,17 @@ public class OrderController {
     public CommonResponse<Void> updateOrderStatus(@RequestBody @Valid OrderStatusUpdateRequest request) {
         orderService.updateOrderStatus(request.getOrderIds(), request.getStatus());
         return CommonResponse.success();
+    }
+
+    /**
+     * 주문 상세 정보를 불러오는 메서드입니다.
+     *
+     * @param id 주문 id
+     * @return 주문 상세 정보
+     */
+    @GetMapping("/orders/{id}")
+    public CommonResponse<OrderDetailResponse> getOrderDetail(@PathVariable("id") Long id) {
+        OrderDetailResponse orderDetailResponse = orderService.getOrderDetail(id);
+        return CommonResponse.successWithData(orderDetailResponse);
     }
 }
