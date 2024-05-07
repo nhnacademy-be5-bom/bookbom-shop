@@ -15,5 +15,5 @@ public interface CouponService {
 
     void addCategoryCoupon(AddCategoryCouponRequest addCategoryCouponRequest);
 
-    Page<CouponInfoResponse> getCouponInfo(Pageable pageable, CouponInfoRequest couponInfoRequest);
+    Page<CouponInfoResponse> getCouponInfo(Pageable pageable, String type);
 }

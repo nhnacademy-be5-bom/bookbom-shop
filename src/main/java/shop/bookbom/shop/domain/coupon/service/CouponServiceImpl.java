@@ -98,7 +98,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CouponInfoResponse> getCouponInfo(Pageable pageable, CouponInfoRequest couponInfoRequest) {
-        return couponRepository.getCouponInfoList(pageable, CouponType.valueOf(couponInfoRequest.getType()));
+    public Page<CouponInfoResponse> getCouponInfo(Pageable pageable, String type) {
+        return couponRepository.getCouponInfoList(pageable, CouponType.valueOf(type));
     }
 }

@@ -48,11 +48,10 @@ public class CouponController {
         return CommonResponse.success();
     }
 
-    @GetMapping("/couponAdmin/{id}")
+    @GetMapping("/couponAdmin/{type}/{id}")
     public CommonResponse<Page<CouponInfoResponse>> getCouponList(@PageableDefault Pageable pageable,
-                                                                  @PathVariable("id") Long userId, @RequestBody
-                                                                  CouponInfoRequest couponInfoRequest) {
-        Page<CouponInfoResponse> couponInfoResponses = couponService.getCouponInfo(pageable, couponInfoRequest);
+                                                                  @PathVariable("id") Long userId, @PathVariable("type") String type) {
+        Page<CouponInfoResponse> couponInfoResponses = couponService.getCouponInfo(pageable, type.toUpperCase());
         return CommonResponse.successWithData(couponInfoResponses);
     }
 }
