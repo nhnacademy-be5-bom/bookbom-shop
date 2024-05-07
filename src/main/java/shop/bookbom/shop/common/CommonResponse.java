@@ -49,7 +49,7 @@ public class CommonResponse<T> {
     public static CommonResponse<Void> fail(ErrorCode errorCode, String message) {
         return CommonResponse.<Void>builder()
                 .header(ResponseHeader.builder()
-                        .isSuccessful(false)
+                        .successful(false)
                         .resultCode(errorCode.getCode())
                         .resultMessage(message).build())
                 .build();
