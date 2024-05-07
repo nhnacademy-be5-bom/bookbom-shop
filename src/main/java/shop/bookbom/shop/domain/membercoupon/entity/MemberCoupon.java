@@ -66,4 +66,12 @@ public class MemberCoupon {
         this.coupon = coupon;
         this.member = member;
     }
+
+    public void updateUseDate(LocalDate useDate) {
+        this.useDate = useDate;
+    }
+
+    public void updateCouponStatus(CouponStatus status) {
+        this.status = status;
+    }
 }

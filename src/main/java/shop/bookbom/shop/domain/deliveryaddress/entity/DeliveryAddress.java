@@ -2,6 +2,8 @@ package shop.bookbom.shop.domain.deliveryaddress.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AccessLevel;
@@ -15,7 +17,8 @@ import lombok.NoArgsConstructor;
 @Getter
 public class DeliveryAddress {
     @Id
-    @Column(name = "delivery_address_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "delivery_address_id", nullable = false)
     private Long id;
 
     @Column(name = "zip_code", nullable = false, length = 5)

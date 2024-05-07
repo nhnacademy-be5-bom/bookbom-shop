@@ -125,7 +125,7 @@ public class BookTestUtils {
                 1000,
                 100,
                 true,
-                BookStatus.FS,
+                BookStatus.FOR_SALE,
                 123
         );
     }
@@ -147,7 +147,7 @@ public class BookTestUtils {
                 1000,
                 100,
                 true,
-                BookStatus.FS,
+                BookStatus.FOR_SALE,
                 123
         );
     }

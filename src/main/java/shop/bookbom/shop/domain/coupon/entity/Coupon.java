@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,6 +36,10 @@ public class Coupon {
     @Column(nullable = false, length = 50)
     private String name;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CouponType type;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_policy_id", nullable = false)
     private CouponPolicy couponPolicy;
@@ -50,11 +56,13 @@ public class Coupon {
     @Builder
     public Coupon(
             String name,
+            CouponType type,
             CouponPolicy couponPolicy,
             List<MemberCoupon> memberCoupons,
             List<CouponBook> couponBooks
     ) {
         this.name = name;
+        this.type = type;
         this.couponPolicy = couponPolicy;
         this.memberCoupons = memberCoupons;
         this.couponBooks = couponBooks;

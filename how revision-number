@@ -1,0 +1,152 @@
+[33m1453c03[m[33m ([m[1;36mHEAD -> [m[1;32mfeature/order[m[33m, [m[1;31morigin/feature/order[m[33m)[m [fix] 주문서 작성 api 수정
+[33m5114d0c[m [feat] 주문서 작성 api
+[33m96ca374[m Merge branch 'develop' of https://github.com/nhnacademy-be5-bom/bookbom-shop into feature/order
+[33mdc609c8[m [fix] 포장지 선택 - selectWrapper api 수정
+[33m079c4af[m [fix] 포장지 선택 - 책 정보 조회 메소드 분리 + 재고 체크 메소드 추가
+[33m40c26e1[m [fix] order 비회원 controller 생성
+[33m8b7084e[m [fix] erd 수정 - orders, wrapper
+[33m20a915a[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mdevelop[m[33m)[m [fix] 포장지 선택 test 수정
+[33m081ca6d[m [fix] 리뷰 평균 평점 소수점 한 자리까지 나오도록 수정
+[33m232d7e9[m Merge branch 'develop' of https://github.com/nhnacademy-be5-bom/bookbom-shop into feature/order
+[33mdb8f15a[m [fix] 포장지 선택 dto 필드 수정
+[33mf8ac31d[m [fix] 카테고리 조회 테스트 코드 에러 수정
+[33mefccd3f[m [Fix] repository 충돌 해결
+[33mfbbb628[m [Fix] Conflict 해결
+[33md2c3713[m Merge pull request #30 from nhnacademy-be5-bom/feature/category
+[33m63f1567[m Merge branch 'develop' into feature/category
+[33md2155f3[m Merge pull request #31 from nhnacademy-be5-bom/feature/book
+[33m2670278[m Merge branch 'develop' into feature/book
+[33m2931f6e[m [Fix] 베스트도서 총권수 100개 제한
+[33m57bdb2c[m Merge branch 'feature/category' into feature/book
+[33m0f7a68d[m Merge branch 'develop' into feature/category
+[33m3b1014f[m [Refactor] 포인트 관련 상세정보 출력 타입 수정
+[33m2783ec0[m [Refactor] 페이지네이션 쿼리 수정
+[33m877b1d3[m [fix] 도서 리뷰 조회 BookService로 이동
+[33mfaf3215[m [Feature] 카테고리 CRUD
+[33mafadfc8[m Merge remote-tracking branch 'origin/develop' into feature/order
+[33md08385e[m [fix] 정적 팩토리 메서드 패턴 사용 클래스 생성자 private 처리
+[33m14f6be2[m Merge pull request #28 from nhnacademy-be5-bom/fix/cart
+[33m9968db2[m[33m ([m[1;31morigin/fix/cart[m[33m)[m [fix] 사용하지 않는 import 문 제거
+[33m20a66b9[m [fix] TestEntityManager를 사용한 테스트 로직으로 수정
+[33mdfdc140[m [fix] JPAQueryFactory Spring Bean으로 등록해서 사용하도록 수정
+[33m8152cdf[m [fix] ElasticSearch 검색 ngram 형태 분석기 오탈자 수정
+[33m0d92c6e[m [feat] ElasticSearch 검색 ngram 형태 분석기 추가
+[33m13c1e53[m [fix] 도메인에서 개발 환경 DB 볼 수 있도록 변경
+[33m9cec94c[m Merge remote-tracking branch 'origin/develop' into feature/order
+[33m4ac36e5[m Merge pull request #29 from nhnacademy-be5-bom/feature/book
+[33m13acecd[m[33m ([m[1;31morigin/feature/book[m[33m)[m [Refactor] DTO 핸들러 클래스에 private 생성자 등록
+[33mb0d44a0[m[33m ([m[1;31morigin/feature/category[m[33m)[m [Refactor] 검색 코드 재활용을 위한 책 리포지토리 코드 리팩토링 진행
+[33m138dda1[m [fix] develop 브랜치에 PR시에는 CI/CD 안되도록 수정
+[33mbec5609[m [Test] 서비스 테스트 코드
+[33ma453f1b[m [Refactor] DTO 수정에 따른 테스트 코드 수정
+[33m28bb4a8[m [Refactor] 중간정보, 간단정보 쿼리 수정
+[33m89e5fdd[m [fix] PointRateRepositoryTest 로직 수정
+[33md14a08c[m Merge remote-tracking branch 'refs/remotes/origin/develop' into fix/cart
+[33m34bc6cd[m Merge pull request #27 from nhnacademy-be5-bom/feature/admin/point
+[33me561a5e[m [feat] CartRepository 테스트 코드 작성
+[33ma87ed39[m[33m ([m[1;31morigin/feature/admin/point[m[33m)[m Merge remote-tracking branch 'refs/remotes/origin/develop' into feature/admin/point
+[33md1b4d3e[m Merge remote-tracking branch 'refs/remotes/origin/develop' into fix/cart
+[33m6066778[m Merge remote-tracking branch 'origin/feature/book' into feature/book
+[33m9bbef06[m [Refactor] 상세정보 쿼리 수정
+[33mf9b12ef[m [Fix] 잘못된 mapped 수정
+[33me00a8cc[m [fix] 장바구니 등록 시 cartItem의 ID를 반환해주는 방식으로 수정
+[33mac13836[m [feat] 포장지 선택 api response에 배송예정일 추가
+[33m97b09d6[m Merge pull request #25 from nhnacademy-be5-bom/feature/book
+[33m7289fae[m [Refacfor] 테스트 데이터 삭제
+[33m2c7aee5[m [Refactor] 더미 클래스 삭제
+[33m4e9d2af[m [fix] 장바구니 테스트 코드 로직 수정
+[33mc1af1f5[m [fix] 장바구니 조회 DTO 로직 수정
+[33m6ae3a35[m [fix] 검색 기능 작가 구분자 수정
+[33m2af8d28[m [Test] book 컨트롤러 테스트 코드
+[33mce4fa5b[m [fix] MemberCoupon 엔티티 매핑 수정
+[33m78577dd[m [fix] PointRate DTO 유효성 검사 로직 수정 및 from 메서드 생성
+[33m1fd9912[m Merge remote-tracking branch 'origin/develop' into feature/book
+[33m7fa8217[m Merge remote-tracking branch 'origin/feature/book' into feature/book
+[33med72244[m [Refactor] 코드리뷰 기반 컨트롤러 및 서비스 리팩토링 진행
+[33mea7e96b[m [feat] 관리자 포인트 정책 수정 테스트 구현
+[33mbbb5d8a[m [feat] 관리자 포인트 정책 수정 기능 구현
+[33mf4a75ad[m [feat] 포인트 정책 조회 서비스, 컨트롤러 테스트 구현
+[33mf7e88f7[m [feat] 포인트 정책 조회 테스트 코드 구현
+[33m0e55db0[m [feat] QueryDSL 테스트 환경 구축
+[33m3b4298d[m [feat] 포인트 정책 목록 보기 기능 구현
+[33mb9222a9[m [fix] Object Storage 테스트 로직 수정
+[33m21711b8[m [feat] 검색 결과 작가 예외처리
+[33mb4d959a[m Merge pull request #23 from nhnacademy-be5-bom/feature/search
+[33m4f8b7f2[m Merge pull request #20 from nhnacademy-be5-bom/feature/object-storage
+[33m1548cc6[m[33m ([m[1;31morigin/feature/object-storage[m[33m)[m Merge branch 'develop' into feature/object-storage
+[33m29267af[m Merge pull request #18 from nhnacademy-be5-bom/feature/user
+[33mccaeb30[m[33m ([m[1;31morigin/feature/user[m[33m)[m Merge branch 'develop' into feature/user
+[33m4bce50c[m [fix] 오류 수정
+[33mc88ac52[m Merge branch 'develop' of https://github.com/nhnacademy-be5-bom/bookbom-shop into develop
+[33m03d4bc3[m Merge branch 'develop' of https://github.com/nhnacademy-be5-bom/bookbom-shop into develop
+[33md96cfa4[m [fix] book tag controller / tag controller test code 오류 수정
+[33m6887439[m Merge branch 'feature/user' of https://github.com/nhnacademy-be5-bom/bookbom-shop into feature/user
+[33mbb1b49e[m [feat] validated exception handler 추가
+[33m7e10a7d[m Merge branch 'develop' into feature/user
+[33m923cf97[m Merge branch 'feature/user' of https://github.com/nhnacademy-be5-bom/bookbom-shop into feature/user
+[33m4db0f14[m [fix] Role 생성자 수정
+[33m6fa7e41[m Merge pull request #19 from nhnacademy-be5-bom/feature/wish
+[33mcee4cc9[m Merge branch 'develop' into feature/user
+[33m7d9ddc7[m[33m ([m[1;31morigin/feature/wish[m[33m)[m Merge branch 'develop' into feature/wish
+[33m51a81ec[m Merge branch 'develop' into feature/user
+[33m7ef675c[m [Refactor] 메서드 중복 제거
+[33m9d14851[m Merge branch 'develop' of https://github.com/nhnacademy-be5-bom/bookbom-shop into develop
+[33ma7d9f8a[m [feat] user service testcode 추가
+[33mbeb0bba[m [feat] 수정사항 반영 - 유효성 검사 추가 / 유효성 검사 테스트 추가 / 테스트코드 url 변경
+[33m4c91e4b[m [feat] 수정사항 반영 - java doc 형식 통일
+[33m1fcb1bb[m [feat] 수정사항 반영 - optional 및 url 수정
+[33m1485663[m [feat] 수정사항 반영 - transactional 추가
+[33mdd7755f[m [fix] getUrl 메서드 public으로 수정
+[33m6438cb1[m [fix] 파일 업로드 인터페이스를 통한 구현으로 수정
+[33mba32ec4[m[33m ([m[1;31morigin/feature/search[m[33m)[m [fix] 검색 조건 수정 및 여러 작가 구분자 수정
+[33me8be272[m Merge branch 'develop' into feature/book
+[33m0520a72[m [feat] 검색 가중치 조건 추가
+[33m5801c63[m [feat] 태그 crud 수정 + 예외 추가 + test 추가
+[33mc7e353b[m [fix] 포장지 api 유효성 검사 오류 해결 + test 추가
+[33me41643d[m [fix] paymentMethod 엔티티 필드 추가
+[33ma3bb3aa[m [Feature] Book CRUD
+[33m6fd4bbc[m [feat] 검색 정렬 조건 추가
+[33m25820e4[m [Feature] 단건 조회, 모든 책 페이지네이션
+[33m975279a[m Merge pull request #21 from nhnacademy-be5-bom/feature/bookTag
+[33me61725f[m Merge branch 'develop' of https://github.com/nhnacademy-be5-bom/bookbom-shop into develop
+[33m3d2ae64[m Merge pull request #22 from nhnacademy-be5-bom/feature/tag
+[33mefd1dbf[m [fix] test 오류 수정
+[33mf24dd0f[m [fix] 포장지 선택 api jpa오류 수정, 유효성 검사오류 수정 및 test 추가
+[33m9902aaf[m [fix] delete 예외처리 수정
+[33m573ca74[m [feat] 검색 기능 controller, repository 테스트 코드 구현
+[33m1de2291[m [feat] 검색 기능 BookSearchRepository로 분리
+[33me41ef92[m [Fix] book 엔티티에 review 추가
+[33m70cf68f[m [fix] request 유효성 검사 수정
+[33macc80ec[m[33m ([m[1;31morigin/feature/bookTag[m[33m)[m [fix] get 요청 시 반환하는 tag 정보 추가
+[33mdd5c046[m Merge branch 'develop' into feature/wish
+[33m6a13d6a[m Merge branch 'develop' into feature/bookTag
+[33me1f501f[m [fix] deliveryAddress 데이터베이스 맵핑 오류 수정
+[33m1c9135d[m Merge branch 'develop' into feature/wish
+[33m3ce1a9a[m [fix] 찜 중복 예외처리
+[33m7fd7984[m [fix] 오타 수정
+[33m031ad9d[m [fix] add, delete 미완성 부분 수정
+[33m38e90cf[m [fix] test코드 url 수정
+[33m632cc18[m[33m ([m[1;31morigin/feature/tag[m[33m)[m [fix] DTO 컨벤션 적용 및 유효성 테스트 추가
+[33m403f7bd[m [fix] 수정사항 반영 # 설명 - 도서에 태그가 없는 경우 빈 리스트 반환 - 유효성 검사 테스트 추가 - url 수정 - DTO 컨벤션 적용
+[33m3411fbd[m [fix] address 관련 엔티티 추가 및 수정
+[33m337bbae[m [fix] 클래스명 수정으로 인한 오류 해결
+[33m5647a49[m Merge branch 'develop' into feature/book
+[33m8b6131f[m Merge branch 'develop' into feature/book
+[33mae35548[m [HELP] 도움!!!!
+[33mbe35add[m [feat] 검색 기능 테스트 코드 구현
+[33m0d4f56f[m [feat] 검색 기능 DTO로 변환 후 반환 및 NativeQuery 방식으로 변경
+[33md37ad59[m [feat] ElasticSearch를 통한 검색 기능 구현
+[33mcdbc81c[m [test] BookTag 테스트 코드 작성
+[33me40c72b[m [feat] Object Storage 테스트 구현
+[33mfc4a265[m [test] Tag 테스트 코드 작성
+[33m6fc73c7[m [fix] 포장지 api dto anotationt 수정
+[33m9d20267[m Merge branch 'develop' of https://github.com/nhnacademy-be5-bom/bookbom-shop into feature/order
+[33m04bcfec[m Merge remote-tracking branch 'origin/develop' into feature/order
+[33m5a836d4[m temp
+[33m5434ba3[m [fix] merge 및 서비스 코드 수정
+[33m55107e7[m [fix] 예외처리 코드 추가
+[33m4e0db0c[m [fix] 수정사항 반영 설명: - url 매핑 수정 - 레퍼지토리에 코드 추가 - request 파일에 유효성 검증 추가 - response 파일에 private 추가 - service에서 예외처리 추가
+[33m42e4c13[m Merge remote-tracking branch 'origin/feature/bookTag' into feature/bookTag
+[33m4847873[m Merge pull request #16 from nhnacademy-be5-bom/feature/tag
+[33m8f41bde[m Merge pull request #10 from nhnacademy-be5-bom/feature/bookTag
+[33m833452c[m Merge branch 'develop' into feature/bookTag
