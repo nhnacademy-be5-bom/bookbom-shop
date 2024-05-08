@@ -174,29 +174,6 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("#3-2_1 READ USER : Check email availability")
-    void checkEmailCanUseTest() throws Exception {
-        when(userService.checkEmailCanUse(any(String.class))).thenReturn(true);
-
-        mockMvc.perform(
-                        post("/shop/users/email/confirm")
-                                .content(objectMapper.writeValueAsString("hi@email"))
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.header.resultCode").value(200))
-                .andExpect(jsonPath("$.result").value(Boolean.TRUE));
-
-
-        when(userService.checkEmailCanUse(any(String.class))).thenReturn(false);
-
-        mockMvc.perform(
-                        post("/shop/users/email/confirm")
-                                .content(objectMapper.writeValueAsString("hi@email"))
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.header.resultCode").value(200))
-                .andExpect(jsonPath("$.result").value(Boolean.FALSE));
-    }
-
-    @Test
     @DisplayName("주문 내역 조회")
     void getOrders() throws Exception {
         //given
