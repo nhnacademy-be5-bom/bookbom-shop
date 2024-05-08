@@ -7,6 +7,7 @@ import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
 import shop.bookbom.shop.domain.users.dto.request.EmailPasswordDto;
 import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
+import shop.bookbom.shop.domain.users.dto.response.UserIdRole;
 
 public interface UserService {
 
@@ -21,6 +22,8 @@ public interface UserService {
     boolean checkEmailCanUse(String email);
 
     boolean confirm(EmailPasswordDto emailPasswordDto);
+
+    UserIdRole getIdRole(EmailPasswordDto emailPasswordDto);
 
     /**
      * 회원의 주문 내역을 가져오는 메서드입니다.

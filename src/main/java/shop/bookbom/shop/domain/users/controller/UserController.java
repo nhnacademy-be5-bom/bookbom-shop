@@ -24,6 +24,7 @@ import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
 import shop.bookbom.shop.domain.users.dto.request.EmailPasswordDto;
 import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
+import shop.bookbom.shop.domain.users.dto.response.UserIdRole;
 import shop.bookbom.shop.domain.users.service.UserService;
 
 @RestController
@@ -135,4 +136,14 @@ public class UserController {
         return CommonResponse.successWithData(userService.confirm(emailPasswordDto));
     }
 
+    @PostMapping("/open/detail")
+    public CommonResponse<UserIdRole> getIdRole(@RequestBody EmailPasswordDto emailPasswordDto,
+                                                BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new BaseException(ErrorCode.COMMON_INVALID_PARAMETER);
+        }
+        CommonResponse<UserIdRole> userIdRoleCommonResponse =
+                CommonResponse.successWithData(userService.getIdRole(emailPasswordDto));
+        return userIdRoleCommonResponse;
+    }
 }

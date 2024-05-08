@@ -15,6 +15,7 @@ import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
 import shop.bookbom.shop.domain.users.dto.request.EmailPasswordDto;
 import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
+import shop.bookbom.shop.domain.users.dto.response.UserIdRole;
 import shop.bookbom.shop.domain.users.entity.User;
 import shop.bookbom.shop.domain.users.exception.RoleNotFoundException;
 import shop.bookbom.shop.domain.users.exception.UserAlreadyExistException;
@@ -61,7 +62,16 @@ public class UserServiceImpl implements UserService {
         return user.getPassword().equals(emailPasswordDto.getPassword());
     }
 
+    @Override
+    @Transactional
+    public UserIdRole getIdRole(EmailPasswordDto emailPasswordDto) {
+        User user = userRepository.findByEmail(emailPasswordDto.getEmail()).orElseThrow(UserNotFoundException::new);
+        if (!user.getPassword().equals(emailPasswordDto.getPassword())) {
+            throw new BaseException(ErrorCode.USER_NOT_VALIDATE);
+        }
+        return UserIdRole.builder().userId(user.getId()).role(user.getRole().getName()).build();
     }
+
 
     @Override
     public void changeRegistered(Long id, boolean registered) {
