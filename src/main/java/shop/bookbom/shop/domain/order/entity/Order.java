@@ -58,6 +58,9 @@ public class Order {
     @Column(name = "used_point", nullable = false)
     private int usedPoint;
 
+    @Column(name = "used_coupon_cost", nullable = false)
+    private int usedCouponCost;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -75,20 +78,11 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private List<OrderBook> orderBooks = new ArrayList<>();
 
-
     @Builder
-    public Order(
-            String orderNumber,
-            String orderInfo,
-            LocalDateTime orderDate,
-            String senderName,
-            String senderPhoneNumber,
-            Integer totalCost,
-            Integer discountCost,
-            int usedPoint,
-            User user,
-            OrderStatus status
-    ) {
+    public Order(String orderNumber, String orderInfo, LocalDateTime orderDate, String senderName,
+                 String senderPhoneNumber,
+                 Integer totalCost, Integer discountCost, int usedPoint, int usedCouponCost, User user,
+                 OrderStatus status) {
         this.orderNumber = orderNumber;
         this.orderInfo = orderInfo;
         this.orderDate = orderDate;
@@ -97,6 +91,7 @@ public class Order {
         this.totalCost = totalCost;
         this.discountCost = discountCost;
         this.usedPoint = usedPoint;
+        this.usedCouponCost = usedCouponCost;
         this.user = user;
         this.status = status;
     }
