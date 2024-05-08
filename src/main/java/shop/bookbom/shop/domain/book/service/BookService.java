@@ -346,8 +346,9 @@ public class BookService {
     }
 
     private void handleThumbnail(MultipartFile thumbnail, Book book) {
-        String objectName = book.getTitle().length() > 7 ? (book.getTitle().substring(1, 7) + "_thumbnail") :
-                (book.getTitle().substring(1, book.getTitle().length() - 1) + "_thumbnail");
+        String trimmedBookTitle = StringUtils.trimAllWhitespace(book.getTitle());
+        String objectName = trimmedBookTitle.length() > 7 ? (trimmedBookTitle.substring(0, 6) + "_thumbnail") :
+                (trimmedBookTitle.substring(0, trimmedBookTitle.length() - 1) + "_thumbnail");
 
         if (thumbnail == null) {
             BookFile bookFile = BookFile.builder()
