@@ -6,7 +6,6 @@ import static shop.bookbom.shop.domain.book.DtoToListHandler.processReviews;
 import static shop.bookbom.shop.domain.bookfiletype.entity.QBookFileType.bookFileType;
 
 import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-import org.springframework.data.support.PageableExecutionUtils;
 import shop.bookbom.shop.domain.author.dto.AuthorResponse;
 import shop.bookbom.shop.domain.author.entity.QAuthor;
 import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
@@ -166,10 +164,6 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
         }
 
         List<Book> result = from(book)
-                .leftJoin(book.bookFiles, bookFiles).fetchJoin()
-                .join(bookFiles.bookFileType, bookFileType).fetchJoin()
-                .join(bookFiles.file, file).fetchJoin()
-                .join(book.publisher, publisher).fetchJoin()
                 .where(book.status.ne(BookStatus.DEL))
                 .offset(pageable.getOffset())
                 .limit(limit)
@@ -179,12 +173,17 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
         List<BookSearchResponse> content = convertBookToSearch(result);
 
-        JPAQuery<Long> countQuery = queryFactory.select(book.count())
+        Long countQuery = queryFactory.select(book.count())
                 .from(book)
                 .where(book.status.ne(BookStatus.DEL))
-                .limit(limit);
+                .limit(limit)
+                .fetchOne();
 
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+        long count = countQuery == null ? 0L : countQuery;
+        if (count >= BEST_LIMIT) {
+            count = BEST_LIMIT;
+        }
+        return new PageImpl<>(content, pageable, count);
     }
 
     private List<BookSearchResponse> getAllBookMediumInfosOrderByViewCount(Pageable pageable) {
