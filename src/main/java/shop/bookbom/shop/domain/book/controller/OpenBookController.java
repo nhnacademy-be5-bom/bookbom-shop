@@ -47,7 +47,7 @@ public class OpenBookController {
         return CommonResponse.successWithData(bookService.getPageableEntireBookList(pageable));
     }
 
-    @GetMapping("/books/category/{categoryId}")
+    @GetMapping("/books/categories/{categoryId}")
     @CrossOrigin(origins = "*")
     public CommonResponse<Page<BookSearchResponse>> getByCategoryId(
             @PathVariable("categoryId") Long categoryId,
@@ -58,19 +58,19 @@ public class OpenBookController {
                 bookService.getPageableBookListByCategoryId(categoryId, sortCondition, pageable));
     }
 
-    @GetMapping("/book/detail/{id}")
+    @GetMapping("/books/detail/{id}")
     @CrossOrigin(origins = "*")
     public CommonResponse<BookDetailResponse> getBookDetail(@PathVariable("id") Long bookId) {
         return CommonResponse.successWithData(bookService.getBookDetailInformation(bookId));
     }
 
-    @GetMapping("/book/medium/{id}")
+    @GetMapping("/books/medium/{id}")
     @CrossOrigin(origins = "*")
     public CommonResponse<BookMediumResponse> getBookMedium(@PathVariable("id") Long bookId) {
         return CommonResponse.successWithData(bookService.getBookMediumInformation(bookId));
     }
 
-    @GetMapping("/book/simple/{id}")
+    @GetMapping("/books/simple/{id}")
     @CrossOrigin(origins = "*")
     public CommonResponse<BookSimpleResponse> getBookSimple(@PathVariable("id") Long bookId) {
         return CommonResponse.successWithData(bookService.getBookSimpleInformation(bookId));
