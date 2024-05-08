@@ -102,7 +102,7 @@ class OpenBookControllerTest {
 
         when(bookService.getBookDetailInformation(1L)).thenReturn(detailResponse);
 
-        ResultActions perform = mockMvc.perform(get("/shop/open/book/detail/{id}", 1L)
+        ResultActions perform = mockMvc.perform(get("/shop/open/books/detail/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON));
 
         verify(bookService, times(1)).getBookDetailInformation(anyLong());
@@ -129,7 +129,7 @@ class OpenBookControllerTest {
 
         when(bookService.getBookMediumInformation(1L)).thenReturn(mediumResponse);
 
-        ResultActions perform = mockMvc.perform(get("/shop/open/book/medium/{id}", 1L)
+        ResultActions perform = mockMvc.perform(get("/shop/open/books/medium/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON));
 
         verify(bookService, times(1)).getBookMediumInformation(anyLong());
@@ -156,7 +156,7 @@ class OpenBookControllerTest {
 
         when(bookService.getBookSimpleInformation(1L)).thenReturn(simpleResponse);
 
-        ResultActions perform = mockMvc.perform(get("/shop/open/book/simple/{id}", 1L)
+        ResultActions perform = mockMvc.perform(get("/shop/open/books/simple/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON));
 
         verify(bookService, times(1)).getBookSimpleInformation(anyLong());
@@ -240,7 +240,7 @@ class OpenBookControllerTest {
         when(bookService.getPageableBookListByCategoryId(1L, "test", pageable)).thenReturn(pageResponse);
 
         ResultActions perform =
-                mockMvc.perform(get("/shop/open/books/category/{id}", 1)
+                mockMvc.perform(get("/shop/open/books/categories/{id}", 1)
                         .param("page", "0")
                         .param("size", "20")
                         .param("sortCondition", "test")
