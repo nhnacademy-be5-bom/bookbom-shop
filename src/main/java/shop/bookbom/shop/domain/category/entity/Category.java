@@ -71,4 +71,8 @@ public class Category {
     public void delete() {
         this.status = Status.DEL;
     }
+
+    public boolean hasChildren() {
+        return this.getChild().isEmpty();
+    }
 }

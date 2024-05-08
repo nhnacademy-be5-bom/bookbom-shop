@@ -4,7 +4,6 @@ package shop.bookbom.shop.common.file;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import lombok.NonNull;
@@ -57,8 +56,7 @@ public class ObjectService implements FileService {
         if (Objects.isNull(token) || token.getExpires().isBefore(LocalDateTime.now())) {
             token = tokenService.requestToken();
         }
-        try {
-            InputStream inputStream = file.getInputStream();
+        try (InputStream inputStream = file.getInputStream()) {
             final RequestCallback requestCallback = request -> {
                 request.getHeaders().add("X-Auth-Token", token.getId());
                 IOUtils.copy(inputStream, request.getBody());

@@ -47,6 +47,14 @@ public class DtoToListHandler {
         return tagList;
     }
 
+    public static List<String> processTagsToString(List<BookTag> bookTags) {
+        List<String> tagList = new ArrayList<>();
+        for (BookTag bookTag : bookTags) {
+            tagList.add(bookTag.getTag().getName());
+        }
+        return tagList;
+    }
+
     public static List<CategoryDTO> processBookCategories(List<BookCategory> bookCategories) {
         List<CategoryDTO> categoryList = new ArrayList<>();
         for (BookCategory bookCategory : bookCategories) {
@@ -63,6 +71,14 @@ public class DtoToListHandler {
         return categoryList;
     }
 
+    public static List<String> processBookCategoriesToString(List<BookCategory> categories) {
+        List<String> categoryList = new ArrayList<>();
+        for (BookCategory category : categories) {
+            categoryList.add(category.getCategory().getName());
+        }
+        return categoryList;
+    }
+
     public static List<FileDTO> processFiles(List<BookFile> bookFiles) {
         List<FileDTO> fileList = new ArrayList<>();
         for (BookFile bookFile : bookFiles) {
@@ -71,7 +87,7 @@ public class DtoToListHandler {
         return fileList;
     }
 
-    public static String getThumbnailFrom(List<BookFile> bookFiles) {
+    public static String getThumbnailUrlFrom(List<BookFile> bookFiles) {
 
         BookFile thumbnailBookFile = bookFiles.stream()
                 .filter(bookFile -> "img".equals(bookFile.getBookFileType().getName()))
@@ -79,6 +95,14 @@ public class DtoToListHandler {
                 .orElseThrow(FileNotFoundException::new);
 
         return thumbnailBookFile.getFile().getUrl();
+    }
+
+    public static BookFile getThumbnailBookFileFrom(List<BookFile> bookFiles) {
+
+        return bookFiles.stream()
+                .filter(bookFile -> "img".equals(bookFile.getBookFileType().getName()))
+                .findFirst()
+                .orElseThrow(FileNotFoundException::new);
     }
 
     public static BookReviewStatisticsInformation processReviews(List<Review> reviews) {

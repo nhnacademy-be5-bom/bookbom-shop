@@ -4,9 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.book.dto.request.BookAddRequest;
 import shop.bookbom.shop.domain.book.dto.request.BookUpdateRequest;
@@ -31,16 +32,18 @@ public class UpdateBookRestController {
     private final BookService bookService;
 
     @PutMapping("/book/update/new")
-    public CommonResponse<Void> addBook(@RequestBody BookAddRequest bookAddRequest) {
-        bookService.addBook(bookAddRequest);
+    public CommonResponse<Void> addBook(@RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail,
+                                        @RequestPart("bookAddRequest") BookAddRequest bookAddRequest) {
+        bookService.addBook(thumbnail, bookAddRequest);
         return CommonResponse.success();
     }
 
     @PutMapping("/book/update/{id}")
-    public CommonResponse<Void> updateBook(@RequestBody BookUpdateRequest bookUpdateRequest,
+    public CommonResponse<Void> updateBook(@RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail,
+                                           @RequestPart("bookUpdateRequest") BookUpdateRequest bookUpdateRequest,
                                            @PathVariable("id") Long bookId) {
 
-        bookService.updateBook(bookUpdateRequest, bookId);
+        bookService.updateBook(thumbnail, bookUpdateRequest, bookId);
         return CommonResponse.success();
     }
 
