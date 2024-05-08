@@ -23,4 +23,8 @@ public class InvalidParameterException extends BaseException {
     public InvalidParameterException(ErrorCode errorCode, String message) {
         super(errorCode, message);
     }
+
+    public InvalidParameterException(String message) {
+        super(ErrorCode.COMMON_INVALID_PARAMETER, message);
+    }
 }
