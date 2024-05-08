@@ -73,6 +73,6 @@ public class Category {
     }
 
     public boolean hasChildren() {
-        return this.getChild().isEmpty();
+        return !this.getChild().isEmpty();
     }
 }
