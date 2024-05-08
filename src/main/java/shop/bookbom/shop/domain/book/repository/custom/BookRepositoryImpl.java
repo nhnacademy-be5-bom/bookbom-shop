@@ -160,6 +160,11 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
     @Override
     public Page<BookSearchResponse> getPageableListBookMediumInfosOrderByDate(Pageable pageable) {
+        long limit = pageable.getPageSize();
+        if ((pageable.getOffset() + pageable.getPageSize()) > BEST_LIMIT) {
+            limit = BEST_LIMIT - pageable.getOffset();
+        }
+
         List<Book> result = from(book)
                 .leftJoin(book.bookFiles, bookFiles).fetchJoin()
                 .join(bookFiles.bookFileType, bookFileType).fetchJoin()
@@ -167,7 +172,7 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
                 .join(book.publisher, publisher).fetchJoin()
                 .where(book.status.ne(BookStatus.DEL))
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .limit(limit)
                 .orderBy(book.pubDate.desc())
                 .select(book)
                 .fetch();
@@ -176,7 +181,8 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
         JPAQuery<Long> countQuery = queryFactory.select(book.count())
                 .from(book)
-                .where(book.status.ne(BookStatus.DEL));
+                .where(book.status.ne(BookStatus.DEL))
+                .limit(limit);
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
