@@ -90,4 +90,6 @@ public interface BookRepositoryCustom {
     Page<BookSearchResponse> getPageableBookMediumInfosByCategoryId(Long categoryId,
                                                                     String sortCondition,
                                                                     Pageable pageable);
+
+    Page<BookSearchResponse> getPageableListBookMediumInfosOrderByDate(Pageable pageable);
 }

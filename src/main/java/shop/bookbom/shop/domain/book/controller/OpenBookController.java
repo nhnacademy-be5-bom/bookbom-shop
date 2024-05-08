@@ -41,6 +41,11 @@ public class OpenBookController {
         return CommonResponse.successWithData(bookService.getPageableEntireBookListOrderByCount(pageable));
     }
 
+    @GetMapping("/books/latest")
+    public CommonResponse<Page<BookSearchResponse>> getLatest(Pageable pageable) {
+        return CommonResponse.successWithData(bookService.getPageableEntireBookListOrderByDate(pageable));
+    }
+
     @GetMapping("/books/all")
     @CrossOrigin(origins = "*")
     public CommonResponse<Page<BookSearchResponse>> getAll(Pageable pageable) {

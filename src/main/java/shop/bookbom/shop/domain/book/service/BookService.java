@@ -411,4 +411,9 @@ public class BookService {
                 .orElse(0.0);
         return Math.round(avgRate * 10) / 10.0;
     }
+
+    @Transactional(readOnly = true)
+    public Page<BookSearchResponse> getPageableEntireBookListOrderByDate(Pageable pageable) {
+        return bookRepository.getPageableListBookMediumInfosOrderByDate(pageable);
+    }
 }

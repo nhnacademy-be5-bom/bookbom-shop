@@ -3,8 +3,11 @@ package shop.bookbom.shop.domain.book.repository.custom;
 
 import static shop.bookbom.shop.domain.book.DtoToListHandler.getThumbnailUrlFrom;
 import static shop.bookbom.shop.domain.book.DtoToListHandler.processReviews;
+import static shop.bookbom.shop.domain.bookfiletype.entity.QBookFileType.bookFileType;
 
 import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.data.support.PageableExecutionUtils;
 import shop.bookbom.shop.domain.author.dto.AuthorResponse;
 import shop.bookbom.shop.domain.author.entity.QAuthor;
 import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
@@ -31,6 +35,7 @@ import shop.bookbom.shop.domain.bookfiletype.entity.QBookFileType;
 import shop.bookbom.shop.domain.booktag.entity.QBookTag;
 import shop.bookbom.shop.domain.category.entity.QCategory;
 import shop.bookbom.shop.domain.file.entity.QFile;
+import shop.bookbom.shop.domain.publisher.entity.QPublisher;
 import shop.bookbom.shop.domain.review.dto.BookReviewStatisticsInformation;
 import shop.bookbom.shop.domain.review.entity.QReview;
 import shop.bookbom.shop.domain.tag.entity.QTag;
@@ -47,21 +52,24 @@ import shop.bookbom.shop.domain.tag.entity.QTag;
  * 2024-04-12        전석준       최초 생성
  */
 public class BookRepositoryImpl extends QuerydslRepositorySupport implements BookRepositoryCustom {
+    private final JPAQueryFactory queryFactory;
     QBook book = QBook.book;
     QAuthor author = QAuthor.author;
+    QPublisher publisher = QPublisher.publisher;
     QBookAuthor bookAuthor = QBookAuthor.bookAuthor;
     QTag tag = QTag.tag;
     QBookTag bookTag = QBookTag.bookTag;
     QCategory category = QCategory.category;
     QBookCategory bookCategory = QBookCategory.bookCategory;
     QFile file = QFile.file;
-    QBookFileType fileType = QBookFileType.bookFileType;
+    QBookFileType fileType = bookFileType;
     QBookFile bookFiles = QBookFile.bookFile;
     QReview review = QReview.review;
     public static final int BEST_LIMIT = 100;
 
-    public BookRepositoryImpl() {
+    public BookRepositoryImpl(JPAQueryFactory queryFactory) {
         super(Book.class);
+        this.queryFactory = queryFactory;
     }
 
     @Override
@@ -148,6 +156,29 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
         long count = getCount(categoryId);
 
         return new PageImpl<>(entityList, pageable, count);
+    }
+
+    @Override
+    public Page<BookSearchResponse> getPageableListBookMediumInfosOrderByDate(Pageable pageable) {
+        List<Book> result = from(book)
+                .leftJoin(book.bookFiles, bookFiles).fetchJoin()
+                .join(bookFiles.bookFileType, bookFileType).fetchJoin()
+                .join(bookFiles.file, file).fetchJoin()
+                .join(book.publisher, publisher).fetchJoin()
+                .where(book.status.ne(BookStatus.DEL))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(book.pubDate.desc())
+                .select(book)
+                .fetch();
+
+        List<BookSearchResponse> content = convertBookToSearch(result);
+
+        JPAQuery<Long> countQuery = queryFactory.select(book.count())
+                .from(book)
+                .where(book.status.ne(BookStatus.DEL));
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     private List<BookSearchResponse> getAllBookMediumInfosOrderByViewCount(Pageable pageable) {
