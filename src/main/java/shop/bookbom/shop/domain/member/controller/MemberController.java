@@ -15,7 +15,7 @@ import shop.bookbom.shop.domain.member.service.MemberService;
 public class MemberController {
     private final MemberService memberService;
 
-    @GetMapping("/member/my-page")
+    @GetMapping("/users/my-page")
     public CommonResponse<MemberInfoResponse> myPage(@RequestParam("userId") Long id) {
         return CommonResponse.successWithData(memberService.getMemberInfo(id));
     }
