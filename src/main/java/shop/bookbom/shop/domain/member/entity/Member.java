@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import shop.bookbom.shop.domain.membercoupon.entity.MemberCoupon;
 import shop.bookbom.shop.domain.rank.entity.Rank;
@@ -44,6 +45,7 @@ public class Member extends User {
     @Column(nullable = false)
     private int point;
 
+    @Setter
     @Builder.Default
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -92,4 +94,5 @@ public class Member extends User {
     public void updatePoints(int point) {
         this.point = point;
     }
+
 }

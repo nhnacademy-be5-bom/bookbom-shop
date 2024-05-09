@@ -2,10 +2,13 @@ package shop.bookbom.shop.domain.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
+import shop.bookbom.shop.domain.member.dto.request.WithDrawDTO;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.member.service.MemberService;
 
@@ -18,5 +21,11 @@ public class MemberController {
     @GetMapping("/members/my-page")
     public CommonResponse<MemberInfoResponse> myPage(@RequestParam("userId") Long id) {
         return CommonResponse.successWithData(memberService.getMemberInfo(id));
+    }
+
+    @PostMapping("/member/withdraw")
+    public CommonResponse<Void> deleteMember(@RequestBody WithDrawDTO withDrawDTO, @RequestParam("memberId") Long memberId){
+        memberService.deleteMember(memberId, withDrawDTO);
+        return CommonResponse.success();
     }
 }

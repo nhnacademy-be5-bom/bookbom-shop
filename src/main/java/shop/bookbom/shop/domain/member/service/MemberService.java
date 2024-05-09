@@ -1,6 +1,7 @@
 package shop.bookbom.shop.domain.member.service;
 
 import shop.bookbom.shop.domain.member.dto.request.SignUpRequest;
+import shop.bookbom.shop.domain.member.dto.request.WithDrawDTO;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 
 public interface MemberService {
@@ -18,4 +19,7 @@ public interface MemberService {
      * @param signUpRequest 회원가입 요청 정보
      */
     void save(SignUpRequest signUpRequest);
+
+    void deleteMember(Long memberId, WithDrawDTO withDrawDTO);
+
 }
