@@ -1,5 +1,6 @@
 package shop.bookbom.shop.domain.coupon.controller;
 
+import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,9 @@ import shop.bookbom.shop.domain.coupon.dto.request.AddCategoryCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.CouponInfoRequest;
 import shop.bookbom.shop.domain.coupon.dto.response.CouponInfoResponse;
+import shop.bookbom.shop.domain.coupon.dto.response.CouponIssueResponse;
 import shop.bookbom.shop.domain.coupon.service.CouponService;
+import shop.bookbom.shop.domain.membercoupon.dto.request.IssueCouponRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,8 +52,36 @@ public class CouponController {
 
     @GetMapping("/admin/coupons/{type}/{id}")
     public CommonResponse<Page<CouponInfoResponse>> getCouponList(@PageableDefault Pageable pageable,
-                                                                  @PathVariable("id") Long userId, @PathVariable("type") String type) {
+                                                                  @PathVariable("id") Long userId,
+                                                                  @PathVariable("type") String type) {
         Page<CouponInfoResponse> couponInfoResponses = couponService.getCouponInfo(pageable, type.toUpperCase());
         return CommonResponse.successWithData(couponInfoResponses);
+    }
+
+    /**
+     * 쿠폰을 발급합니다.
+     *
+     * @param userId             유저
+     * @param issueCouponRequest 쿠폰 발급 요청 정보
+     * @return 성공 응답
+     */
+    @PostMapping("/admin/coupons/issue/{id}")
+    public CommonResponse<Void> issueCoupon(@PathVariable("id") Long userId,
+                                            @RequestBody IssueCouponRequest issueCouponRequest) {
+        couponService.addMemberCoupon(issueCouponRequest);
+        return CommonResponse.success();
+    }
+
+    ;
+
+    /**
+     * 쿠폰 발급에서 발급 가능한 쿠폰 이름 목록을 보여줄 때 사용됩니다.
+     *
+     * @param userId 유저
+     * @return 쿠폰 목록 정보(쿠폰 이름, 쿠폰 id, 쿠폰 타입)
+     */
+    @GetMapping("/admin/coupons/issue/{id}")
+    public CommonListResponse<CouponIssueResponse> getCouponNameList(@PathVariable("id") Long userId) {
+        return CommonListResponse.successWithList(couponService.getCouponName());
     }
 }
