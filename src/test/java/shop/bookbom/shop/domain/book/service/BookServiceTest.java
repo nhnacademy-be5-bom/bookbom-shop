@@ -22,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import shop.bookbom.shop.common.file.ObjectService;
 import shop.bookbom.shop.domain.author.repository.AuthorRepository;
 import shop.bookbom.shop.domain.book.dto.request.BookAddRequest;
@@ -140,13 +141,14 @@ class BookServiceTest {
     @DisplayName("책 저장: 모든 필드가 존재")
     void addBook() {
         BookAddRequest request = getBookAddRequest("테스트");
+        MockMultipartFile file = new MockMultipartFile("image.jpg", new byte[123]);
         when(pointRateRepository.getReferenceById(1L)).thenReturn(getPointRateEntity());
         when(tagRepository.existsByName(anyString())).thenReturn(false);
         when(categoryRepository.findByName(anyString())).thenReturn(Optional.ofNullable(getCategoryEntity()));
         when(objectService.getUrl(anyString(), anyString())).thenReturn("URL");
         when(bookFileTypeRepository.getReferenceById(1L)).thenReturn(getBookFileTypeEntity());
 
-        bookService.addBook(request);
+        bookService.addBook(file, request);
 
         verify(publisherRepository, times(1)).save(any());
         verify(pointRateRepository, times(1)).getReferenceById(1L);

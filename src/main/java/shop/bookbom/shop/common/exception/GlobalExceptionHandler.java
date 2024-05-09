@@ -10,7 +10,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
     public CommonResponse<Void> handleBaseException(BaseException e) {
-        return CommonResponse.fail(e.getErrorCode());
+        return CommonResponse.fail(e.getErrorCode(), e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

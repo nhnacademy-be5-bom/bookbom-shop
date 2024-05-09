@@ -8,6 +8,7 @@ import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookDetailResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookMediumResponse;
 import shop.bookbom.shop.domain.book.dto.response.BookSimpleResponse;
+import shop.bookbom.shop.domain.book.dto.response.BookUpdateResponse;
 
 /**
  * packageName    : shop.bookbom.shop.domain.book.repository.custom
@@ -55,6 +56,8 @@ public interface BookRepositoryCustom {
      */
     Optional<BookSimpleResponse> getBookSimpleInfoById(Long bookId);
 
+    Optional<BookUpdateResponse> getBookUpdateInfoById(Long bookId);
+
     /**
      * methodName : getPageableAndOrderByViewCountListBookMediumInfos
      * author : 전석준
@@ -87,4 +90,6 @@ public interface BookRepositoryCustom {
     Page<BookSearchResponse> getPageableBookMediumInfosByCategoryId(Long categoryId,
                                                                     String sortCondition,
                                                                     Pageable pageable);
+
+    Page<BookSearchResponse> getPageableListBookMediumInfosOrderByDate(Pageable pageable);
 }
