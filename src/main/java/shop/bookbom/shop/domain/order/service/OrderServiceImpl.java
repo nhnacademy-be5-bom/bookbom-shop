@@ -9,8 +9,8 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +21,19 @@ import shop.bookbom.shop.domain.book.entity.BookStatus;
 import shop.bookbom.shop.domain.book.exception.BookNotForSaleException;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
+import shop.bookbom.shop.domain.bookcategory.repository.BookCategoryRepository;
 import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
+import shop.bookbom.shop.domain.coupon.entity.CouponType;
 import shop.bookbom.shop.domain.delivery.entity.Delivery;
 import shop.bookbom.shop.domain.delivery.repository.DeliveryRepository;
 import shop.bookbom.shop.domain.deliveryaddress.entity.DeliveryAddress;
 import shop.bookbom.shop.domain.deliveryaddress.repository.DeliveryAddressRepository;
+import shop.bookbom.shop.domain.member.entity.Member;
+import shop.bookbom.shop.domain.member.exception.MemberNotFoundException;
+import shop.bookbom.shop.domain.member.repository.MemberRepository;
+import shop.bookbom.shop.domain.membercoupon.dto.MemberCouponDto;
+import shop.bookbom.shop.domain.membercoupon.exception.MemberCouponNotFoundException;
+import shop.bookbom.shop.domain.membercoupon.repository.MemberCouponRepository;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequest;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
 import shop.bookbom.shop.domain.order.dto.request.OpenOrderRequest;
@@ -33,6 +41,7 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OpenWrapperSelectResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderDetailResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
@@ -71,7 +80,9 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final DeliveryRepository deliveryRepository;
     private final OrderBookRepository orderBookRepository;
-    private final EntityManager em;
+    private final MemberRepository memberRepository;
+    private final MemberCouponRepository memberCouponRepository;
+    private final BookCategoryRepository bookCategoryRepository;
 
     /**
      * 주문 전에 bookId로 책 정보를 불러오고 포장지 전체 List를 받아오는 메소드
@@ -119,11 +130,11 @@ public class OrderServiceImpl implements OrderService {
      *
      * @param
      * @param wrapperSelectRequest(책정보와 선택한 포장지 의 List와 전체 주문 갯수)
-     * @return 포장지 선택 request 와 userId를 내보냄
+     * @return 포장지 선택 request
      */
     @Override
     @Transactional
-    public WrapperSelectResponse selectWrapper(WrapperSelectRequest wrapperSelectRequest) {
+    public OpenWrapperSelectResponse selectWrapper(WrapperSelectRequest wrapperSelectRequest) {
         int totalOrderCount = 0;
         int wrapCost = 0;
         //request을 가져와서 총 주문 갯수와 포장지 선택 리스트를 받아옴
@@ -152,13 +163,138 @@ public class OrderServiceImpl implements OrderService {
         //배송 예정일 리스트 생성
         List<String> estimatedDateList = createEstimatedDateList();
 
-        return WrapperSelectResponse.builder()
+        return OpenWrapperSelectResponse.builder()
                 .totalOrderCount(totalOrderCount)
                 .wrapperSelectResponseList(wrapperSelectBookResponseList)
                 .estimatedDateList(estimatedDateList)
                 .deliveryCost(5000)
                 .wrapCost(wrapCost)
                 .build();
+    }
+
+    /**
+     * 포장지 선택 정보를 처리하는 메소드 - 회원
+     *
+     * @param wrapperSelectRequest
+     * @return 주문서에 필요한 데이터들을 넘겨줌
+     */
+    @Override
+    @Transactional
+    public WrapperSelectResponse selectWrapperForMember(WrapperSelectRequest wrapperSelectRequest, Long userId) {
+        int totalOrderCount = 0;
+        int wrapCost = 0;
+        int totalBookCost = 0;
+
+        //request을 가져와서 총 주문 갯수와 포장지 선택 리스트를 받아옴
+        //포장지 셀렉 응답 리스트를 만듬
+        List<WrapperSelectBookResponse> wrapperSelectBookResponseList = new ArrayList<>();
+        for (WrapperSelectBookRequest selectBookRequest : wrapperSelectRequest.getWrapperSelectBookRequestList()) {
+            BeforeOrderBookResponse bookDetailInfo =
+                    getBookDetailInfo(selectBookRequest.getBookId(), selectBookRequest.getQuantity());
+            WrapperSelectBookResponse wrapperSelectBookResponse =
+                    WrapperSelectBookResponse.builder()
+                            .bookId(bookDetailInfo.getBookId())
+                            .bookTitle(bookDetailInfo.getTitle())
+                            .cost(bookDetailInfo.getCost())
+                            .discountCost(bookDetailInfo.getDiscountCost())
+                            .imgUrl(bookDetailInfo.getImageUrl())
+                            .quantity(bookDetailInfo.getQuantity())
+                            .wrapperName(selectBookRequest.getWrapperName())
+                            .build();
+
+            wrapperSelectBookResponseList.add(wrapperSelectBookResponse);
+            totalOrderCount += bookDetailInfo.getQuantity();
+            Integer costByName = wrapperRepository.getCostByName(selectBookRequest.getWrapperName());
+            wrapCost += costByName * bookDetailInfo.getQuantity();
+            totalBookCost += bookDetailInfo.getDiscountCost() * bookDetailInfo.getQuantity();
+
+        }
+        //배송 예정일 리스트 생성
+        List<String> estimatedDateList = createEstimatedDateList();
+        //회원 포인트 가져옴
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(MemberNotFoundException::new);
+        int point = member.getPoint();
+        //회원이 가진 쿠폰 가지고옴
+        List<MemberCouponDto> memberCoupons = memberCouponRepository.getAllMemberCoupons(member.getId());
+
+
+        //회원이 사용할 수 있는 쿠폰리스트, 사용할 수 없는 쿠폰리스트를 나눔
+        List<MemberCouponDto> availableMemberCoupons = new ArrayList<>();
+        List<MemberCouponDto> unavailableMemberCoupons = new ArrayList<>();
+        for (MemberCouponDto memberCouponDto : memberCoupons) {
+            //쿠폰이 제너럴 타입일 때
+            if (memberCouponDto.getCouponDto().getType().equals(CouponType.GENERAL)) {
+                if (totalBookCost > memberCouponDto.getCouponDto().getMinOrderCost()) {
+                    availableMemberCoupons.add(memberCouponDto);
+                } else {
+                    unavailableMemberCoupons.add(memberCouponDto);
+                }
+            }
+            //쿠폰이 책타입일 때
+            else if (memberCouponDto.getCouponDto().getType().equals(CouponType.BOOK)) {
+                boolean isSameBookId = false;
+                for (WrapperSelectBookRequest selectBookRequest : wrapperSelectRequest.getWrapperSelectBookRequestList()) {
+                    for (int i = 0; i < memberCouponDto.getCouponDto().getCouponBooks().size(); i++) {
+                        if (Objects.equals(selectBookRequest.getBookId(),
+                                memberCouponDto.getCouponDto().getCouponBooks().get(i).getBookId())) {
+                            isSameBookId = true;
+                            break;
+                        }
+                    }
+                    if (isSameBookId) {
+                        break;
+                    }
+                }
+                if (isSameBookId) {
+                    availableMemberCoupons.add(memberCouponDto);
+                } else {
+                    unavailableMemberCoupons.add(memberCouponDto);
+                }
+            }
+            //쿠폰이 카테고리타입일 때
+            else if (memberCouponDto.getCouponDto().getType().equals(CouponType.CATEGORY)) {
+                boolean isSameCategoryId = false;
+                for (WrapperSelectBookRequest selectBookRequest : wrapperSelectRequest.getWrapperSelectBookRequestList()) {
+                    List<Long> categoryIdByBookIdList =
+                            bookCategoryRepository.getCategoryIdByBookId(selectBookRequest.getBookId());
+                    for (Long categoryIdByBookId : categoryIdByBookIdList) {
+                        for (int i = 0; i < memberCouponDto.getCouponDto().getCouponCategories().size(); i++) {
+                            Long categoryId =
+                                    memberCouponDto.getCouponDto().getCouponCategories().get(i).getCategoryId();
+                            if (Objects.equals(categoryIdByBookId, categoryId)) {
+                                availableMemberCoupons.add(memberCouponDto);
+                                isSameCategoryId = true;
+                                break;
+                            }
+                        }
+                        if (isSameCategoryId) {
+                            break;
+                        }
+                    }
+                    if (isSameCategoryId) {
+                        break;
+                    }
+                }
+                // 모든 카테고리를 확인한 후에도 isSameCategoryId가 false이면 쿠폰을 사용 불가능한 목록에 추가합니다.
+                if (!isSameCategoryId) {
+                    unavailableMemberCoupons.add(memberCouponDto);
+                }
+            } else {
+                throw new MemberCouponNotFoundException();
+            }
+        }
+
+
+        return WrapperSelectResponse.builder().totalOrderCount(totalOrderCount)
+                .wrapperSelectResponseList(wrapperSelectBookResponseList)
+                .estimatedDateList(estimatedDateList)
+                .wrapCost(wrapCost)
+                .point(point)
+                .availableMemberCoupons(availableMemberCoupons)
+                .unavailableMemberCoupons(unavailableMemberCoupons)
+                .build();
+
     }
 
     /**

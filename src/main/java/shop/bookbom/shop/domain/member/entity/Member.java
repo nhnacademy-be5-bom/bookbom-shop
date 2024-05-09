@@ -55,7 +55,7 @@ public class Member extends User {
     private List<Wish> wishList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<MemberCoupon> memberCoupons = new ArrayList<>();
+    private List<MemberCoupon> memberCoupons;
 
     public Member(
             String email,

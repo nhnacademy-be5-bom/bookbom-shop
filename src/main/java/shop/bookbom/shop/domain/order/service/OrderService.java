@@ -8,6 +8,7 @@ import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
 import shop.bookbom.shop.domain.order.dto.request.OpenOrderRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OpenWrapperSelectResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderDetailResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
@@ -16,7 +17,9 @@ import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 public interface OrderService {
     BeforeOrderResponse getOrderBookInfo(BeforeOrderRequestList beforeOrderRequestList);
 
-    WrapperSelectResponse selectWrapper(WrapperSelectRequest wrapperSelectRequest);
+    OpenWrapperSelectResponse selectWrapper(WrapperSelectRequest wrapperSelectRequest);
+
+    WrapperSelectResponse selectWrapperForMember(WrapperSelectRequest wrapperSelectRequest, Long userId);
 
     OrderResponse processOpenOrder(OpenOrderRequest openOrderRequest);
 

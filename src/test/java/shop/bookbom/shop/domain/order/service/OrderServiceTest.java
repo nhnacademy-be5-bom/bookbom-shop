@@ -26,8 +26,8 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OpenWrapperSelectResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
-import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.pointrate.entity.ApplyPointType;
 import shop.bookbom.shop.domain.pointrate.entity.EarnPointType;
 import shop.bookbom.shop.domain.pointrate.entity.PointRate;
@@ -152,14 +152,14 @@ public class OrderServiceTest {
         estimatedDateList.add("4/30(화)");
         estimatedDateList.add("5/1(수)");
         estimatedDateList.add("5/2(목)");
-        WrapperSelectResponse.builder().wrapperSelectResponseList(wrapperSelectBookResponseList)
+        OpenWrapperSelectResponse.builder().wrapperSelectResponseList(wrapperSelectBookResponseList)
                 .wrapCost(3000)
                 .deliveryCost(5000)
                 .totalOrderCount(3)
                 .estimatedDateList(estimatedDateList)
                 .build();
         //when
-        WrapperSelectResponse response = orderService.selectWrapper(wrapperSelectRequest);
+        OpenWrapperSelectResponse response = orderService.selectWrapper(wrapperSelectRequest);
 
         //then
         assertEquals(3, response.getTotalOrderCount());
