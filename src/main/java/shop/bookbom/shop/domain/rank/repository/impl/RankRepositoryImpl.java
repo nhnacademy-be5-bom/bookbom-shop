@@ -1,5 +1,6 @@
 package shop.bookbom.shop.domain.rank.repository.impl;
 
+import static shop.bookbom.shop.domain.pointrate.entity.QPointRate.pointRate;
 import static shop.bookbom.shop.domain.rank.entity.QRank.rank;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,7 +18,7 @@ public class RankRepositoryImpl implements RankRepositoryCustom {
         Rank result = queryFactory
                 .select(rank)
                 .from(rank)
-                .leftJoin(rank.pointRate).fetchJoin()
+                .leftJoin(rank.pointRate, pointRate).fetchJoin()
                 .where(rank.name.eq(name))
                 .fetchOne();
         if (result == null) {

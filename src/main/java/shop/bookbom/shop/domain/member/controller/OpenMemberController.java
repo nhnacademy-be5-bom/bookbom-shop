@@ -16,9 +16,14 @@ import shop.bookbom.shop.domain.member.service.MemberService;
 public class OpenMemberController {
     private final MemberService memberService;
 
+    /**
+     * 회원가입을 처리하는 메서드입니다.
+     *
+     * @param signUpRequest 회원가입 요청 정보
+     */
     @PostMapping("/sign-up")
-    public CommonResponse<Long> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
-        Long userId = memberService.save(signUpRequest);
-        return CommonResponse.successWithData(userId);
+    public CommonResponse<Void> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
+        memberService.save(signUpRequest);
+        return CommonResponse.success();
     }
 }

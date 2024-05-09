@@ -14,8 +14,8 @@ public interface MemberService {
 
     /**
      * 회원가입을 처리하는 메서드입니다.
+     *
      * @param signUpRequest 회원가입 요청 정보
-     * @return 회원 id
      */
-    Long save(SignUpRequest signUpRequest);
+    void save(SignUpRequest signUpRequest);
 }

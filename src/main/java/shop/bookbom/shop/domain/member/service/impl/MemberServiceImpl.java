@@ -45,7 +45,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public Long save(SignUpRequest signUpRequest) {
+    public void save(SignUpRequest signUpRequest) {
         Role role = roleRepository.findByName(ROLE_USER)
                 .orElseThrow(RoleNotFoundException::new);
         PointRate pointRate = pointRateRepository.findByName(SIGNUP_POINT_RATE)
@@ -83,7 +83,5 @@ public class MemberServiceImpl implements MemberService {
                 .member(member)
                 .build();
         addressRepository.save(address);
-
-        return member.getId();
     }
 }
