@@ -97,7 +97,7 @@ class PointRateControllerTest {
         perform
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(400))
-                .andExpect(jsonPath("$.header.resultMessage").value("요청한 값이 올바르지 않습니다."))
+                .andExpect(jsonPath("$.header.resultMessage").value("적립률은 0 이상이어야 합니다."))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
 }

@@ -25,23 +25,19 @@ import shop.bookbom.shop.domain.category.service.CategoryService;
 public class CategoryRestController {
     private final CategoryService categoryService;
 
-//    @GetMapping("/category/all")
-//    public CommonListResponse<CategoryDTO> getAllCategories() {
-//        return CommonListResponse.successWithList(categoryService.getAllDepthOneCategories());
-//    }
-
-    @GetMapping("/category/depth1")
+    @GetMapping("/open/categories/depth1")
+    @CrossOrigin(origins = "*")
     public CommonListResponse<CategoryDTO> getDepthOneCategories() {
         return CommonListResponse.successWithList(categoryService.getAllDepthOneCategories());
     }
 
-    @GetMapping("/category/{parentId}")
+    @GetMapping("/open/categories/{parentId}")
     @CrossOrigin(origins = "*")
     public CommonListResponse<CategoryDTO> getChildCategoriesOf(@PathVariable("parentId") Long parentId) {
         return CommonListResponse.successWithList(categoryService.getChildCategoriesByCategoryId(parentId));
     }
 
-    @GetMapping("/category/nameandchild/{parentId}")
+    @GetMapping("/open/categories/nameandchild/{parentId}")
     @CrossOrigin(origins = "*")
     public CommonResponse<CategoryNameAndChildResponse> getNameAndChildCategoriesOf(
             @PathVariable("parentId") Long parentId) {
@@ -51,13 +47,13 @@ public class CategoryRestController {
         );
     }
 
-    @PutMapping("/category/update/new")
+    @PutMapping("/categories/update/new")
     public CommonResponse<Void> addCategory(@RequestBody CategoryAddRequest categoryAddRequest) {
         categoryService.addCategory(categoryAddRequest);
         return CommonResponse.success();
     }
 
-    @PutMapping("/category/update/{id}")
+    @PutMapping("/categories/update/{id}")
     public CommonResponse<Void> updateCategory(@RequestBody CategoryUpdateRequest categoryUpdateRequest,
                                                @PathVariable("id") Long categoryId) {
 
@@ -65,7 +61,7 @@ public class CategoryRestController {
         return CommonResponse.success();
     }
 
-    @DeleteMapping("/category/delete/{id}")
+    @DeleteMapping("/categories/delete/{id}")
     public CommonResponse<Void> deleteCategory(@PathVariable("id") Long categoryId) {
 
         categoryService.deleteCategory(categoryId);

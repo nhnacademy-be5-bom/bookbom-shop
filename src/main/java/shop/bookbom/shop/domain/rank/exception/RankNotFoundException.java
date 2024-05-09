@@ -5,6 +5,6 @@ import shop.bookbom.shop.common.exception.ErrorCode;
 
 public class RankNotFoundException extends BaseException {
     public RankNotFoundException() {
-        super(ErrorCode.COMMON_ENTITY_NOT_FOUND, "존재하지 않는 등급 입니다.");
+        super(ErrorCode.RANK_NOT_FOUND);
     }
 }
