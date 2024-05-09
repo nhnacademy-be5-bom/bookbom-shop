@@ -30,7 +30,10 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .join(member.rank, rank).fetchJoin()
                 .leftJoin(member.orders, order).fetchJoin()
                 .leftJoin(order.status, orderStatus).fetchJoin()
-                .where(member.id.eq(id))
+                .where(
+                        member.id.eq(id),
+                        order.status.name.ne("결제전")
+                )
                 .fetchOne();
 
         if (memberResult == null) {
