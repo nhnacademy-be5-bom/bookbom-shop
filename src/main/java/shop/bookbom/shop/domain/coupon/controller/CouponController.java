@@ -22,33 +22,32 @@ import shop.bookbom.shop.domain.coupon.dto.response.CouponInfoResponse;
 import shop.bookbom.shop.domain.coupon.service.CouponService;
 
 @RestController
-@RequestMapping("/shop")
 @RequiredArgsConstructor
 public class CouponController {
     private final CouponService couponService;
 
-    @PostMapping("/generalCoupon/{id}")
+    @PostMapping("/admin/generalCoupon/{id}")
     public CommonResponse<Void> addGeneralCoupon(@PathVariable("id") Long userId,
                                                  @RequestBody AddCouponRequest addCouponRequest) {
         couponService.addGeneralCoupon(addCouponRequest);
         return CommonResponse.success();
     }
 
-    @PostMapping("/bookCoupon/{id}")
+    @PostMapping("/admin/bookCoupon/{id}")
     public CommonResponse<Void> addGeneralCoupon(@PathVariable("id") Long userId,
                                                  @RequestBody AddBookCouponRequest addCouponRequest) {
         couponService.addBookCoupon(addCouponRequest);
         return CommonResponse.success();
     }
 
-    @PostMapping("/categoryCoupon/{id}")
+    @PostMapping("/admin/categoryCoupon/{id}")
     public CommonResponse<Void> addCategoryCoupon(@PathVariable("id") Long userId,
                                                   @RequestBody AddCategoryCouponRequest addCouponRequest) {
         couponService.addCategoryCoupon(addCouponRequest);
         return CommonResponse.success();
     }
 
-    @GetMapping("/couponAdmin/{type}/{id}")
+    @GetMapping("/admin/coupons/{type}/{id}")
     public CommonResponse<Page<CouponInfoResponse>> getCouponList(@PageableDefault Pageable pageable,
                                                                   @PathVariable("id") Long userId, @PathVariable("type") String type) {
         Page<CouponInfoResponse> couponInfoResponses = couponService.getCouponInfo(pageable, type.toUpperCase());
