@@ -15,7 +15,7 @@ import shop.bookbom.shop.security.jwt.JwtConfig;
 
 @Slf4j
 @RequiredArgsConstructor
-public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
     private final JwtConfig jwtConfig;
 
     @Override
@@ -32,7 +32,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             MethodParameter parameter,
             ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
-    ) throws Exception {
+    ) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = jwtConfig.resolveToken(request);
         UserIdRole userIdRole = jwtConfig.getUserIdRole(token);
