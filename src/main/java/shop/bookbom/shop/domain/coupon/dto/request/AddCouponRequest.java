@@ -1,12 +1,15 @@
 package shop.bookbom.shop.domain.coupon.dto.request;
 
 import java.util.Date;
+import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 public class AddCouponRequest {
+    @NotBlank(message = "쿠폰 이름을 입력하세요.")
     private String name;
+    @NotBlank(message = "쿠폰 정책을 입력하세요.")
     private Long couponPolicyId;
     private Date period;
 

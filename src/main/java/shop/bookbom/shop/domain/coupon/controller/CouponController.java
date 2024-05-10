@@ -1,8 +1,6 @@
 package shop.bookbom.shop.domain.coupon.controller;
 
-import java.util.List;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,14 +9,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonListResponse;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.coupon.dto.request.AddBookCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCategoryCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCouponRequest;
-import shop.bookbom.shop.domain.coupon.dto.request.CouponInfoRequest;
 import shop.bookbom.shop.domain.coupon.dto.response.CouponInfoResponse;
 import shop.bookbom.shop.domain.coupon.dto.response.CouponIssueResponse;
 import shop.bookbom.shop.domain.coupon.service.CouponService;
@@ -31,21 +27,21 @@ public class CouponController {
 
     @PostMapping("/admin/generalCoupon/{id}")
     public CommonResponse<Void> addGeneralCoupon(@PathVariable("id") Long userId,
-                                                 @RequestBody AddCouponRequest addCouponRequest) {
+                                                 @RequestBody @Valid AddCouponRequest addCouponRequest) {
         couponService.addGeneralCoupon(addCouponRequest);
         return CommonResponse.success();
     }
 
     @PostMapping("/admin/bookCoupon/{id}")
     public CommonResponse<Void> addGeneralCoupon(@PathVariable("id") Long userId,
-                                                 @RequestBody AddBookCouponRequest addCouponRequest) {
+                                                 @RequestBody @Valid AddBookCouponRequest addCouponRequest) {
         couponService.addBookCoupon(addCouponRequest);
         return CommonResponse.success();
     }
 
     @PostMapping("/admin/categoryCoupon/{id}")
     public CommonResponse<Void> addCategoryCoupon(@PathVariable("id") Long userId,
-                                                  @RequestBody AddCategoryCouponRequest addCouponRequest) {
+                                                  @RequestBody @Valid AddCategoryCouponRequest addCouponRequest) {
         couponService.addCategoryCoupon(addCouponRequest);
         return CommonResponse.success();
     }
@@ -67,7 +63,7 @@ public class CouponController {
      */
     @PostMapping("/admin/coupons/issue/{id}")
     public CommonResponse<Void> issueCoupon(@PathVariable("id") Long userId,
-                                            @RequestBody IssueCouponRequest issueCouponRequest) {
+                                            @RequestBody @Valid IssueCouponRequest issueCouponRequest) {
         couponService.addMemberCoupon(issueCouponRequest);
         return CommonResponse.success();
     }
