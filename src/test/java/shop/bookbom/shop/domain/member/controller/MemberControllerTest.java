@@ -11,7 +11,6 @@ import static shop.bookbom.shop.common.TestUtils.getPointRate;
 import static shop.bookbom.shop.common.TestUtils.getRank;
 import static shop.bookbom.shop.common.TestUtils.getRole;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,8 +31,6 @@ class MemberControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    ObjectMapper objectMapper = new ObjectMapper();
-
     @MockBean
     MemberService memberService;
 
@@ -45,7 +42,7 @@ class MemberControllerTest {
         when(memberService.getMemberInfo(1L)).thenReturn(
                 getMemberInfoResponse(rank, getMember("test@email.com", getRole(), rank)));
         //when
-        ResultActions perform = mockMvc.perform(get("/shop/member/my-page")
+        ResultActions perform = mockMvc.perform(get("/shop/users/my-page")
                 .param("userId", "1"));
 
         //then

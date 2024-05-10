@@ -45,7 +45,7 @@ class PointHistoryControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 5);
         PageImpl<PointHistoryResponse> page = new PageImpl<>(List.of(pointHistoryResponse), pageRequest, 1);
         when(pointHistoryService.findPointHistory(any(), any(), any())).thenReturn(page);
-        ResultActions perform = mockMvc.perform(get("/shop/member/point-history")
+        ResultActions perform = mockMvc.perform(get("/shop/users/point-history")
                 .param("userId", "1"));
         perform
                 .andExpect(status().isOk())
@@ -66,7 +66,7 @@ class PointHistoryControllerTest {
         PageImpl<PointHistoryResponse> page = new PageImpl<>(List.of(pointHistoryResponse), pageRequest, 1);
         when(pointHistoryService.findPointHistory(any(), any(), eq(ChangeReason.EARN))).thenReturn(page);
         when(pointHistoryService.findPointHistory(any(), any(), eq(ChangeReason.USE))).thenReturn(Page.empty());
-        ResultActions perform = mockMvc.perform(get("/shop/member/point-history")
+        ResultActions perform = mockMvc.perform(get("/shop/users/point-history")
                 .param("userId", "1")
                 .param("reason", "USE"));
         perform
@@ -85,7 +85,7 @@ class PointHistoryControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 5);
         PageImpl<PointHistoryResponse> page = new PageImpl<>(List.of(pointHistoryResponse), pageRequest, 1);
         when(pointHistoryService.findPointHistory(any(), any(), any())).thenReturn(page);
-        ResultActions perform = mockMvc.perform(get("/shop/member/point-history")
+        ResultActions perform = mockMvc.perform(get("/shop/users/point-history")
                 .param("userId", "1")
                 .param("reason", "TESTTT"));
         perform
