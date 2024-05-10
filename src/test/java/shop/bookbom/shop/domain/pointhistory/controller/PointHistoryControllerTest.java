@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ import shop.bookbom.shop.domain.pointhistory.dto.response.PointHistoryResponse;
 import shop.bookbom.shop.domain.pointhistory.entity.ChangeReason;
 import shop.bookbom.shop.domain.pointhistory.service.PointHistoryService;
 
+@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(PointHistoryController.class)
 class PointHistoryControllerTest {
@@ -45,7 +47,7 @@ class PointHistoryControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 5);
         PageImpl<PointHistoryResponse> page = new PageImpl<>(List.of(pointHistoryResponse), pageRequest, 1);
         when(pointHistoryService.findPointHistory(any(), any(), any())).thenReturn(page);
-        ResultActions perform = mockMvc.perform(get("/shop/member/point-history")
+        ResultActions perform = mockMvc.perform(get("/shop/users/point-history")
                 .param("userId", "1"));
         perform
                 .andExpect(status().isOk())
@@ -66,7 +68,7 @@ class PointHistoryControllerTest {
         PageImpl<PointHistoryResponse> page = new PageImpl<>(List.of(pointHistoryResponse), pageRequest, 1);
         when(pointHistoryService.findPointHistory(any(), any(), eq(ChangeReason.EARN))).thenReturn(page);
         when(pointHistoryService.findPointHistory(any(), any(), eq(ChangeReason.USE))).thenReturn(Page.empty());
-        ResultActions perform = mockMvc.perform(get("/shop/member/point-history")
+        ResultActions perform = mockMvc.perform(get("/shop/users/point-history")
                 .param("userId", "1")
                 .param("reason", "USE"));
         perform
@@ -85,7 +87,7 @@ class PointHistoryControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 5);
         PageImpl<PointHistoryResponse> page = new PageImpl<>(List.of(pointHistoryResponse), pageRequest, 1);
         when(pointHistoryService.findPointHistory(any(), any(), any())).thenReturn(page);
-        ResultActions perform = mockMvc.perform(get("/shop/member/point-history")
+        ResultActions perform = mockMvc.perform(get("/shop/users/point-history")
                 .param("userId", "1")
                 .param("reason", "TESTTT"));
         perform
