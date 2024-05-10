@@ -21,12 +21,14 @@ import shop.bookbom.shop.common.exception.BaseException;
 import shop.bookbom.shop.common.exception.ErrorCode;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
+import shop.bookbom.shop.domain.users.dto.request.EmailPasswordDto;
 import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
+import shop.bookbom.shop.domain.users.dto.response.UserIdRole;
 import shop.bookbom.shop.domain.users.service.UserService;
 
 @RestController
-@RequestMapping("/shop/users")
+@RequestMapping("/shop")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
@@ -39,7 +41,7 @@ public class UserController {
      * @param userRequestDto : String email, String password, String roleName
      * @return Long userId
      */
-    @PostMapping
+    @PostMapping("/open/users")
     public CommonResponse<Long> registerUser(@Valid @RequestBody UserRequestDto userRequestDto,
                                              BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -54,7 +56,7 @@ public class UserController {
      *
      * @param resetPasswordRequestDto : Long id, String password
      */
-    @PatchMapping("/{id}/password")
+    @PatchMapping("/users/{id}/password")
     public CommonResponse resetPassword(@RequestBody ResetPasswordRequestDto resetPasswordRequestDto) {
         userService.resetPassword(resetPasswordRequestDto);
         return CommonResponse.success();
@@ -66,7 +68,7 @@ public class UserController {
      * @param id         userId
      * @param registered
      */
-    @PatchMapping("/{id}/registered")
+    @PatchMapping("/users/{id}/registered")
     public CommonResponse changeRegistered(@PathVariable("id") Long id,
                                            @RequestParam boolean registered) {
         log.info("id is : " + id);
@@ -80,7 +82,7 @@ public class UserController {
      * @param id
      * @return registered   user의 registered를 받아옴
      */
-    @GetMapping("/{id}/registered")
+    @GetMapping("/open/users/{id}/registered")
     public CommonResponse<Boolean> getRegistered(@PathVariable Long id) {
         boolean registered = userService.isRegistered(id);
         return CommonResponse.successWithData(Boolean.valueOf(registered));
@@ -93,7 +95,7 @@ public class UserController {
      * @return emial이 사용 가능한지 여부. 사용 가능하면 true
      */
     // #3-2 READ USER - Email이 사용 가능한지 확인
-    @PostMapping("/email/confirm")
+    @PostMapping("/open/users/email/confirm")
     public CommonResponse<Boolean> checkEmailCanUse(@RequestBody String email) {
         if (userService.checkEmailCanUse(email)) {
             return CommonResponse.successWithData(Boolean.TRUE);
@@ -110,7 +112,7 @@ public class UserController {
      * @param dateFrom 주문 최소 날짜
      * @param dateTo   주문 최대 날짜
      */
-    @GetMapping("/orders")
+    @GetMapping("/users/orders")
     public CommonResponse<Page<OrderInfoResponse>> getOrders(
             @RequestParam("userId") Long userId,
             Pageable pageable,
@@ -120,5 +122,29 @@ public class UserController {
         OrderDateCondition orderDateCondition =
                 new OrderDateCondition(parseLocalDate(dateFrom), parseLocalDate(dateTo));
         return CommonResponse.successWithData(userService.getOrderInfos(userId, pageable, orderDateCondition));
+    }
+
+    /**
+     * READ USER - Email, Password 검증
+     */
+    @PostMapping("/open/users/confirm")
+    public CommonResponse<Boolean> confirmEmailPassword(@RequestBody EmailPasswordDto emailPasswordDto,
+                                                        BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new BaseException(ErrorCode.COMMON_INVALID_PARAMETER);
+        }
+        return CommonResponse.successWithData(userService.confirm(emailPasswordDto));
+    }
+
+    @PostMapping("/open/users/detail")
+    public CommonResponse<UserIdRole> getIdRole(@RequestBody EmailPasswordDto emailPasswordDto,
+                                                BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new BaseException(ErrorCode.COMMON_INVALID_PARAMETER);
+        }
+        log.info("getIdRole API ROLE");
+        CommonResponse<UserIdRole> userIdRoleCommonResponse =
+                CommonResponse.successWithData(userService.getIdRole(emailPasswordDto));
+        return userIdRoleCommonResponse;
     }
 }
