@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ import shop.bookbom.shop.domain.pointhistory.dto.response.PointHistoryResponse;
 import shop.bookbom.shop.domain.pointhistory.entity.ChangeReason;
 import shop.bookbom.shop.domain.pointhistory.service.PointHistoryService;
 
+@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(PointHistoryController.class)
 class PointHistoryControllerTest {
