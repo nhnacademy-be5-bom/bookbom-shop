@@ -13,7 +13,7 @@ import shop.bookbom.shop.security.jwt.JwtConfig;
 
 @Slf4j
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
@@ -48,7 +48,7 @@ public class SecurityConfig {
                         (authz) -> authz
                                 .antMatchers("/shop/admin/**").hasAnyRole("ADMIN")
                                 .antMatchers("/shop/open/**").permitAll()
-//                                .antMatchers("/shop/**").hasAnyRole("USER")
+                                .antMatchers("/shop/**").hasAnyRole("USER")
                                 .anyRequest().permitAll()
                 );
 
