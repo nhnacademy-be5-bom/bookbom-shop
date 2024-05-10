@@ -38,7 +38,7 @@ public class CartController {
      * @param userDto  로그인한 회원 정보
      * @param requests 장바구니 추가할 상품 ID와 수량 리스트
      */
-    @PostMapping("/carts/{id}")
+    @PostMapping("/carts")
     public CommonListResponse<Long> addToCart(
             @Login UserDto userDto,
             @RequestBody List<CartAddRequest> requests
@@ -55,7 +55,7 @@ public class CartController {
      * @param userDto 로그인한 회원 정보
      * @return 장바구니 ID, 상품 ID와 수량 리스트
      */
-    @GetMapping("/carts/{id}")
+    @GetMapping("/carts")
     public CommonResponse<CartInfoResponse> getCart(@Login UserDto userDto) {
         return successWithData(cartService.getCartInfo(userDto.getId()));
     }

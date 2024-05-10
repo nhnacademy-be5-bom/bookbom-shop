@@ -24,36 +24,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.bookbom.shop.argumentresolver.LoginArgumentResolver;
+import shop.bookbom.shop.config.WebConfig;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartInfoResponse;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartUpdateResponse;
 import shop.bookbom.shop.domain.cart.dto.request.CartAddRequest;
 import shop.bookbom.shop.domain.cart.dto.request.CartUpdateRequest;
 import shop.bookbom.shop.domain.cart.service.CartService;
+import shop.bookbom.shop.domain.users.dto.UserDto;
 
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(CartController.class)
+@WebMvcTest(
+        value = CartController.class,
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebConfig.class))
 class CartControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @MockBean
+    LoginArgumentResolver resolver;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
     @MockBean
     CartService cartService;
 
+
     @Test
     @DisplayName("장바구니 상품 추가")
     void addToCart() throws Exception {
         List<CartAddRequest> request = getCartAddRequest();
-        ResultActions perform = mockMvc.perform(post("/shop/carts/{id}", 1L)
+        ResultActions perform = mockMvc.perform(post("/shop/carts")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
+        when(resolver.resolveArgument(any(), any(), any(), any())).thenReturn(new UserDto(1L));
         perform
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -66,9 +78,11 @@ class CartControllerTest {
     @DisplayName("장바구니 상품 추가 예외")
     void addToCartException() throws Exception {
         CartAddRequest cartAddRequest = new CartAddRequest(1L, -1);
-        ResultActions perform = mockMvc.perform(post("/shop/carts/{id}", 1L)
+        ResultActions perform = mockMvc.perform(post("/shop/carts", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(List.of(cartAddRequest))));
+
+        when(resolver.resolveArgument(any(), any(), any(), any())).thenReturn(new UserDto(1L));
         perform
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(HttpStatus.BAD_REQUEST.value()))
@@ -81,7 +95,9 @@ class CartControllerTest {
     void getCart() throws Exception {
         CartInfoResponse response = getCartInfoResponse();
         when(cartService.getCartInfo(any())).thenReturn(response);
-        ResultActions perform = mockMvc.perform(get("/shop/carts/{id}", 1L));
+        ResultActions perform = mockMvc.perform(get("/shop/carts", 1L));
+
+        when(resolver.resolveArgument(any(), any(), any(), any())).thenReturn(new UserDto(1L));
         perform
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
