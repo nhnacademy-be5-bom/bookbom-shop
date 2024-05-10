@@ -35,7 +35,7 @@ public class PointHistoryController {
                 .orElseThrow(InvalidChangeReasonException::new);
     }
 
-    @GetMapping("/member/point-history")
+    @GetMapping("/users/point-history")
     public CommonResponse<Page<PointHistoryResponse>> getPointHistory(
             @RequestParam Long userId,
             Pageable pageable,
