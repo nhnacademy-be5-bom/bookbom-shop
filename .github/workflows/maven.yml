@@ -56,7 +56,7 @@ jobs:
           username: ${{ secrets.SSH_ID }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          envs: SECURE_MANAGER_APPKEY, KEYSTORE_PASSWORD
+          envs: SECURE_MANAGER_APPKEY, KEYSTORE_PASSWORD, JWT_SECRET_KEY
           script_stop: true
           script: "./startup.sh"
 
