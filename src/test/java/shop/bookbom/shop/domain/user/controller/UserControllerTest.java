@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
@@ -42,6 +43,7 @@ import shop.bookbom.shop.domain.users.exception.UserAlreadyExistException;
 import shop.bookbom.shop.domain.users.exception.UserNotFoundException;
 import shop.bookbom.shop.domain.users.service.UserService;
 
+@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(UserController.class)
 class UserControllerTest {
@@ -63,7 +65,7 @@ class UserControllerTest {
 
         when(userService.save(any(UserRequestDto.class))).thenReturn(1L);
 
-        mockMvc.perform(post("/shop/users").content(objectMapper.writeValueAsString(userRequestDto))
+        mockMvc.perform(post("/shop/open/users").content(objectMapper.writeValueAsString(userRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value(1));
     }
@@ -75,7 +77,7 @@ class UserControllerTest {
                 UserRequestDto.builder().email("wow@email.com").password("1").roleName("INVALID_ROLE").build();
         doThrow(new RoleNotFoundException()).when(userService).save(any(UserRequestDto.class));
 
-        mockMvc.perform(post("/shop/users").content(objectMapper.writeValueAsString(userRequestDto))
+        mockMvc.perform(post("/shop/open/users").content(objectMapper.writeValueAsString(userRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
@@ -87,7 +89,7 @@ class UserControllerTest {
                 UserRequestDto.builder().email("wow@email.com").password("1").roleName("INVALID_ROLE").build();
         doThrow(new UserAlreadyExistException()).when(userService).save(any(UserRequestDto.class));
 
-        mockMvc.perform(post("/shop/users").content(objectMapper.writeValueAsString(userRequestDto))
+        mockMvc.perform(post("/shop/open/users").content(objectMapper.writeValueAsString(userRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
@@ -99,7 +101,7 @@ class UserControllerTest {
                 UserRequestDto.builder().email("INVALID_EMAIL").password("1").roleName("ROLE_USER").build();
 //        doThrow(new UserAlreadyExistException()).when(userService).save(any(UserRequestDto.class));
 
-        mockMvc.perform(post("/shop/users").content(objectMapper.writeValueAsString(userRequestDto))
+        mockMvc.perform(post("/shop/open/users").content(objectMapper.writeValueAsString(userRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
@@ -158,7 +160,7 @@ class UserControllerTest {
     void getRegisteredTest() throws Exception {
         when(userService.isRegistered(any(Long.class))).thenReturn(true);
 
-        mockMvc.perform(get("/shop/users/1/registered").param("id", "1").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/shop/open/users/1/registered").param("id", "1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.result").value(Boolean.TRUE));
     }
@@ -168,7 +170,7 @@ class UserControllerTest {
     void getRegisteredWithNoUserTest() throws Exception {
         doThrow(new UserNotFoundException()).when(userService).isRegistered(any(Long.class));
 
-        mockMvc.perform(get("/shop/users/-4/registered").param("id", "-4").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/shop/open/users/-4/registered").param("id", "-4").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }

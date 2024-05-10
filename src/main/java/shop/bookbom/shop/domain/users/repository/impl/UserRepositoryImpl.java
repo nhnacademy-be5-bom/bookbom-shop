@@ -30,7 +30,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .where(
                         order.user.eq(user),
                         orderDateMin(condition.getOrderDateMin()),
-                        orderDateMax(condition.getOrderDateMax())
+                        orderDateMax(condition.getOrderDateMax()),
+                        order.status.name.ne("결제전")
                 )
                 .orderBy(order.orderDate.desc())
                 .offset(pageable.getOffset())
