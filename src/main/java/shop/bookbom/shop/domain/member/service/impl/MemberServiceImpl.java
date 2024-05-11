@@ -36,7 +36,7 @@ import shop.bookbom.shop.domain.users.exception.RoleNotFoundException;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
-    private static final String ROLE_USER = "ROLE_USER";
+    private static final String ROLE_MEMBER = "ROLE_MEMBER";
     private static final String STANDARD_RANK = "STANDARD";
     private static final String SIGNUP_POINT_RATE = "회원가입";
     private final MemberRepository memberRepository;
@@ -56,7 +56,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void save(SignUpRequest signUpRequest) {
-        Role role = roleRepository.findByName(ROLE_USER)
+        Role role = roleRepository.findByName(ROLE_MEMBER)
                 .orElseThrow(RoleNotFoundException::new);
         PointRate pointRate = pointRateRepository.findByName(SIGNUP_POINT_RATE)
                 .orElseThrow(PointRateNotFoundException::new);

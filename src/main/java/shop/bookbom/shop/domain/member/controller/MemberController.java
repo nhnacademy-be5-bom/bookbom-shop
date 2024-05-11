@@ -7,20 +7,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import shop.bookbom.shop.annotation.Login;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.member.dto.request.WithDrawDTO;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.member.service.MemberService;
+import shop.bookbom.shop.domain.users.dto.UserDto;
 
 @RestController
-@RequestMapping("/shop")
 @RequiredArgsConstructor
+@RequestMapping("/shop")
 public class MemberController {
     private final MemberService memberService;
 
-    @GetMapping("/members/my-page")
-    public CommonResponse<MemberInfoResponse> myPage(@RequestParam("userId") Long id) {
-        return CommonResponse.successWithData(memberService.getMemberInfo(id));
+    @GetMapping("/users/my-page")
+    public CommonResponse<MemberInfoResponse> myPage(@Login UserDto userDto) {
+        return CommonResponse.successWithData(memberService.getMemberInfo(userDto.getId()));
     }
 
     @PostMapping("/member/withdraw")

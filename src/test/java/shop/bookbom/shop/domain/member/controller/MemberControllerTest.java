@@ -11,12 +11,12 @@ import static shop.bookbom.shop.common.TestUtils.getPointRate;
 import static shop.bookbom.shop.common.TestUtils.getRank;
 import static shop.bookbom.shop.common.TestUtils.getRole;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -26,13 +26,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import shop.bookbom.shop.domain.member.service.MemberService;
 import shop.bookbom.shop.domain.rank.entity.Rank;
 
+@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(MemberController.class)
 class MemberControllerTest {
     @Autowired
     MockMvc mockMvc;
-
-    ObjectMapper objectMapper = new ObjectMapper();
 
     @MockBean
     MemberService memberService;
@@ -45,7 +44,7 @@ class MemberControllerTest {
         when(memberService.getMemberInfo(1L)).thenReturn(
                 getMemberInfoResponse(rank, getMember("test@email.com", getRole(), rank)));
         //when
-        ResultActions perform = mockMvc.perform(get("/shop/member/my-page")
+        ResultActions perform = mockMvc.perform(get("/shop/users/my-page")
                 .param("userId", "1"));
 
         //then

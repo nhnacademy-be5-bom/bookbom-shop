@@ -28,7 +28,7 @@ public class BookTagController {
     private final BookTagService bookTagService;
 
     // 책 태그 정보
-    @GetMapping("/book/tag/{id}")
+    @GetMapping("/books/tag/{id}")
     public CommonResponse<List<BookTagInfoResponse>> getBookTag(@PathVariable long id) {
         List<BookTagInfoResponse> bookTagResponses = bookTagService.getBookTagInformation(id);
         // 응답을 200으로 설정하고 본문으로 리스트를 넘겨줌
@@ -36,7 +36,7 @@ public class BookTagController {
     }
 
     // 책 태그 등록
-    @PostMapping("/book/tag")
+    @PostMapping("/books/tag")
     public CommonResponse<Void> saveBookTag(final @Valid @RequestBody BookTagCreateRequest bookTagRequest,
                                             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -50,7 +50,7 @@ public class BookTagController {
     }
 
     //책 태그 삭제
-    @DeleteMapping("/book/tag/{id}")
+    @DeleteMapping("/books/tag/{id}")
     public CommonResponse<Void> deleteBookTag(@PathVariable long id) {
         bookTagService.deleteBookTagService(id);
         return success();

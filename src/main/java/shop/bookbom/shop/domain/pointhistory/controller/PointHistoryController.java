@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import shop.bookbom.shop.annotation.Login;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.pointhistory.dto.response.PointHistoryResponse;
 import shop.bookbom.shop.domain.pointhistory.entity.ChangeReason;
 import shop.bookbom.shop.domain.pointhistory.exception.InvalidChangeReasonException;
 import shop.bookbom.shop.domain.pointhistory.service.PointHistoryService;
+import shop.bookbom.shop.domain.users.dto.UserDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,15 +37,15 @@ public class PointHistoryController {
                 .orElseThrow(InvalidChangeReasonException::new);
     }
 
-    @GetMapping("/member/point-history")
+    @GetMapping("/users/point-history")
     public CommonResponse<Page<PointHistoryResponse>> getPointHistory(
-            @RequestParam Long userId,
+            @Login UserDto userDto,
             Pageable pageable,
             @RequestParam(value = "reason", required = false) String reason
     ) {
         if (reason == null) {
-            return successWithData(pointHistoryService.findPointHistory(userId, pageable, null));
+            return successWithData(pointHistoryService.findPointHistory(userDto.getId(), pageable, null));
         }
-        return successWithData(pointHistoryService.findPointHistory(userId, pageable, getChangeReason(reason)));
+        return successWithData(pointHistoryService.findPointHistory(userDto.getId(), pageable, getChangeReason(reason)));
     }
 }
