@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import shop.bookbom.shop.domain.member.service.MemberService;
 import shop.bookbom.shop.domain.users.controller.OpenUserController;
 import shop.bookbom.shop.domain.users.service.UserService;
 
@@ -31,6 +32,9 @@ class OpenUserControllerTest {
 
     @MockBean
     UserService userService;
+
+    @MockBean
+    MemberService memberService;
 
     @Test
     @DisplayName("이메일 중복 체크")
