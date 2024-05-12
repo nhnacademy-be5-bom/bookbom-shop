@@ -15,7 +15,7 @@ import shop.bookbom.shop.domain.payment.dto.response.PaymentSuccessResponse;
 import shop.bookbom.shop.domain.payment.service.PaymentService;
 
 @RestController
-@RequestMapping("/shop")
+@RequestMapping("/shop/open")
 @RequiredArgsConstructor
 public class PaymentController {
     private final PaymentService paymentService;

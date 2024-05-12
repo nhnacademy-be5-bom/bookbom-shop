@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import shop.bookbom.shop.annotation.Login;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.common.exception.BaseException;
 import shop.bookbom.shop.common.exception.ErrorCode;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
+import shop.bookbom.shop.domain.users.dto.UserDto;
 import shop.bookbom.shop.domain.users.dto.request.EmailPasswordDto;
 import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
@@ -107,21 +109,21 @@ public class UserController {
     /**
      * 유저의 주문 내역을 조회하는 메서드입니다.
      *
-     * @param userId   유저 아이디
+     * @param userDto  로그인 유저 정보
      * @param pageable 페이지 정보
      * @param dateFrom 주문 최소 날짜
      * @param dateTo   주문 최대 날짜
      */
     @GetMapping("/users/orders")
     public CommonResponse<Page<OrderInfoResponse>> getOrders(
-            @RequestParam("userId") Long userId,
+            @Login UserDto userDto,
             Pageable pageable,
             @RequestParam(value = "date_from", required = false) String dateFrom,
             @RequestParam(value = "date_to", required = false) String dateTo
     ) {
         OrderDateCondition orderDateCondition =
                 new OrderDateCondition(parseLocalDate(dateFrom), parseLocalDate(dateTo));
-        return CommonResponse.successWithData(userService.getOrderInfos(userId, pageable, orderDateCondition));
+        return CommonResponse.successWithData(userService.getOrderInfos(userDto.getId(), pageable, orderDateCondition));
     }
 
     /**
