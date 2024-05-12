@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.annotation.Login;
 import shop.bookbom.shop.common.CommonResponse;
@@ -25,9 +24,9 @@ public class MemberController {
         return CommonResponse.successWithData(memberService.getMemberInfo(userDto.getId()));
     }
 
-    @PostMapping("/member/withdraw")
-    public CommonResponse<Void> deleteMember(@RequestBody WithDrawDTO withDrawDTO, @RequestParam("memberId") Long memberId){
-        memberService.deleteMember(memberId, withDrawDTO);
+    @PostMapping("/users/withdraw")
+    public CommonResponse<Void> deleteMember(@Login UserDto userDto, @RequestBody WithDrawDTO withDrawDTO) {
+        memberService.deleteMember(userDto.getId(), withDrawDTO);
         return CommonResponse.success();
     }
 }
