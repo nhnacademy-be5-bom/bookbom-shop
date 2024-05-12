@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.coupon.dto.request.AddBookCouponRequest;
@@ -53,7 +54,7 @@ public class CouponController {
     }
 
     /**
-     * 쿠폰을 발급합니다.
+     * 관리자가 쿠폰을 발급할 때 사용합니다.
      *
      * @param userId             유저
      * @param issueCouponRequest 쿠폰 발급 요청 정보
@@ -63,6 +64,18 @@ public class CouponController {
     public CommonResponse<Void> issueCoupon(@PathVariable("id") Long userId,
                                             @RequestBody @Valid IssueCouponRequest issueCouponRequest) {
         couponService.addMemberCoupon(issueCouponRequest);
+        return CommonResponse.success();
+    }
+
+    /**
+     * 회원가입시 웰컴 쿠폰을 발급할 때 사용합니다.
+     *
+     * @param email 유저 이메일
+     * @return 성공 응답
+     */
+    @GetMapping("/shop/open/coupons/welcome")
+    public CommonResponse<Void> issueWelcomeCoupon(@RequestParam String email){
+        couponService.addWelcomeCoupon(email);
         return CommonResponse.success();
     }
 }

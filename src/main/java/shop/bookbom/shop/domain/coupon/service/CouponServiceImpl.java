@@ -134,4 +134,22 @@ public class CouponServiceImpl implements CouponService {
             memberCouponRepository.save(memberCoupon);
         });
     }
+
+    @Override
+    public void addWelcomeCoupon(String email) {
+        //welcom coupon id 2로 가정
+        Coupon welcomCoupon = couponRepository.findById(2L)
+                .orElseThrow(CouponNotFoundException::new);
+        Long userId = userRepository.findIdByEmail(email);
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(MemberNotFoundException::new);
+        MemberCoupon memberCoupon = MemberCoupon.builder()
+                .status(CouponStatus.NEW)
+                .issueDate(LocalDate.now())
+                .expireDate(LocalDate.now().plusDays(30))
+                .coupon(welcomCoupon)
+                .member(member)
+                .build();
+        memberCouponRepository.save(memberCoupon);
+    }
 }

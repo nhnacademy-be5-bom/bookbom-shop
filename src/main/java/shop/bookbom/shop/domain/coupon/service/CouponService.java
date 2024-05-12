@@ -18,4 +18,6 @@ public interface CouponService {
     Page<CouponInfoResponse> getCouponInfo(Pageable pageable, String type);
 
     void addMemberCoupon(IssueCouponRequest issueCouponRequest);
+
+    void addWelcomeCoupon(String email);
 }
