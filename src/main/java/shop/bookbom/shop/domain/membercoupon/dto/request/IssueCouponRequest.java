@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +15,9 @@ import lombok.RequiredArgsConstructor;
 public class IssueCouponRequest {
     @NotEmpty(message = "적어도 한 명의 유저가 있어야 합니다.")
     private List<String> userEmailList;
-    @NotBlank(message = "발급할 쿠폰을 입력해주세요.")
+    @NotNull(message = "발급할 쿠폰을 입력해주세요.")
     private Long couponId;
-    @NotBlank(message = "쿠폰의 만료일을 입력해주세요.")
+    @NotNull(message = "쿠폰의 만료일을 입력해주세요.")
     private LocalDate expireDate;
 
     @Builder

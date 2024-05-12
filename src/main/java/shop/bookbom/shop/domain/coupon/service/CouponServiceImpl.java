@@ -1,9 +1,8 @@
 package shop.bookbom.shop.domain.coupon.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ import shop.bookbom.shop.domain.coupon.dto.request.AddBookCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCategoryCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.response.CouponInfoResponse;
-import shop.bookbom.shop.domain.coupon.dto.response.CouponIssueResponse;
 import shop.bookbom.shop.domain.coupon.entity.Coupon;
 import shop.bookbom.shop.domain.coupon.entity.CouponType;
 import shop.bookbom.shop.domain.coupon.exception.CouponNotFoundException;
@@ -122,29 +120,18 @@ public class CouponServiceImpl implements CouponService {
         Coupon coupon = couponRepository.findById(issueCouponRequest.getCouponId())
                 .orElseThrow(CouponNotFoundException::new);
         issueCouponRequest.getUserEmailList().forEach(email -> {
-                    Long userId = userRepository.findIdByEmail(email);
-                    Member member = memberRepository.findById(userId)
-                            .orElseThrow(MemberNotFoundException::new);
-                    //같은 쿠폰을 가지고 있을 때 예외처리?
-                    MemberCoupon memberCoupon = MemberCoupon.builder()
-                            .status(CouponStatus.NEW)
-                            .issueDate(LocalDate.now())
-                            .expireDate(issueCouponRequest.getExpireDate())
-                            .coupon(coupon)
-                            .member(member)
-                            .build();
-                    memberCouponRepository.save(memberCoupon);
-                }
-        );
-    }
-
-    @Override
-    public List<CouponIssueResponse> getCouponName() {
-        List<CouponIssueResponse> couponIssueResponses = new ArrayList<CouponIssueResponse>();
-        couponRepository.findAll().forEach(coupon -> {
-            CouponIssueResponse couponIssueResponse = CouponIssueResponse.from(coupon);
-            couponIssueResponses.add(couponIssueResponse);
+            Long userId = userRepository.findIdByEmail(email);
+            Member member = memberRepository.findById(userId)
+                    .orElseThrow(MemberNotFoundException::new);
+            //같은 쿠폰을 가지고 있을 때 예외처리?
+            MemberCoupon memberCoupon = MemberCoupon.builder()
+                    .status(CouponStatus.NEW)
+                    .issueDate(LocalDate.now())
+                    .expireDate(issueCouponRequest.getExpireDate())
+                    .coupon(coupon)
+                    .member(member)
+                    .build();
+            memberCouponRepository.save(memberCoupon);
         });
-        return couponIssueResponses;
     }
 }

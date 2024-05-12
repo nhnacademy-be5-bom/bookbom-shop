@@ -1,13 +1,11 @@
 package shop.bookbom.shop.domain.coupon.service;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.bookbom.shop.domain.coupon.dto.request.AddBookCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCategoryCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.response.CouponInfoResponse;
-import shop.bookbom.shop.domain.coupon.dto.response.CouponIssueResponse;
 import shop.bookbom.shop.domain.membercoupon.dto.request.IssueCouponRequest;
 
 public interface CouponService {
@@ -20,6 +18,4 @@ public interface CouponService {
     Page<CouponInfoResponse> getCouponInfo(Pageable pageable, String type);
 
     void addMemberCoupon(IssueCouponRequest issueCouponRequest);
-
-    List<CouponIssueResponse> getCouponName();
 }
