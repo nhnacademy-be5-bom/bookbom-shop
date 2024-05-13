@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.address.dto.response.AddressResponse;
 import shop.bookbom.shop.domain.address.entity.Address;
+import shop.bookbom.shop.domain.address.exception.AddressDefaultDeleteException;
 import shop.bookbom.shop.domain.address.exception.AddressLimitExceedException;
 import shop.bookbom.shop.domain.address.exception.AddressNotFoundException;
 import shop.bookbom.shop.domain.address.repository.AddressRepository;
@@ -37,7 +38,8 @@ public class AddressServiceImpl implements AddressService {
     public void saveAddress(Long userId, String nickname, String zipCode, String address, String addressDetail) {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(MemberNotFoundException::new);
-        checkAddressCount(member);
+        long count = addressRepository.countByMember(member);
+        validAddressCount(count);
         Address newAddress = Address.builder()
                 .member(member)
                 .nickname(nickname)
@@ -54,6 +56,17 @@ public class AddressServiceImpl implements AddressService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
         return addressRepository.existsSameAddress(member, zipCode, address, addressDetail);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAddress(Long addressId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(AddressNotFoundException::new);
+        if (address.isDefaultAddress()) {
+            throw new AddressDefaultDeleteException();
+        }
+        addressRepository.delete(address);
     }
 
     @Override
@@ -80,10 +93,9 @@ public class AddressServiceImpl implements AddressService {
     /**
      * 주소록 갯수를 확인해 최대 주소록 갯수를 초과하면 예외를 발생시키는 메서드입니다.
      *
-     * @param member 회원
+     * @param count 주소록 갯수
      */
-    private void checkAddressCount(Member member) {
-        long count = addressRepository.countByMember(member);
+    public void validAddressCount(long count) {
         if (count >= MAX_ADDRESS_COUNT) {
             throw new AddressLimitExceedException();
         }

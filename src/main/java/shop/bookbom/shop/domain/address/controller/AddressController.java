@@ -3,6 +3,7 @@ package shop.bookbom.shop.domain.address.controller;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,6 +55,12 @@ public class AddressController {
         validSameAddress(userDto.getId(), request);
         addressService.updateAddress(id, request.getNickname(), request.getZipcode(), request.getAddress(),
                 request.getAddressDetail());
+        return CommonResponse.success();
+    }
+
+    @DeleteMapping("/{addressId}")
+    public CommonResponse<Void> deleteAddress(@PathVariable("addressId") Long id) {
+        addressService.deleteAddress(id);
         return CommonResponse.success();
     }
 

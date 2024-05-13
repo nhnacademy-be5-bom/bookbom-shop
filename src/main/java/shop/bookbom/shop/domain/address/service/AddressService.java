@@ -46,11 +46,18 @@ public interface AddressService {
     /**
      * 동일한 주소가 있는지 확인하는 메서드입니다.
      *
-     * @param memberId      회원 ID
+     * @param userId        회원 ID
      * @param zipCode       우편번호
      * @param address       주소
      * @param addressDetail 상세주소
      * @return 동일한 주소가 있으면 true, 없으면 false
      */
-    boolean existsSameAddress(Long memberId, String zipCode, String address, String addressDetail);
+    boolean existsSameAddress(Long userId, String zipCode, String address, String addressDetail);
+
+    /**
+     * 주소를 삭제하는 메서드입니다.
+     *
+     * @param addressId 주소 ID
+     */
+    void deleteAddress(Long addressId);
 }
