@@ -5,12 +5,14 @@ import java.util.List;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 import shop.bookbom.shop.domain.coupon.dto.CouponDto;
+import shop.bookbom.shop.domain.coupon.entity.Coupon;
 import shop.bookbom.shop.domain.coupon.entity.QCoupon;
 import shop.bookbom.shop.domain.couponbook.dto.CouponBookDto;
 import shop.bookbom.shop.domain.couponbook.entity.QCouponBook;
 import shop.bookbom.shop.domain.couponcategory.dto.CouponCategoryDto;
 import shop.bookbom.shop.domain.couponcategory.entity.QCouponCategory;
 import shop.bookbom.shop.domain.couponpolicy.entity.QCouponPolicy;
+import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.entity.QMember;
 import shop.bookbom.shop.domain.membercoupon.dto.MemberCouponDto;
 import shop.bookbom.shop.domain.membercoupon.entity.CouponStatus;
@@ -87,5 +89,15 @@ public class MemberCouponRepositoryCustomImpl extends QuerydslRepositorySupport
         return memberCouponDtos;
     }
 
+    @Override
+    public MemberCoupon findByCouponAndMember(Coupon coupon1, Member member1) {
+        return from(memberCoupon)
+                .innerJoin(coupon).on(coupon.eq(memberCoupon.coupon))
+                .innerJoin(member).on(member.eq(memberCoupon.member))
+                .where(memberCoupon.status.eq(CouponStatus.NEW)
+                        .and(coupon.eq(coupon1))
+                        .and(member.eq(member1)))
+                .fetchOne();
 
+    }
 }

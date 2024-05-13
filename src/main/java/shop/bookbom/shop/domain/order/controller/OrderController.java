@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.common.CommonResponse;
+import shop.bookbom.shop.domain.order.dto.request.OrderRequest;
 import shop.bookbom.shop.domain.order.dto.request.OrderStatusUpdateRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.OrderDetailResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.exception.OrderInfoInvalidException;
 import shop.bookbom.shop.domain.order.service.OrderService;
@@ -56,6 +58,26 @@ public class OrderController {
         WrapperSelectResponse wrapperSelectResponse = orderService.selectWrapperForMember(wrapperSelectRequest, userId);
         //응답 반환
         return CommonResponse.successWithData(wrapperSelectResponse);
+    }
+
+    /**
+     * 회원 주문 처리 메소드
+     *
+     * @param orderRequest
+     * @param bindingResult
+     * @return 결제 요청에 필요한 데이터
+     */
+    @PostMapping("/orders/{userId}")
+    public CommonResponse<OrderResponse> processOrder(@PathVariable(name = "userId") Long userId,
+                                                      @RequestBody @Valid OrderRequest orderRequest,
+                                                      BindingResult bindingResult) {
+        //요청의 유효성 검사
+        if (bindingResult.hasErrors()) {
+            throw new OrderInfoInvalidException();
+        }
+        //주문 처리 메소드
+        OrderResponse orderResponse = orderService.processOrder(orderRequest, userId);
+        return CommonResponse.successWithData(orderResponse);
     }
 
     /**
