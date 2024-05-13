@@ -48,7 +48,7 @@ public class SecurityConfig {
                         (authz) -> authz
                                 .antMatchers("/shop/admin/**").hasAnyRole("ADMIN")
                                 .antMatchers("/shop/open/**").permitAll()
-                                .antMatchers("/shop/**").hasAnyRole("USER")
+                                .antMatchers("/shop/**").hasAnyRole("USER", "MEMBER", "ADMIN")
                                 .anyRequest().permitAll()
                 );
 
