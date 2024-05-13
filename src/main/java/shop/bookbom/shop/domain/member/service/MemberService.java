@@ -22,4 +22,11 @@ public interface MemberService {
 
     void deleteMember(Long memberId, WithDrawDTO withDrawDTO);
 
+
+    /**
+     * 회원의 닉네임을 중복 체크하는 메서드입니다.
+     * @param nickname
+     * @return
+     */
+    boolean checkNicknameCanUse(String nickname);
 }

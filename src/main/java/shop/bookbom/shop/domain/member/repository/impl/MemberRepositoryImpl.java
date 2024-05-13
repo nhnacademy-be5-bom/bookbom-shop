@@ -8,7 +8,6 @@ import static shop.bookbom.shop.domain.rank.entity.QRank.rank;
 import static shop.bookbom.shop.domain.wish.entity.QWish.wish;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +27,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         Member memberResult = queryFactory
                 .selectFrom(member)
                 .join(member.rank, rank).fetchJoin()
-                .leftJoin(member.orders, order).fetchJoin()
-                .leftJoin(order.status, orderStatus).fetchJoin()
-                .where(
-                        member.id.eq(id),
-                        order.status.name.ne("결제전")
-                )
+                .where(member.id.eq(id))
                 .fetchOne();
 
         if (memberResult == null) {
@@ -52,10 +46,18 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .where(wish.member.eq(memberResult))
                 .fetchOne();
 
+        List<Order> orders = queryFactory
+                .selectFrom(order)
+                .join(order.status, orderStatus).fetchJoin()
+                .where(
+                        order.user.eq(memberResult),
+                        order.status.name.ne("결제전"))
+                .orderBy(order.orderDate.desc())
+                .limit(5)
+                .fetch();
+
         List<OrderInfoResponse> lastOrders =
-                memberResult.getOrders().stream()
-                        .sorted(Comparator.comparing(Order::getOrderDate).reversed())
-                        .limit(5)
+                orders.stream()
                         .map(OrderInfoResponse::of)
                         .collect(Collectors.toList());
 

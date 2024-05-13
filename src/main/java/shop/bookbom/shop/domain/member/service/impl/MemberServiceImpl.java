@@ -115,4 +115,10 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean checkNicknameCanUse(String nickname) {
+        return !memberRepository.existsByNickname(nickname);
+    }
 }
