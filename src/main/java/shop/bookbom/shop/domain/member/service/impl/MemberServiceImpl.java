@@ -8,8 +8,10 @@ import shop.bookbom.shop.domain.address.entity.Address;
 import shop.bookbom.shop.domain.address.repository.AddressRepository;
 import shop.bookbom.shop.domain.member.dto.request.SignUpRequest;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
+import shop.bookbom.shop.domain.member.dto.response.MemberRankResponse;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.entity.MemberStatus;
+import shop.bookbom.shop.domain.member.exception.MemberNotFoundException;
 import shop.bookbom.shop.domain.member.repository.MemberRepository;
 import shop.bookbom.shop.domain.member.service.MemberService;
 import shop.bookbom.shop.domain.pointhistory.entity.ChangeReason;
@@ -20,6 +22,7 @@ import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 import shop.bookbom.shop.domain.pointrate.exception.PointRateNotFoundException;
 import shop.bookbom.shop.domain.pointrate.repository.PointRateRepository;
 import shop.bookbom.shop.domain.rank.entity.Rank;
+import shop.bookbom.shop.domain.rank.exception.RankNotFoundException;
 import shop.bookbom.shop.domain.rank.repository.RankRepository;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.role.repository.RoleRepository;
@@ -89,5 +92,16 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     public boolean checkNicknameCanUse(String nickname) {
         return !memberRepository.existsByNickname(nickname);
+    }
+
+    @Override
+    public MemberRankResponse getUserRank(Long id) {
+        Member member = memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
+        Rank userRank = rankRepository.findById(member.getRank().getId()).orElseThrow(RankNotFoundException::new);
+
+        return MemberRankResponse.builder()
+                .nickname(member.getNickname())
+                .userrank(userRank.getName())
+                .build();
     }
 }

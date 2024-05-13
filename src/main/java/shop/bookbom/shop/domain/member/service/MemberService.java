@@ -2,6 +2,7 @@ package shop.bookbom.shop.domain.member.service;
 
 import shop.bookbom.shop.domain.member.dto.request.SignUpRequest;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
+import shop.bookbom.shop.domain.member.dto.response.MemberRankResponse;
 
 public interface MemberService {
     /**
@@ -25,4 +26,9 @@ public interface MemberService {
      * @return
      */
     boolean checkNicknameCanUse(String nickname);
+
+    /**
+     * 회원 등급 조회페이지에 출력할 정보를 가져오는 메서드입니다.
+     */
+    MemberRankResponse getUserRank(Long id);
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.bookbom.shop.annotation.Login;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
+import shop.bookbom.shop.domain.member.dto.response.MemberRankResponse;
 import shop.bookbom.shop.domain.member.service.MemberService;
 import shop.bookbom.shop.domain.users.dto.UserDto;
 
@@ -19,5 +20,10 @@ public class MemberController {
     @GetMapping("/users/my-page")
     public CommonResponse<MemberInfoResponse> myPage(@Login UserDto userDto) {
         return CommonResponse.successWithData(memberService.getMemberInfo(userDto.getId()));
+    }
+
+    @GetMapping("/users/my-rank")
+    public CommonResponse<MemberRankResponse> userRank(@Login UserDto userDto) {
+        return CommonResponse.successWithData(memberService.getUserRank(userDto.getId()));
     }
 }
