@@ -27,14 +27,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.bookbom.shop.argumentresolver.LoginArgumentResolver;
+import shop.bookbom.shop.config.WebConfig;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.users.controller.UserController;
+import shop.bookbom.shop.domain.users.dto.UserDto;
 import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.entity.User;
@@ -45,7 +50,9 @@ import shop.bookbom.shop.domain.users.service.UserService;
 
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(UserController.class)
+@WebMvcTest(
+        value = UserController.class,
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebConfig.class))
 class UserControllerTest {
 
     @Autowired
@@ -53,6 +60,9 @@ class UserControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @MockBean
+    LoginArgumentResolver resolver;
 
     @MockBean
     UserService userService;
@@ -187,6 +197,7 @@ class UserControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
         when(userService.getOrderInfos(any(), any(), any()))
                 .thenReturn(new PageImpl<>(content, pageRequest, content.size()));
+        when(resolver.resolveArgument(any(), any(), any(), any())).thenReturn(new UserDto(1L));
         //when
         ResultActions perform = mockMvc.perform(get("/shop/users/orders")
                 .param("userId", "1"));
@@ -209,6 +220,7 @@ class UserControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
         when(userService.getOrderInfos(any(), any(), any()))
                 .thenReturn(new PageImpl<>(content, pageRequest, content.size()));
+        when(resolver.resolveArgument(any(), any(), any(), any())).thenReturn(new UserDto(1L));
         //when
         ResultActions perform = mockMvc.perform(get("/shop/users/orders")
                 .param("userId", "1")

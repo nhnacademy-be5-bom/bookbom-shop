@@ -18,4 +18,11 @@ public interface MemberService {
      * @param signUpRequest 회원가입 요청 정보
      */
     void save(SignUpRequest signUpRequest);
+
+    /**
+     * 회원의 닉네임을 중복 체크하는 메서드입니다.
+     * @param nickname
+     * @return
+     */
+    boolean checkNicknameCanUse(String nickname);
 }

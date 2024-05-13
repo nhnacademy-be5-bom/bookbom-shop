@@ -84,4 +84,10 @@ public class MemberServiceImpl implements MemberService {
                 .build();
         addressRepository.save(address);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean checkNicknameCanUse(String nickname) {
+        return !memberRepository.existsByNickname(nickname);
+    }
 }
