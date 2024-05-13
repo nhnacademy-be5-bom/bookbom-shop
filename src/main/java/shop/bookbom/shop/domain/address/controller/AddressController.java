@@ -4,6 +4,7 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +33,12 @@ public class AddressController {
     public CommonResponse<Void> addAddress(@Login UserDto userDto, @Valid @RequestBody AddressSaveRequest request) {
         addressService.saveAddress(userDto.getId(), request.getNickname(), request.getZipcode(), request.getAddress(),
                 request.getAddressDetail());
+        return CommonResponse.success();
+    }
+
+    @PostMapping("/default/{addressId}")
+    public CommonResponse<Void> updateDefaultAddress(@Login UserDto userDto, @PathVariable("addressId") Long id) {
+        addressService.updateDefaultAddress(userDto.getId(), id);
         return CommonResponse.success();
     }
 }

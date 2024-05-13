@@ -56,8 +56,8 @@ public class Address {
         this.member = member;
     }
 
-    public void setDefaultAddress() {
-        this.defaultAddress = true;
+    public void updateDefaultAddress(boolean defaultAddress) {
+        this.defaultAddress = defaultAddress;
     }
 
     public void updateNickname(String nickname) {

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.address.dto.response.AddressResponse;
 import shop.bookbom.shop.domain.address.entity.Address;
 import shop.bookbom.shop.domain.address.exception.AddressLimitExceedException;
+import shop.bookbom.shop.domain.address.exception.AddressNotFoundException;
 import shop.bookbom.shop.domain.address.repository.AddressRepository;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.exception.MemberNotFoundException;
@@ -50,6 +51,18 @@ public class AddressServiceImpl implements AddressService {
                 .addressDetail(addressDetail)
                 .build();
         addressRepository.save(newAddress);
+    }
+
+    @Override
+    @Transactional
+    public void updateDefaultAddress(Long userId, Long addressId) {
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(MemberNotFoundException::new);
+        List<Address> addresses = addressRepository.findByMember(member);
+        Address findAddress = addresses.stream().filter(a -> a.getId().equals(addressId))
+                .findFirst()
+                .orElseThrow(AddressNotFoundException::new);
+        addresses.forEach(a -> a.updateDefaultAddress(a.equals(findAddress)));
     }
 
     /**

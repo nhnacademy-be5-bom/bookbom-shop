@@ -77,6 +77,7 @@ public enum ErrorCode {
     //rank
     RANK_NOT_FOUND(404, "해당 등급이 존재하지 않습니다."),
     //address
+    ADDRESS_NOT_FOUND(404, "해당 주소가 존재하지 않습니다."),
     ADDRESS_LIMIT_EXCEED(400, "주소록 최대 저장 갯수를 초과하였습니다."),
     ;
 

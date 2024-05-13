@@ -22,4 +22,12 @@ public interface AddressService {
      * @param addressDetail 상세주소
      */
     void saveAddress(Long userId, String nickname, String zipCode, String address, String addressDetail);
+
+    /**
+     * 기본 배송지를 변경하는 메서드입니다.
+     *
+     * @param userId    회원 ID
+     * @param addressId 주소 ID
+     */
+    void updateDefaultAddress(Long userId, Long addressId);
 }
