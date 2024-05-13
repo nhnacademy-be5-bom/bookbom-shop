@@ -55,12 +55,12 @@ public class Address {
         this.defaultAddress = defaultAddress;
         this.member = member;
     }
-    
+
     public void setDefaultAddress() {
         this.defaultAddress = true;
     }
 
-    public void editNickName(String nickName) {
-        this.nickname = nickName;
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
     }
 }
