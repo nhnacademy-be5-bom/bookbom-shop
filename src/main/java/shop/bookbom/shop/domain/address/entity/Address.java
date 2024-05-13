@@ -63,4 +63,11 @@ public class Address {
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
+
+    public void updateAddress(String nickname, String zipcode, String address, String addressDetail) {
+        this.nickname = nickname;
+        this.zipCode = zipcode;
+        this.address = address;
+        this.addressDetail = addressDetail;
+    }
 }

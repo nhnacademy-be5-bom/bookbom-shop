@@ -38,11 +38,6 @@ public class AddressServiceImpl implements AddressService {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(MemberNotFoundException::new);
         checkAddressCount(member);
-        Address sameAddress = addressRepository.findSameAddress(member, address, addressDetail, zipCode);
-        if (sameAddress != null) {
-            sameAddress.updateNickname(nickname);
-            return;
-        }
         Address newAddress = Address.builder()
                 .member(member)
                 .nickname(nickname)
@@ -51,6 +46,14 @@ public class AddressServiceImpl implements AddressService {
                 .addressDetail(addressDetail)
                 .build();
         addressRepository.save(newAddress);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsSameAddress(Long memberId, String zipCode, String address, String addressDetail) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+        return addressRepository.existsSameAddress(member, zipCode, address, addressDetail);
     }
 
     @Override
@@ -63,6 +66,15 @@ public class AddressServiceImpl implements AddressService {
                 .findFirst()
                 .orElseThrow(AddressNotFoundException::new);
         addresses.forEach(a -> a.updateDefaultAddress(a.equals(findAddress)));
+    }
+
+    @Override
+    @Transactional
+    public void updateAddress(Long id, String nickname, String zipcode, String address,
+                              String addressDetail) {
+        Address findAddress = addressRepository.findById(id)
+                .orElseThrow(AddressNotFoundException::new);
+        findAddress.updateAddress(nickname, zipcode, address, addressDetail);
     }
 
     /**

@@ -30,4 +30,27 @@ public interface AddressService {
      * @param addressId 주소 ID
      */
     void updateDefaultAddress(Long userId, Long addressId);
+
+    /**
+     * 주소를 수정하는 메서드입니다.
+     *
+     * @param id            주소 ID
+     * @param nickname      별칭
+     * @param zipcode       우편번호
+     * @param address       주소
+     * @param addressDetail 상세주소
+     */
+    void updateAddress(Long id, String nickname, String zipcode, String address,
+                       String addressDetail);
+
+    /**
+     * 동일한 주소가 있는지 확인하는 메서드입니다.
+     *
+     * @param memberId      회원 ID
+     * @param zipCode       우편번호
+     * @param address       주소
+     * @param addressDetail 상세주소
+     * @return 동일한 주소가 있으면 true, 없으면 false
+     */
+    boolean existsSameAddress(Long memberId, String zipCode, String address, String addressDetail);
 }

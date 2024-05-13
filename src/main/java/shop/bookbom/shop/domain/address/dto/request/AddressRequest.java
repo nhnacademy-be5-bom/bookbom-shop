@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class AddressSaveRequest {
+public class AddressRequest {
     private String nickname;
     @Size(min = 5, max = 5, message = "우편번호는 5자리여야 합니다.")
     private String zipcode;
