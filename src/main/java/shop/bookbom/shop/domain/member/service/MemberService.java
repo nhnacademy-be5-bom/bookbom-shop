@@ -1,5 +1,6 @@
 package shop.bookbom.shop.domain.member.service;
 
+import shop.bookbom.shop.domain.member.dto.request.SignUpRequest;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.member.entity.Member;
 
@@ -19,4 +20,18 @@ public interface MemberService {
      * @return
      */
     Member getMemberById(Long memberId);
+
+    /**
+     * 회원가입을 처리하는 메서드입니다.
+     *
+     * @param signUpRequest 회원가입 요청 정보
+     */
+    void save(SignUpRequest signUpRequest);
+
+    /**
+     * 회원의 닉네임을 중복 체크하는 메서드입니다.
+     * @param nickname
+     * @return
+     */
+    boolean checkNicknameCanUse(String nickname);
 }

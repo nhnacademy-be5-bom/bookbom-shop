@@ -73,7 +73,12 @@ public enum ErrorCode {
     //wrapper
     WRAPPER_NOT_FOUND(404, "해당 포장지가 존재하지 않습니다."),
     //coupon
-    COUPON_NOT_FOUND(400, "해당 쿠폰이 존재하지 않습니다.");
+    COUPON_NOT_FOUND(400, "해당 쿠폰이 존재하지 않습니다."),
+    JWT_NOT_VALIDATE(400, "유효하지 않은 상태입니다."),
+    USER_NOT_VALIDATE(400, "아이디나 비밀번호가 일치하지 않습니다."),
+    //rank
+    RANK_NOT_FOUND(404, "해당 등급이 존재하지 않습니다."),
+    ;
 
     private final int code;
     private final String message;

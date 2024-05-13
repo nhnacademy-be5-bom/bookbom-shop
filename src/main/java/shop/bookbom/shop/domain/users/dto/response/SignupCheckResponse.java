@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class EmailCheckResponse {
+public class SignupCheckResponse {
     private boolean canUse;
 }

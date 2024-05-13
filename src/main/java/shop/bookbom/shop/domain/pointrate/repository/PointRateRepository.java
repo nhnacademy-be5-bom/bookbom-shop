@@ -8,4 +8,5 @@ import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 public interface PointRateRepository extends JpaRepository<PointRate, Long>, PointRateRepositoryCustom {
     Optional<PointRate> findByApplyType(ApplyPointType applyPointType);
 
+    Optional<PointRate> findByName(String name);
 }

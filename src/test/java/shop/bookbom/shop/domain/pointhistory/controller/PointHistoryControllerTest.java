@@ -15,8 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -24,17 +27,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.bookbom.shop.argumentresolver.LoginArgumentResolver;
+import shop.bookbom.shop.config.WebConfig;
 import shop.bookbom.shop.domain.pointhistory.dto.response.PointHistoryResponse;
 import shop.bookbom.shop.domain.pointhistory.entity.ChangeReason;
 import shop.bookbom.shop.domain.pointhistory.service.PointHistoryService;
+import shop.bookbom.shop.domain.users.dto.UserDto;
 
+@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(PointHistoryController.class)
+@WebMvcTest(
+        value = PointHistoryController.class,
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebConfig.class))
 class PointHistoryControllerTest {
 
     @Autowired
     MockMvc mockMvc;
-
+    @MockBean
+    LoginArgumentResolver resolver;
     @MockBean
     PointHistoryService pointHistoryService;
 
@@ -45,8 +55,8 @@ class PointHistoryControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 5);
         PageImpl<PointHistoryResponse> page = new PageImpl<>(List.of(pointHistoryResponse), pageRequest, 1);
         when(pointHistoryService.findPointHistory(any(), any(), any())).thenReturn(page);
-        ResultActions perform = mockMvc.perform(get("/shop/member/point-history")
-                .param("userId", "1"));
+        when(resolver.resolveArgument(any(), any(), any(), any())).thenReturn(new UserDto(1L));
+        ResultActions perform = mockMvc.perform(get("/shop/users/point-history"));
         perform
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -66,8 +76,8 @@ class PointHistoryControllerTest {
         PageImpl<PointHistoryResponse> page = new PageImpl<>(List.of(pointHistoryResponse), pageRequest, 1);
         when(pointHistoryService.findPointHistory(any(), any(), eq(ChangeReason.EARN))).thenReturn(page);
         when(pointHistoryService.findPointHistory(any(), any(), eq(ChangeReason.USE))).thenReturn(Page.empty());
-        ResultActions perform = mockMvc.perform(get("/shop/member/point-history")
-                .param("userId", "1")
+        when(resolver.resolveArgument(any(), any(), any(), any())).thenReturn(new UserDto(1L));
+        ResultActions perform = mockMvc.perform(get("/shop/users/point-history")
                 .param("reason", "USE"));
         perform
                 .andExpect(status().isOk())
@@ -85,8 +95,8 @@ class PointHistoryControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 5);
         PageImpl<PointHistoryResponse> page = new PageImpl<>(List.of(pointHistoryResponse), pageRequest, 1);
         when(pointHistoryService.findPointHistory(any(), any(), any())).thenReturn(page);
-        ResultActions perform = mockMvc.perform(get("/shop/member/point-history")
-                .param("userId", "1")
+        when(resolver.resolveArgument(any(), any(), any(), any())).thenReturn(new UserDto(1L));
+        ResultActions perform = mockMvc.perform(get("/shop/users/point-history")
                 .param("reason", "TESTTT"));
         perform
                 .andExpect(status().isOk())

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import shop.bookbom.shop.annotation.Login;
 import shop.bookbom.shop.common.CommonListResponse;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.cart.dto.repsonse.CartInfoResponse;
@@ -23,6 +24,7 @@ import shop.bookbom.shop.domain.cart.dto.request.CartAddRequest;
 import shop.bookbom.shop.domain.cart.dto.request.CartUpdateRequest;
 import shop.bookbom.shop.domain.cart.exception.CartInvalidAddRequestException;
 import shop.bookbom.shop.domain.cart.service.CartService;
+import shop.bookbom.shop.domain.users.dto.UserDto;
 
 @RestController
 @RequestMapping("/shop")
@@ -33,29 +35,29 @@ public class CartController {
     /**
      * 장바구니 상품을 추가하는 메서드입니다.
      *
-     * @param userId   로그인한 회원 ID
+     * @param userDto  로그인한 회원 정보
      * @param requests 장바구니 추가할 상품 ID와 수량 리스트
      */
-    @PostMapping("/carts/{id}")
+    @PostMapping("/carts")
     public CommonListResponse<Long> addToCart(
-            @PathVariable("id") Long userId,
+            @Login UserDto userDto,
             @RequestBody List<CartAddRequest> requests
     ) {
         if (!isValidAddRequest(requests)) {
             throw new CartInvalidAddRequestException();
         }
-        return successWithList(cartService.addCart(requests, userId));
+        return successWithList(cartService.addCart(requests, userDto.getId()));
     }
 
     /**
      * 장바구니 상품을 조회하는 메서드입니다.
      *
-     * @param userId 로그인한 회원 ID
+     * @param userDto 로그인한 회원 정보
      * @return 장바구니 ID, 상품 ID와 수량 리스트
      */
-    @GetMapping("/carts/{id}")
-    public CommonResponse<CartInfoResponse> getCart(@PathVariable("id") Long userId) {
-        return successWithData(cartService.getCartInfo(userId));
+    @GetMapping("/carts")
+    public CommonResponse<CartInfoResponse> getCart(@Login UserDto userDto) {
+        return successWithData(cartService.getCartInfo(userDto.getId()));
     }
 
     /**
