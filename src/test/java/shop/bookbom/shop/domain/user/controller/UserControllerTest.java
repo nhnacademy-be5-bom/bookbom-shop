@@ -52,7 +52,8 @@ import shop.bookbom.shop.domain.users.service.UserService;
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(
         value = UserController.class,
-        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebConfig.class))
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                classes = {WebConfig.class, LoginArgumentResolver.class}))
 class UserControllerTest {
 
     @Autowired
