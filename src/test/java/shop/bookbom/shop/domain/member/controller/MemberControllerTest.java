@@ -36,7 +36,8 @@ import shop.bookbom.shop.domain.users.dto.UserDto;
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(
         value = MemberController.class,
-        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebConfig.class))
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                classes = {WebConfig.class, LoginArgumentResolver.class}))
 class MemberControllerTest {
     @Autowired
     MockMvc mockMvc;

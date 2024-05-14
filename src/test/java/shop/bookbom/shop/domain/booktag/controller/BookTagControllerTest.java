@@ -19,15 +19,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import shop.bookbom.shop.argumentresolver.LoginArgumentResolver;
+import shop.bookbom.shop.config.WebConfig;
 import shop.bookbom.shop.domain.booktag.dto.response.BookTagInfoResponse;
 import shop.bookbom.shop.domain.booktag.service.BookTagService;
 import shop.bookbom.shop.domain.category.entity.Status;
 
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(BookTagController.class)
+@WebMvcTest(value = BookTagController.class,
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                classes = {WebConfig.class, LoginArgumentResolver.class}))
 class BookTagControllerTest {
 
     @Autowired
