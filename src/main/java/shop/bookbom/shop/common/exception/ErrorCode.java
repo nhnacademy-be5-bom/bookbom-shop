@@ -26,6 +26,9 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(400, "해당 회원이 존재하지 않습니다."),
     // user
     USER_ALREADY_EXIST(400, "이미 존재하는 사용자입니다"),
+    USER_NOT_VALIDATE(400, "아이디나 비밀번호가 일치하지 않습니다."),
+    CONFIRM_PASSWORD_NOT_MATCH(400, "비밀번호 확인이 일치하지 않습니다."),
+    PASSWORD_NOT_MATCH(400, "비밀번호가 일치하지 않습니다."),
     // wish
     WISH_NOT_FOUND(400, "해당 찜 상품이 존재하지 않습니다."),
     WISH_DUPLICATE_VALUE(400, "이미 찜한 상품입니다."),
@@ -75,7 +78,6 @@ public enum ErrorCode {
     //coupon
     COUPON_NOT_FOUND(400, "해당 쿠폰이 존재하지 않습니다."),
     JWT_NOT_VALIDATE(400, "유효하지 않은 상태입니다."),
-    USER_NOT_VALIDATE(400, "아이디나 비밀번호가 일치하지 않습니다."),
     //rank
     RANK_NOT_FOUND(404, "해당 등급이 존재하지 않습니다."),
     ;
