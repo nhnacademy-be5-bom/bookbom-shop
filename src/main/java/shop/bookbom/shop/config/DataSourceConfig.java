@@ -32,10 +32,10 @@ public class DataSourceConfig {
         dataSource.setPassword(password);
         dataSource.setTestOnBorrow(true);
         dataSource.setValidationQuery("SELECT 1");
-        dataSource.setInitialSize(POOL_SIZE);
+        dataSource.setInitialSize(20);
         dataSource.setMaxTotal(POOL_SIZE);
         dataSource.setMaxIdle(POOL_SIZE);
-        dataSource.setMinIdle(POOL_SIZE);
+        dataSource.setMinIdle(20);
         dataSource.setMaxWaitMillis(5000);
         return dataSource;
     }
