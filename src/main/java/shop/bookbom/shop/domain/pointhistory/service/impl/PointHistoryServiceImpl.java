@@ -48,7 +48,7 @@ public class PointHistoryServiceImpl implements PointHistoryService {
     public void decreasePoint(Member member, int usedPoint) {
 
         //포인트 히스토리 추가
-        PointHistory pointHistory = PointHistory.builder().changePoint(-usedPoint)
+        PointHistory pointHistory = PointHistory.builder().changePoint(usedPoint)
                 .changeReason(ChangeReason.USE)
                 .member(member)
                 .detail(PointHistoryDetail.PAYMENT_USE)
