@@ -55,12 +55,19 @@ public class Address {
         this.defaultAddress = defaultAddress;
         this.member = member;
     }
-    
-    public void setDefaultAddress() {
-        this.defaultAddress = true;
+
+    public void updateDefaultAddress(boolean defaultAddress) {
+        this.defaultAddress = defaultAddress;
     }
 
-    public void editNickName(String nickName) {
-        this.nickname = nickName;
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateAddress(String nickname, String zipcode, String address, String addressDetail) {
+        this.nickname = nickname;
+        this.zipCode = zipcode;
+        this.address = address;
+        this.addressDetail = addressDetail;
     }
 }

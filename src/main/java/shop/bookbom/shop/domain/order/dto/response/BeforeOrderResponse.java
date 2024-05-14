@@ -9,7 +9,6 @@ import shop.bookbom.shop.domain.wrapper.dto.WrapperDto;
 public class BeforeOrderResponse {
     private int totalOrderCount;
     private List<BeforeOrderBookResponse> beforeOrderBookResponseList;
-
     private List<WrapperDto> wrapperList;
 
     @Builder

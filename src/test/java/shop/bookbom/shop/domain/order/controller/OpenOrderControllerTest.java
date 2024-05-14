@@ -19,26 +19,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.bookbom.shop.argumentresolver.LoginArgumentResolver;
 import shop.bookbom.shop.common.exception.ErrorCode;
+import shop.bookbom.shop.config.WebConfig;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequest;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OpenWrapperSelectResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
-import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.service.OrderService;
 import shop.bookbom.shop.domain.wrapper.dto.WrapperDto;
 
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(OpenOrderController.class)
-public class OpenOrderControllerTest {
+@WebMvcTest(
+        value = OpenOrderController.class,
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                classes = {WebConfig.class, LoginArgumentResolver.class})
+)
+class OpenOrderControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -152,7 +160,7 @@ public class OpenOrderControllerTest {
         estimatedDateList.add("5/1(수)");
         estimatedDateList.add("5/2(목)");
 
-        WrapperSelectResponse response = WrapperSelectResponse.builder().totalOrderCount(3)
+        OpenWrapperSelectResponse response = OpenWrapperSelectResponse.builder().totalOrderCount(3)
                 .wrapperSelectResponseList(wrapperSelectBookResponseList)
                 .estimatedDateList(estimatedDateList)
                 .deliveryCost(5000)

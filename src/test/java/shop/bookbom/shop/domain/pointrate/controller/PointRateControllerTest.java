@@ -20,10 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shop.bookbom.shop.argumentresolver.LoginArgumentResolver;
+import shop.bookbom.shop.config.WebConfig;
 import shop.bookbom.shop.domain.pointrate.dto.request.PointRateUpdateRequest;
 import shop.bookbom.shop.domain.pointrate.entity.EarnPointType;
 import shop.bookbom.shop.domain.pointrate.repository.dto.PointRateResponse;
@@ -31,7 +35,9 @@ import shop.bookbom.shop.domain.pointrate.service.PointRateService;
 
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(PointRateController.class)
+@WebMvcTest(value = PointRateController.class,
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                classes = {WebConfig.class, LoginArgumentResolver.class}))
 class PointRateControllerTest {
     @Autowired
     MockMvc mockMvc;

@@ -1,5 +1,6 @@
 package shop.bookbom.shop.config;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +15,8 @@ import shop.bookbom.shop.security.jwt.JwtConfig;
 @Slf4j
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-
     @Bean
     public JwtConfig jwtConfig() {
         return new JwtConfig();
@@ -48,7 +49,7 @@ public class SecurityConfig {
                         (authz) -> authz
                                 .antMatchers("/shop/admin/**").hasAnyRole("ADMIN")
                                 .antMatchers("/shop/open/**").permitAll()
-                                .antMatchers("/shop/**").hasAnyRole("USER")
+                                .antMatchers("/shop/**").hasAnyRole("USER", "MEMBER", "ADMIN")
                                 .anyRequest().permitAll()
                 );
 

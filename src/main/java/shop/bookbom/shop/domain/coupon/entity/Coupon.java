@@ -19,6 +19,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.shop.domain.couponbook.entity.CouponBook;
+import shop.bookbom.shop.domain.couponcategory.entity.CouponCategory;
 import shop.bookbom.shop.domain.couponpolicy.entity.CouponPolicy;
 import shop.bookbom.shop.domain.membercoupon.entity.MemberCoupon;
 import shop.bookbom.shop.domain.ordercoupon.entity.OrderCoupon;
@@ -48,7 +49,13 @@ public class Coupon {
     private List<MemberCoupon> memberCoupons = new ArrayList<>();
 
     @OneToMany(mappedBy = "coupon")
-    private List<CouponBook> couponBooks = new ArrayList<>();
+    private List<CouponBook> couponBooks;
+
+    @OneToMany(mappedBy = "coupon")
+    private List<CouponCategory> couponCategories;
+
+    @OneToMany(mappedBy = "coupon")
+    private List<OrderCoupon> orderCoupons = new ArrayList<>();
 
     @Builder
     public Coupon(

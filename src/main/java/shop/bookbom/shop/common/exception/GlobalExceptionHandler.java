@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
         StringBuilder sb = new StringBuilder();
         e.getBindingResult()
                 .getAllErrors()
-                .forEach(error -> sb.append(error.getDefaultMessage()).append("\n"));
+                .forEach(error -> sb.append(error.getDefaultMessage()).append(","));
         return CommonResponse.fail(ErrorCode.COMMON_INVALID_PARAMETER, sb.toString());
     }
 }

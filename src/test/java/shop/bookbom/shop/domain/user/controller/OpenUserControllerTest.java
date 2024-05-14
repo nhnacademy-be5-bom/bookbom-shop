@@ -14,13 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.web.servlet.MockMvc;
+import shop.bookbom.shop.argumentresolver.LoginArgumentResolver;
+import shop.bookbom.shop.config.WebConfig;
+import shop.bookbom.shop.domain.member.service.MemberService;
 import shop.bookbom.shop.domain.users.controller.OpenUserController;
 import shop.bookbom.shop.domain.users.service.UserService;
 
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(OpenUserController.class)
+@WebMvcTest(value = OpenUserController.class,
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                classes = {WebConfig.class, LoginArgumentResolver.class}))
 class OpenUserControllerTest {
 
     @Autowired
@@ -31,6 +38,9 @@ class OpenUserControllerTest {
 
     @MockBean
     UserService userService;
+
+    @MockBean
+    MemberService memberService;
 
     @Test
     @DisplayName("이메일 중복 체크")
