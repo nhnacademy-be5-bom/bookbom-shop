@@ -38,7 +38,8 @@ import shop.bookbom.shop.domain.users.dto.UserDto;
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(
         value = PointHistoryController.class,
-        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebConfig.class))
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                classes = {WebConfig.class, LoginArgumentResolver.class}))
 class PointHistoryControllerTest {
 
     @Autowired
