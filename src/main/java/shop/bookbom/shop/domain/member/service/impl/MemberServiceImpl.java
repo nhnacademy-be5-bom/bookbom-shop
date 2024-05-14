@@ -1,6 +1,7 @@
 package shop.bookbom.shop.domain.member.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,10 +99,11 @@ public class MemberServiceImpl implements MemberService {
     public MemberRankResponse getUserRank(Long id) {
         Member member = memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
         Rank userRank = rankRepository.findById(member.getRank().getId()).orElseThrow(RankNotFoundException::new);
-
+        List<Rank> ranks = rankRepository.getAllRankFetchPointRate();
         return MemberRankResponse.builder()
                 .nickname(member.getNickname())
                 .userrank(userRank.getName())
+                .ranks(ranks)
                 .build();
     }
 }

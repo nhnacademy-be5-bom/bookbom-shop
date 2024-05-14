@@ -4,6 +4,7 @@ import static shop.bookbom.shop.domain.pointrate.entity.QPointRate.pointRate;
 import static shop.bookbom.shop.domain.rank.entity.QRank.rank;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import shop.bookbom.shop.domain.rank.entity.Rank;
 import shop.bookbom.shop.domain.rank.exception.RankNotFoundException;
@@ -25,5 +26,14 @@ public class RankRepositoryImpl implements RankRepositoryCustom {
             throw new RankNotFoundException();
         }
         return result;
+    }
+
+    @Override
+    public List<Rank> getAllRankFetchPointRate(){
+        return queryFactory
+                .select(rank)
+                .from(rank)
+                .leftJoin(rank.pointRate, pointRate).fetchJoin()
+                .fetch();
     }
 }
