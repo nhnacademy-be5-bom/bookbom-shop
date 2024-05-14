@@ -9,6 +9,7 @@ import shop.bookbom.shop.domain.address.dto.response.AddressResponse;
 import shop.bookbom.shop.domain.address.entity.Address;
 import shop.bookbom.shop.domain.address.exception.AddressDefaultDeleteException;
 import shop.bookbom.shop.domain.address.exception.AddressLimitExceedException;
+import shop.bookbom.shop.domain.address.exception.AddressMinimumRequiredException;
 import shop.bookbom.shop.domain.address.exception.AddressNotFoundException;
 import shop.bookbom.shop.domain.address.repository.AddressRepository;
 import shop.bookbom.shop.domain.member.entity.Member;
@@ -60,7 +61,13 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @Transactional
-    public void deleteAddress(Long addressId) {
+    public void deleteAddress(Long userId, Long addressId) {
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(MemberNotFoundException::new);
+        long count = addressRepository.countByMember(member);
+        if (count <= 1) {
+            throw new AddressMinimumRequiredException();
+        }
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(AddressNotFoundException::new);
         if (address.isDefaultAddress()) {
@@ -95,7 +102,7 @@ public class AddressServiceImpl implements AddressService {
      *
      * @param count 주소록 갯수
      */
-    public void validAddressCount(long count) {
+    private void validAddressCount(long count) {
         if (count >= MAX_ADDRESS_COUNT) {
             throw new AddressLimitExceedException();
         }

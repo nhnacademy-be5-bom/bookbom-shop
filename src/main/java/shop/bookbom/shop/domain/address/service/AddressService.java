@@ -57,7 +57,8 @@ public interface AddressService {
     /**
      * 주소를 삭제하는 메서드입니다.
      *
+     * @param userId    회원 ID
      * @param addressId 주소 ID
      */
-    void deleteAddress(Long addressId);
+    void deleteAddress(Long userId, Long addressId);
 }

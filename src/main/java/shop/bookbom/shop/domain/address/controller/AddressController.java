@@ -59,8 +59,8 @@ public class AddressController {
     }
 
     @DeleteMapping("/{addressId}")
-    public CommonResponse<Void> deleteAddress(@PathVariable("addressId") Long id) {
-        addressService.deleteAddress(id);
+    public CommonResponse<Void> deleteAddress(@Login UserDto userDto, @PathVariable("addressId") Long id) {
+        addressService.deleteAddress(userDto.getId(), id);
         return CommonResponse.success();
     }
 
