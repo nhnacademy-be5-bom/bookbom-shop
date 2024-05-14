@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import shop.bookbom.shop.annotation.Login;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.order.dto.request.OrderRequest;
 import shop.bookbom.shop.domain.order.dto.request.OrderStatusUpdateRequest;
@@ -27,6 +28,7 @@ import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.exception.OrderInfoInvalidException;
 import shop.bookbom.shop.domain.order.service.OrderService;
+import shop.bookbom.shop.domain.users.dto.UserDto;
 
 /**
  * 회원 주문 controller
@@ -40,14 +42,14 @@ public class OrderController {
     /**
      * 포장지 선택 값을 받아서 주문으로 넘겨주기 위한 api
      *
-     * @param userId
+     * @param
      * @param wrapperSelectRequest(포장지 선택한 값들)
      * @param bindingResult(for validation check)
      * @return WrapperSelectResponse(포장지 선택한 값들 + 총 주문 수 + userId)
      */
-    @PostMapping("/orders/wrapper/{userId}")
+    @PostMapping("/orders/wrapper")
     public CommonResponse<WrapperSelectResponse> selectWrapper(
-            @PathVariable(name = "userId") Long userId,
+            @Login UserDto userDto,
             @RequestBody @Valid
             WrapperSelectRequest wrapperSelectRequest, BindingResult bindingResult) {
         //요청의 유효성 검사
@@ -55,7 +57,8 @@ public class OrderController {
             throw new OrderInfoInvalidException();
         }
         //포장지 선택 메소드
-        WrapperSelectResponse wrapperSelectResponse = orderService.selectWrapperForMember(wrapperSelectRequest, userId);
+        WrapperSelectResponse wrapperSelectResponse =
+                orderService.selectWrapperForMember(wrapperSelectRequest, userDto.getId());
         //응답 반환
         return CommonResponse.successWithData(wrapperSelectResponse);
     }
@@ -67,8 +70,8 @@ public class OrderController {
      * @param bindingResult
      * @return 결제 요청에 필요한 데이터
      */
-    @PostMapping("/orders/{userId}")
-    public CommonResponse<OrderResponse> processOrder(@PathVariable(name = "userId") Long userId,
+    @PostMapping("/orders")
+    public CommonResponse<OrderResponse> processOrder(@Login UserDto userDto,
                                                       @RequestBody @Valid OrderRequest orderRequest,
                                                       BindingResult bindingResult) {
         //요청의 유효성 검사
@@ -76,7 +79,7 @@ public class OrderController {
             throw new OrderInfoInvalidException();
         }
         //주문 처리 메소드
-        OrderResponse orderResponse = orderService.processOrder(orderRequest, userId);
+        OrderResponse orderResponse = orderService.processOrder(orderRequest, userDto.getId());
         return CommonResponse.successWithData(orderResponse);
     }
 

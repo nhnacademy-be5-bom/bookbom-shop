@@ -350,7 +350,9 @@ public class OrderServiceImpl implements OrderService {
         Order order = saveOrder(orderRequest, user);
         saveDeliveryInfo(orderRequest, order);
         saveOrderBookInfo(orderRequest.getWrapperSelectRequestList(), order);
-        saveOrderCouponInfo(order, orderRequest.getCouponId());
+        if (orderRequest.getCouponId() != 0) {
+            saveOrderCouponInfo(order, orderRequest.getCouponId());
+        }
         //재고체크 후 재고 감소
         for (WrapperSelectBookRequest bookRequest : orderRequest.getWrapperSelectRequestList()) {
             checkStock(bookRequest.getBookId(), bookRequest.getQuantity());
