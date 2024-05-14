@@ -36,6 +36,9 @@ public class PaymentProcessService {
                 //포인트 사용
                 pointHistoryService.decreasePoint(member, order.getUsedPoint());
             }
+            //도서 포인트 적립
+            pointHistoryService.earnPointByBook(member, order.getTotalCost());
+            pointHistoryService.earnPointByRank(member, order.getTotalCost());
 
         }
         return order.getId();
@@ -53,9 +56,7 @@ public class PaymentProcessService {
             //포인트 사용
             pointHistoryService.decreasePoint(member, order.getUsedPoint());
         }
-        //도서 포인트 적립
-        pointHistoryService.earnPointByBook(member, order.getTotalCost());
-        pointHistoryService.earnPointByRank(member, order.getTotalCost());
+
 
         return order.getId();
     }
