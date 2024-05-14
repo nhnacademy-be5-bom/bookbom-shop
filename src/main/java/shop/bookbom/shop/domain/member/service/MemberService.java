@@ -1,6 +1,7 @@
 package shop.bookbom.shop.domain.member.service;
 
 import shop.bookbom.shop.domain.member.dto.request.SignUpRequest;
+import shop.bookbom.shop.domain.member.dto.request.WithDrawDTO;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.member.dto.response.MemberRankResponse;
 
@@ -19,6 +20,9 @@ public interface MemberService {
      * @param signUpRequest 회원가입 요청 정보
      */
     void save(SignUpRequest signUpRequest);
+
+    void deleteMember(Long memberId, WithDrawDTO withDrawDTO);
+
 
     /**
      * 회원의 닉네임을 중복 체크하는 메서드입니다.

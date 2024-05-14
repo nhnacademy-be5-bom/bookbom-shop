@@ -17,11 +17,14 @@ import shop.bookbom.shop.security.jwt.JwtConfig;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtConfig jwtConfig;
+    @Bean
+    public JwtConfig jwtConfig() {
+        return new JwtConfig();
+    }
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtConfig);
+        return new JwtAuthenticationFilter(jwtConfig());
     }
 
     @Bean
