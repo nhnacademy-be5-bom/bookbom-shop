@@ -12,8 +12,8 @@ import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
 import shop.bookbom.shop.domain.order.dto.request.OpenOrderRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OpenWrapperSelectResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
-import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.exception.OrderInfoInvalidException;
 import shop.bookbom.shop.domain.order.service.OrderService;
 
@@ -56,7 +56,7 @@ public class OpenOrderController {
      * @return 주문서 작성에 필요한 데이터
      */
     @PostMapping("/orders/wrapper")
-    public CommonResponse<WrapperSelectResponse> selectWrapper(
+    public CommonResponse<OpenWrapperSelectResponse> selectWrapper(
             @RequestBody @Valid
             WrapperSelectRequest wrapperSelectRequest, BindingResult bindingResult) {
         //요청의 유효성 검사
@@ -64,9 +64,9 @@ public class OpenOrderController {
             throw new OrderInfoInvalidException();
         }
         //포장지 선택 요청으로 포장지 응답 데이터 찾기
-        WrapperSelectResponse wrapperSelectResponse = orderService.selectWrapper(wrapperSelectRequest);
+        OpenWrapperSelectResponse openWrapperSelectResponse = orderService.selectWrapper(wrapperSelectRequest);
         //응답 반환
-        return CommonResponse.successWithData(wrapperSelectResponse);
+        return CommonResponse.successWithData(openWrapperSelectResponse);
     }
 
     /**

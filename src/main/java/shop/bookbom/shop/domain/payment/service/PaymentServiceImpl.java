@@ -1,6 +1,5 @@
 package shop.bookbom.shop.domain.payment.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,14 +15,6 @@ import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
 import shop.bookbom.shop.domain.delivery.entity.Delivery;
 import shop.bookbom.shop.domain.delivery.exception.DeliveryNotFoundException;
 import shop.bookbom.shop.domain.delivery.repository.DeliveryRepository;
-import shop.bookbom.shop.domain.member.entity.Member;
-import shop.bookbom.shop.domain.member.exception.MemberNotFoundException;
-import shop.bookbom.shop.domain.member.repository.MemberRepository;
-import shop.bookbom.shop.domain.membercoupon.entity.CouponStatus;
-import shop.bookbom.shop.domain.membercoupon.entity.MemberCoupon;
-import shop.bookbom.shop.domain.membercoupon.exception.MemberCouponCanNotUse;
-import shop.bookbom.shop.domain.membercoupon.exception.MemberCouponNotFoundException;
-import shop.bookbom.shop.domain.membercoupon.repository.MemberCouponRepository;
 import shop.bookbom.shop.domain.order.entity.Order;
 import shop.bookbom.shop.domain.order.exception.OrderNotFoundException;
 import shop.bookbom.shop.domain.order.repository.OrderRepository;
@@ -31,14 +22,10 @@ import shop.bookbom.shop.domain.orderbook.dto.OrderBookInfoDto;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
 import shop.bookbom.shop.domain.orderbook.exception.OrderBookNotFoundException;
 import shop.bookbom.shop.domain.orderbook.repository.OrderBookRepository;
-import shop.bookbom.shop.domain.ordercoupon.entity.OrderCoupon;
-import shop.bookbom.shop.domain.ordercoupon.exception.OrderCouponNotFoundException;
-import shop.bookbom.shop.domain.ordercoupon.repository.OrderCouponRepository;
 import shop.bookbom.shop.domain.orderstatus.exception.OrderStatusNotFoundException;
 import shop.bookbom.shop.domain.orderstatus.repository.OrderStatusRepository;
 import shop.bookbom.shop.domain.payment.adapter.PaymentAdapter;
 import shop.bookbom.shop.domain.payment.dto.request.PaymentRequest;
-import shop.bookbom.shop.domain.payment.dto.response.OrderIdResponse;
 import shop.bookbom.shop.domain.payment.dto.response.PaymentResponse;
 import shop.bookbom.shop.domain.payment.dto.response.PaymentSuccessResponse;
 import shop.bookbom.shop.domain.payment.entity.Payment;
@@ -49,9 +36,6 @@ import shop.bookbom.shop.domain.payment.repository.PaymentRepository;
 import shop.bookbom.shop.domain.paymentmethod.entity.PaymentMethod;
 import shop.bookbom.shop.domain.paymentmethod.exception.PaymentMethodNotFoundException;
 import shop.bookbom.shop.domain.paymentmethod.repository.PaymentMethodRepository;
-import shop.bookbom.shop.domain.pointhistory.entity.ChangeReason;
-import shop.bookbom.shop.domain.pointhistory.entity.PointHistory;
-import shop.bookbom.shop.domain.pointhistory.repository.PointHistoryRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -65,10 +49,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final BookRepository bookRepository;
     private final BookFileRepository bookFileRepository;
     private final DeliveryRepository deliveryRepository;
-    private final MemberRepository memberRepository;
-    private final PointHistoryRepository pointHistoryRepository;
-    private final OrderCouponRepository orderCouponRepository;
-    private final MemberCouponRepository memberCouponRepository;
 
     /**
      * 토스페이 결제 승인 요청 보낸 후 받은 데이터로 결제 완료 응답 구성
@@ -78,29 +58,15 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Transactional
     @Override
-    public OrderIdResponse getPaymnetConfirm(PaymentRequest paymentRequest) {
+    public Order getPaymnetConfirm(PaymentRequest paymentRequest) {
         //토스페이에 결제 승인 요청 보냄
         PaymentResponse paymentResponse = paymentAdapter.requestPaymentConfirm(paymentRequest);
         //받은 데이터 중 결제 금액이 order의 결제금액과 같은지 비교 검증
         Order order = verifyRequest(paymentResponse.getOrderId(), paymentResponse.getTotalAmount());
         //payment 저장
         Payment payment = savePaymentInfo(paymentResponse, order);
-        //회원이면
-        if (order.getUser().isRegistered()) {
-            //포인트 감소
-            if (order.getUsedPoint() != 0) {
-                decreasePoints(order);
-            }
-            //쿠폰 사용
-            if (orderCouponRepository.existsByOrder(order)) {
-                OrderCoupon orderCoupon = orderCouponRepository.findByOrder(order)
-                        .orElseThrow(OrderCouponNotFoundException::new);
-                useCoupon(orderCoupon);
 
-            }
-        }
-
-        return OrderIdResponse.builder().orderId(order.getId()).build();
+        return order;
     }
 
     @Transactional
@@ -110,6 +76,59 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(PaymentNotFoundException::new);
 
         return orderComplete(payment);
+    }
+
+    /**
+     * 0원 결제 시 주문 완료 데이터 조회
+     *
+     * @param orderId
+     * @return
+     */
+    @Transactional
+    @Override
+    public PaymentSuccessResponse orderFreeComplete(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+
+        List<OrderBook> orderBooks = orderBookRepository.findByOrder(order);
+        if (orderBooks.isEmpty()) {
+            throw new OrderBookNotFoundException();
+        }
+
+        List<OrderBookInfoDto> orderBookInfoDtoList = new ArrayList<>();
+        Integer totalCount = 0;
+        for (OrderBook orderBook : orderBooks) {
+            Book book = bookRepository.findById(orderBook.getBook().getId())
+                    .orElseThrow(BookNotFoundException::new);
+
+            String imgUrl = bookFileRepository.getBookImageUrl(book.getId());
+            int quantity = orderBook.getQuantity();
+            totalCount += quantity;
+
+            orderBookInfoDtoList.add(OrderBookInfoDto.builder()
+                    .title(book.getTitle())
+                    .cost(book.getCost())
+                    .quantity(quantity)
+                    .imgUrl(imgUrl)
+                    .build());
+        }
+
+        Delivery delivery = deliveryRepository.findById(order.getId())
+                .orElseThrow(DeliveryNotFoundException::new);
+
+        return PaymentSuccessResponse.builder()
+                .orderNumber(order.getOrderNumber())
+                .totalAmount(0)
+                .paymentMethodName("포인트, 쿠폰 사용")
+                .orderInfo(order.getOrderInfo())
+                .orderBookInfoDtoList(orderBookInfoDtoList)
+                .totalCount(totalCount)
+                .deliveryName(delivery.getName())
+                .deliveryPhoneNumber(delivery.getPhoneNumber())
+                .zipCode(delivery.getDeliveryAddress().getZipCode())
+                .deliveryAddress(delivery.getDeliveryAddress().getDeliveryAddress())
+                .addressDetail(delivery.getDeliveryAddress().getAddressDetail())
+                .build();
     }
 
     /**
@@ -201,6 +220,7 @@ public class PaymentServiceImpl implements PaymentService {
         Delivery delivery = deliveryRepository.findById(order.getId())
                 .orElseThrow(DeliveryNotFoundException::new);
 
+
         return PaymentSuccessResponse.builder()
                 .orderNumber(payment.getOrder().getOrderNumber())
                 .totalAmount(payment.getCost())
@@ -216,39 +236,5 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
 
     }
-
-    /**
-     * 포인트 감소 메소드
-     *
-     * @param order
-     */
-    private void decreasePoints(Order order) {
-        Member member = memberRepository.findById(order.getUser().getId())
-                .orElseThrow(MemberNotFoundException::new);
-
-        member.updatePoints(member.getPoint() - order.getUsedPoint());
-        PointHistory pointHistory = PointHistory.builder()
-                .changePoint(order.getUsedPoint())
-                .changeReason(ChangeReason.USE)
-                .changeDate(LocalDateTime.now())
-                .member(member).build();
-        pointHistoryRepository.save(pointHistory);
-    }
-
-    /**
-     * 쿠폰 사용 메소드
-     *
-     * @param orderCoupon
-     */
-    private void useCoupon(OrderCoupon orderCoupon) {
-        MemberCoupon memberCoupon = memberCouponRepository.findByCoupon(orderCoupon.getCoupon())
-                .orElseThrow(MemberCouponNotFoundException::new);
-        if (!memberCoupon.getStatus().getValue().equals("NEW")) {
-            throw new MemberCouponCanNotUse();
-        }
-        memberCoupon.updateUseDate(LocalDate.now());
-        memberCoupon.updateCouponStatus(CouponStatus.USED);
-    }
-
 
 }

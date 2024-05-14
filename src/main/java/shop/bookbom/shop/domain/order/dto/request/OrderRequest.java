@@ -5,14 +5,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-public class OpenOrderRequest {
+public class OrderRequest {
     @Valid
     private List<WrapperSelectBookRequest> wrapperSelectRequestList;
     @NotBlank
@@ -20,15 +18,10 @@ public class OpenOrderRequest {
     @NotBlank
     private String phoneNumber;
     @NotNull
-    @Min(value = 1)
     private Integer totalCost;
     @NotNull
+    @Min(value = 1, message = "은 최소 1원입니다")
     private Integer discountCost;
-    @NotBlank
-    private String email;
-    @NotBlank
-    private String password;
-    @NotBlank
     private String estimatedDateTostring;
     @NotNull
     private Integer deliveryCost;
@@ -38,5 +31,11 @@ public class OpenOrderRequest {
     private String deliveryAddress;
     @NotBlank
     private String addressDetail;
-
+    @NotNull
+    private Integer usedPoint;
+    @NotNull
+    private Integer usedCouponCost;
+    @NotNull
+    private Long couponId;
 }
+

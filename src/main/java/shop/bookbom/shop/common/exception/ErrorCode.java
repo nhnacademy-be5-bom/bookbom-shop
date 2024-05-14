@@ -46,7 +46,7 @@ public enum ErrorCode {
     PAYMENT_VERIFY_FAIL(400, "결제 검증 실패: 요청이 유효하지 않습니다."),
     PAYMENT_NOT_ALLOWED(400, "결제가 허용되지 않습니다. 다시 시도해 주세요."),
     PAYMENT_FAILED(400, "결제가 실패했습니다. 다시 시도해 주세요."),
-    PAYMENT_NOT_FOUND(404, "존재하지 않는 경제 정보입니다."),
+    PAYMENT_NOT_FOUND(404, "존재하지 않는 결제 정보입니다."),
     //paymentMethod
     PAYMENTMETHOD_NOT_FOUND(400, "해당 결제 수단이 존재하지 않습니다."),
     //orderStatus
@@ -72,6 +72,8 @@ public enum ErrorCode {
     ORDER_STATUS_NOT_FOUND(404, "해당 주문 상태가 존재하지 않습니다."),
     //wrapper
     WRAPPER_NOT_FOUND(404, "해당 포장지가 존재하지 않습니다."),
+    //coupon
+    COUPON_NOT_FOUND(400, "해당 쿠폰이 존재하지 않습니다."),
     JWT_NOT_VALIDATE(400, "유효하지 않은 상태입니다."),
     USER_NOT_VALIDATE(400, "아이디나 비밀번호가 일치하지 않습니다."),
     //rank

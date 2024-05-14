@@ -16,6 +16,8 @@ import shop.bookbom.shop.domain.deletereasoncategory.repository.DeleteReasonCate
 import shop.bookbom.shop.domain.member.dto.request.WithDrawDTO;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.member.entity.Member;
+import shop.bookbom.shop.domain.member.exception.MemberNotFoundException;
+import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.entity.MemberStatus;
 import shop.bookbom.shop.domain.member.exception.MemberNotFoundException;
 import shop.bookbom.shop.domain.member.repository.MemberRepository;
@@ -51,6 +53,13 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     public MemberInfoResponse getMemberInfo(Long id) {
         return memberRepository.findMemberInfo(id);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Member getMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
     }
 
     @Override
