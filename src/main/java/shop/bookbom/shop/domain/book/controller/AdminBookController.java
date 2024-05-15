@@ -77,12 +77,5 @@ public class AdminBookController {
 
         return CommonResponse.successWithData(bookService.getBookListByTitle(encodedCondition, pageable));
     }
-
-
-    @GetMapping("/books/all/{keyword}")
-    @CrossOrigin(origins = "*")
-    public CommonResponse<Page<BookSearchResponse>> getAllByTitle(@PathVariable("keyword") String keyword,
-                                                                  Pageable pageable) {
-        return CommonResponse.successWithData(bookService.getBookListByTitle(keyword, pageable));
-    }
+    
 }

@@ -204,35 +204,7 @@ class OpenBookControllerTest {
                 .andExpect(jsonPath("$.result.numberOfElements").value(20))
                 .andExpect(jsonPath("$.result.totalElements").value(1234));
     }
-
-    @Test
-    @DisplayName("pageable 조회: 전체")
-    void getAllAsPageable() throws Exception {
-        PageRequest pageable = PageRequest.of(0, 20);
-        PageImpl<BookSearchResponse> pageResponse = new PageImpl<>(result, pageable, 3433);
-
-        when(bookService.getPageableEntireBookList(pageable)).thenReturn(pageResponse);
-
-        ResultActions perform = mockMvc.perform(get("/shop/open/books/all")
-                .param("page", "0")
-                .param("size", "20")
-                .contentType(MediaType.APPLICATION_JSON));
-
-        verify(bookService, times(1)).getPageableEntireBookList(pageable);
-
-        perform
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.header.resultCode").value(HttpStatus.OK.value()))
-                .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
-                .andExpect(jsonPath("$.header.successful").value(true))
-                .andExpect(jsonPath("$.result.pageable").exists())
-                .andExpect(jsonPath("$.result.pageable.pageNumber").value(0))
-                .andExpect(jsonPath("$.result.pageable.pageSize").value(20))
-                .andExpect(jsonPath("$.result.numberOfElements").value(20))
-                .andExpect(jsonPath("$.result.totalElements").value(3433));
-    }
-
+    
     @Test
     @DisplayName("pageable 조회: 카테고리 id")
     void getByCategoryIdAsPageable() throws Exception {

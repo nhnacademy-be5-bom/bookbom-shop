@@ -97,12 +97,6 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BookSearchResponse> getPageableEntireBookList(Pageable pageable) {
-
-        return bookRepository.getPageableListBookMediumInfos(pageable);
-    }
-
-    @Transactional(readOnly = true)
     public Page<BookSearchResponse> getPageableEntireBookListOrderByCount(Pageable pageable) {
 
         return bookRepository.getPageableAndOrderByViewCountListBookMediumInfos(pageable);
