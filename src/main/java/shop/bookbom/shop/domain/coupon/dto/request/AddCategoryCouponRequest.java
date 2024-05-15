@@ -4,10 +4,10 @@ import java.util.Date;
 import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class AddCategoryCouponRequest {
     @NotBlank(message = "쿠폰 이름을 입력하세요.")
     private String name;

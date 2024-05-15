@@ -1,6 +1,5 @@
 package shop.bookbom.shop.domain.couponpolicy.controller;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;

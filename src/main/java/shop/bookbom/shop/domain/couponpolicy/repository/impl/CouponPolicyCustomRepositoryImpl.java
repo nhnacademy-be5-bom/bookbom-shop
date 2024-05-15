@@ -16,7 +16,6 @@ public class CouponPolicyCustomRepositoryImpl implements CouponPolicyCustomRepos
     }
 
     @Override
-    @Transactional
     public long updateCouponPolicyInfo(CouponPolicyInfoDto couponPolicyInfoDto) {
         return queryFactory.update(couponPolicy)
                 .where(couponPolicy.id.eq(couponPolicyInfoDto.getCouponPolicyId()))

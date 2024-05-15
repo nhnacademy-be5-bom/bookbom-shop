@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.couponpolicy.dto.request.CouponPolicyAddRequest;
 import shop.bookbom.shop.domain.couponpolicy.dto.request.CouponPolicyDeleteRequest;
 import shop.bookbom.shop.domain.couponpolicy.dto.CouponPolicyInfoDto;
@@ -47,6 +48,7 @@ public class CouponPolicyServiceImpl implements CouponPolicyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CouponPolicyInfoDto> getCouponPolicyInfo(Long userId) {
         List<CouponPolicy> couponPolicyList = couponPolicyRepository.findAll();
         List<CouponPolicyInfoDto> policyInfoResponseList = new ArrayList<>();

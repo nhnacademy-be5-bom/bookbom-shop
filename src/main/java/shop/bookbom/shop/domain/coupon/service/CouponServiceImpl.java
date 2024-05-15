@@ -42,7 +42,6 @@ import shop.bookbom.shop.domain.membercoupon.entity.MemberCoupon;
 import shop.bookbom.shop.domain.membercoupon.repository.MemberCouponRepository;
 import shop.bookbom.shop.domain.users.repository.UserRepository;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CouponServiceImpl implements CouponService {
@@ -161,32 +160,34 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<MyCouponInfoResponse> getMemberCouponInfo(Pageable pageable, Long userId) {
         return memberCouponRepository.getMyCouponInfo(pageable, userId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<MyCouponRecordResponse> getMemberRecodes(Pageable pageable, Long userId) {
         List<MyCouponRecordResponse> records = new ArrayList<>();
         final long[] total = {0};
         memberCouponRepository.getMyCouponRecordList(userId).forEach(record -> {
-                if(record.getStatus().getValue().equals("사용 완료")){
-                    records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.NEW, record.getIssueDate()));
-                    records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.USED, record.getUseDate()));
-                    total[0] += 2;
-                } else if (record.getStatus().getValue().equals("만료")) {
-                    if(LocalDate.now().isAfter(record.getExpireDate())){
-                        //expireDate가 지나지 않았는데 상태가 expired인 경우 예외처리
-                        return;
+                    if (record.getStatus().getValue().equals("사용 완료")) {
+                        records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.NEW, record.getIssueDate()));
+                        records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.USED, record.getUseDate()));
+                        total[0] += 2;
+                    } else if (record.getStatus().getValue().equals("만료")) {
+                        if (LocalDate.now().isAfter(record.getExpireDate())) {
+                            //expireDate가 지나지 않았는데 상태가 expired인 경우 예외처리
+                            return;
+                        }
+                        records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.NEW, record.getIssueDate()));
+                        records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.EXPIRED, record.getExpireDate()));
+                        total[0] += 2;
+                    } else { //NEW
+                        records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.NEW, record.getIssueDate()));
+                        total[0]++;
                     }
-                    records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.NEW, record.getIssueDate()));
-                    records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.EXPIRED, record.getExpireDate()));
-                    total[0] += 2;
-                } else{ //NEW
-                    records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.NEW, record.getIssueDate()));
-                    total[0]++;
                 }
-            }
         );
         //sorting
         List<MyCouponRecordResponse> sortedRecords = records.stream()
