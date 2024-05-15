@@ -4,6 +4,7 @@ import shop.bookbom.shop.domain.member.dto.request.SignUpRequest;
 import shop.bookbom.shop.domain.member.dto.request.WithDrawDTO;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.member.dto.response.MemberRankResponse;
+import shop.bookbom.shop.domain.member.entity.Member;
 
 public interface MemberService {
     /**
@@ -13,6 +14,14 @@ public interface MemberService {
      * @return 회원 정보
      */
     MemberInfoResponse getMemberInfo(Long id);
+
+    /**
+     * 멤버 아이디로 멤버 찾기
+     *
+     * @param memberId
+     * @return
+     */
+    Member getMemberById(Long memberId);
 
     /**
      * 회원가입을 처리하는 메서드입니다.

@@ -2,6 +2,7 @@ package shop.bookbom.shop.domain.order.dto.request;
 
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ public class OpenOrderRequest {
     @NotBlank
     private String phoneNumber;
     @NotNull
+    @Min(value = 1)
     private Integer totalCost;
     @NotNull
     private Integer discountCost;

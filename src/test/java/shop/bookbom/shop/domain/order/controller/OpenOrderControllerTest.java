@@ -34,8 +34,8 @@ import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OpenWrapperSelectResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectBookResponse;
-import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.service.OrderService;
 import shop.bookbom.shop.domain.wrapper.dto.WrapperDto;
 
@@ -160,7 +160,7 @@ class OpenOrderControllerTest {
         estimatedDateList.add("5/1(수)");
         estimatedDateList.add("5/2(목)");
 
-        WrapperSelectResponse response = WrapperSelectResponse.builder().totalOrderCount(3)
+        OpenWrapperSelectResponse response = OpenWrapperSelectResponse.builder().totalOrderCount(3)
                 .wrapperSelectResponseList(wrapperSelectBookResponseList)
                 .estimatedDateList(estimatedDateList)
                 .deliveryCost(5000)
