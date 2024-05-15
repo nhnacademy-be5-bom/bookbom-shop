@@ -16,7 +16,6 @@ import shop.bookbom.shop.domain.member.repository.MemberRepository;
 import shop.bookbom.shop.domain.publisher.entity.Publisher;
 import shop.bookbom.shop.domain.wish.dto.request.WishAddDeleteRequest;
 import shop.bookbom.shop.domain.wish.dto.response.WishInfoResponse;
-import shop.bookbom.shop.domain.wish.dto.response.WishTotalCountResponse;
 import shop.bookbom.shop.domain.wish.entity.Wish;
 import shop.bookbom.shop.domain.wish.exception.WishNotFoundException;
 import shop.bookbom.shop.domain.wish.repository.WishRepository;
