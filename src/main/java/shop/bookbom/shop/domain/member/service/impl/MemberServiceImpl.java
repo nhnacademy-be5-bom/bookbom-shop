@@ -125,6 +125,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MemberRankResponse getUserRank(Long id) {
         Member member = memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
         Rank userRank = rankRepository.findById(member.getRank().getId()).orElseThrow(RankNotFoundException::new);
