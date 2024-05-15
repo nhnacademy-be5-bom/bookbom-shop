@@ -13,7 +13,7 @@ public class OrderScheduler {
     private final OrderService orderService;
 
     //todo 10분으로 바꿔
-    @Scheduled(fixedRate = 300000) // 10분마다 실행 (1분 = 60000 밀리초)
+    @Scheduled(fixedRate = 600000) // 10분마다 실행 (1분 = 60000 밀리초)
     public void recoverStock() {
         // 실행할 작업 내용
         log.info("10분마다 실행되는 주문 재고 회복 작업을 수행합니다.");
