@@ -416,4 +416,9 @@ public class BookService {
     public Page<BookSearchResponse> getPageableEntireBookListOrderByDate(Pageable pageable) {
         return bookRepository.getPageableListBookMediumInfosOrderByDate(pageable);
     }
+
+    @Transactional(readOnly = true)
+    public Page<BookSearchResponse> getBookListByTitle(String keyword, Pageable pageable) {
+        return bookRepository.getPageableListBookSearchInfosByTitle(keyword, pageable);
+    }
 }
