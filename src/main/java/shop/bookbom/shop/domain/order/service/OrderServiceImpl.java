@@ -582,7 +582,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(BookNotFoundException::new);
         //주문 이름 생성
         String orderInfo =
-                book.getTitle() + " 외 " + String.valueOf(openOrderRequest.getWrapperSelectRequestList().size() - 1) +
+                book.getTitle() + " 외 " + (openOrderRequest.getWrapperSelectRequestList().size() - 1) +
                         "건";
         //주문상태 = "결제전"
         OrderStatus orderStatus = orderStatusRepository.findByName("결제전")
@@ -624,7 +624,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(BookNotFoundException::new);
         //주문 이름 생성
         String orderInfo =
-                book.getTitle() + " 외 " + String.valueOf(orderRequest.getWrapperSelectRequestList().size() - 1) +
+                book.getTitle() + " 외 " + (orderRequest.getWrapperSelectRequestList().size() - 1) +
                         "건";
         //주문상태 = "결제전"
         OrderStatus orderStatus = orderStatusRepository.findByName("결제전")
@@ -679,11 +679,8 @@ public class OrderServiceImpl implements OrderService {
             Wrapper wrapper = wrapperRepository.findByName(bookRequest.getWrapperName())
                     .orElseThrow(WrapperNotFoundException::new);
 
-            boolean packaging = true;
+            boolean packaging = !bookRequest.getWrapperName().equals("안함");
             //포장지 이름이 "안함"이면 packaging이 false
-            if (bookRequest.getWrapperName().equals("안함")) {
-                packaging = false;
-            }
             OrderBook orderBook = OrderBook.builder().quantity(bookRequest.getQuantity())
                     .packaging(packaging)
                     .status(OrderBookStatus.NONE)
@@ -744,7 +741,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public OrderDetailResponse getOrderDetail(Long id) {
-        return orderRepository.getOrderById(id);
+        return orderRepository.getOrderDetailResponseById(id);
     }
 
     @Override
