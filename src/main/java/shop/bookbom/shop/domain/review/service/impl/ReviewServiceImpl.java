@@ -26,6 +26,7 @@ import shop.bookbom.shop.domain.review.dto.response.ReviewCheckResponse;
 import shop.bookbom.shop.domain.review.dto.response.ReviewResponse;
 import shop.bookbom.shop.domain.review.entity.Review;
 import shop.bookbom.shop.domain.review.exception.ReviewOrderBookNotFoundException;
+import shop.bookbom.shop.domain.review.exception.ReviewTimeLimitExceededException;
 import shop.bookbom.shop.domain.review.repository.ReviewRepository;
 import shop.bookbom.shop.domain.review.service.ReviewService;
 import shop.bookbom.shop.domain.reviewimage.service.ReviewImageService;
@@ -48,26 +49,12 @@ public class ReviewServiceImpl implements ReviewService {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(MemberNotFoundException::new);
         Order order = orderRepository.getOrderFetchOrderBooksById(orderId);
-        List<OrderBook> orderBooks = order.getOrderBooks();
-        OrderBook orderBook = orderBooks.stream()
-                .filter(ob -> ob.getBook().getId().equals(bookId))
-                .findFirst()
-                .orElseThrow(ReviewOrderBookNotFoundException::new);
-        ApplyPointType pointType = ApplyPointType.REVIEW_TEXT;
-        if (type.equals("photo")) {
-            pointType = ApplyPointType.REVIEW_IMAGE;
-        }
+        validateReviewTimeLimit(order);
+        Book book = findBookByOrderBooks(bookId, order.getOrderBooks());
+        ApplyPointType pointType = type.equals("photo") ? ApplyPointType.REVIEW_IMAGE : ApplyPointType.REVIEW_TEXT;
         PointRate pointRate = pointRateRepository.findByApplyType(pointType)
                 .orElseThrow(PointRateNotFoundException::new);
-        Book book = orderBook.getBook();
-        Review review = Review.builder()
-                .rate(rating)
-                .content(content)
-                .createdAt(LocalDateTime.now())
-                .book(book)
-                .member(member)
-                .pointRate(pointRate)
-                .build();
+        Review review = buildReview(rating, content, book, member, pointRate);
         reviewRepository.save(review);
         if (type.equals("photo")) {
             reviewImageService.saveReviewImage(image, review);
@@ -101,5 +88,52 @@ public class ReviewServiceImpl implements ReviewService {
                 .orElseThrow(BookNotFoundException::new);
 
         return reviewRepository.getAllReviewsByBook(book, pageable);
+    }
+
+    /**
+     * 리뷰 엔티티를 생성하는 메서드입니다.
+     *
+     * @param rating    별점
+     * @param content   내용
+     * @param book      책
+     * @param member    회원
+     * @param pointRate 포인트 비율
+     * @return 리뷰 엔티티
+     */
+    private Review buildReview(int rating, String content, Book book, Member member, PointRate pointRate) {
+        return Review.builder()
+                .rate(rating)
+                .content(content)
+                .createdAt(LocalDateTime.now())
+                .book(book)
+                .member(member)
+                .pointRate(pointRate)
+                .build();
+    }
+
+    /**
+     * 주문 도서 목록에서 도서 엔티티를 찾는 메서드입니다.
+     *
+     * @param bookId     책 ID
+     * @param orderBooks 주문 도서 목록
+     * @return 도서 엔티티
+     */
+    private Book findBookByOrderBooks(Long bookId, List<OrderBook> orderBooks) {
+        OrderBook orderBook = orderBooks.stream()
+                .filter(ob -> ob.getBook().getId().equals(bookId))
+                .findFirst()
+                .orElseThrow(ReviewOrderBookNotFoundException::new);
+        return orderBook.getBook();
+    }
+
+    /**
+     * 리뷰 작성 가능 기간을 검증하는 메서드입니다.
+     *
+     * @param order 주문
+     */
+    private void validateReviewTimeLimit(Order order) {
+        if (order.getOrderDate().isBefore(LocalDateTime.now().minusWeeks(2))) {
+            throw new ReviewTimeLimitExceededException();
+        }
     }
 }

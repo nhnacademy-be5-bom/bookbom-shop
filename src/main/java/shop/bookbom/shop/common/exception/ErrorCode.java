@@ -87,6 +87,7 @@ public enum ErrorCode {
     // review
     REVIEW_ORDER_BOOK_NOT_FOUND(400, "주문하지 않은 도서는 리뷰할 수 없습니다."),
     REVIEW_NOT_FOUND(404, "해당 리뷰가 존재하지 않습니다."),
+    REVIEW_TIME_LIMIT_EXCEED(400, "리뷰 작성 가능 기간이 지났습니다."),
     ;
 
     private final int code;
