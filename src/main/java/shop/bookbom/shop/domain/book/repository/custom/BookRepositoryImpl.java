@@ -7,6 +7,7 @@ import static shop.bookbom.shop.domain.bookfiletype.entity.QBookFileType.bookFil
 
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -184,6 +185,18 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
             count = BEST_LIMIT;
         }
         return new PageImpl<>(content, pageable, count);
+    }
+
+    @Override
+    public List<Book> findRecentlyModifiedBooks(LocalDateTime recentTime) {
+        return queryFactory
+                .select(book)
+                .from(book)
+                .leftJoin(book.authors, bookAuthor).fetchJoin()
+                .leftJoin(book.publisher, publisher).fetchJoin()
+                .join(bookAuthor.author, author).fetchJoin()
+                .where(book.lastModifiedAt.after(recentTime))
+                .fetch();
     }
 
     private List<BookSearchResponse> getAllBookMediumInfosOrderByViewCount(Pageable pageable) {
