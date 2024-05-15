@@ -143,4 +143,12 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     private BooleanExpression orderDateMin(LocalDate orderDateMin) {
         return orderDateMin == null ? null : order.orderDate.goe(orderDateMin.atStartOfDay());
     }
+
+    @Override
+    public List<Order> getAllOrderBeforePayment() {
+        return queryFactory.select(order)
+                .from(order)
+                .where(order.status.id.eq(1L))
+                .fetch();
+    }
 }

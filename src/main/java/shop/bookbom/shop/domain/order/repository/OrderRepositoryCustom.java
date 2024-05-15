@@ -38,4 +38,6 @@ public interface OrderRepositoryCustom {
      * @return 조회된 주문 리스트
      */
     List<Order> findAllOrdersById(List<Long> orderIds);
+
+    List<Order> getAllOrderBeforePayment();
 }

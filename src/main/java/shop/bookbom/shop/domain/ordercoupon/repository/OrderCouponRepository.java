@@ -8,6 +8,5 @@ import shop.bookbom.shop.domain.ordercoupon.entity.OrderCoupon;
 public interface OrderCouponRepository extends JpaRepository<OrderCoupon, Long> {
     Optional<OrderCoupon> findByOrder(Order order);
 
-    boolean existsByOrder(Order order);
 
 }
