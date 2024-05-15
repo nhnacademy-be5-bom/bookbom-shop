@@ -60,4 +60,5 @@ public class CouponCustomRepositoryImpl implements CouponCustomRepository {
 
         return PageableExecutionUtils.getPage(couponInfoList, pageable, countQuery::fetchOne);
     }
+
 }

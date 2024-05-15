@@ -2,14 +2,13 @@ package shop.bookbom.shop.domain.coupon.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import shop.bookbom.shop.domain.coupon.entity.Coupon;
 import shop.bookbom.shop.domain.coupon.entity.CouponType;
-import shop.bookbom.shop.domain.couponbook.entity.CouponBook;
 import shop.bookbom.shop.domain.couponpolicy.entity.DiscountType;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class CouponInfoResponse {
     private Long id;
     private String name;

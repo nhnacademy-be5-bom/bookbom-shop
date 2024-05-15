@@ -6,6 +6,8 @@ import shop.bookbom.shop.domain.coupon.dto.request.AddBookCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCategoryCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.response.CouponInfoResponse;
+import shop.bookbom.shop.domain.coupon.dto.response.MyCouponInfoResponse;
+import shop.bookbom.shop.domain.coupon.dto.response.MyCouponRecordResponse;
 import shop.bookbom.shop.domain.membercoupon.dto.request.IssueCouponRequest;
 
 public interface CouponService {
@@ -20,4 +22,8 @@ public interface CouponService {
     void addMemberCoupon(IssueCouponRequest issueCouponRequest);
 
     void addWelcomeCoupon(String email);
+
+    Page<MyCouponInfoResponse> getMemberCouponInfo(Pageable pageable, Long userId);
+
+    Page<MyCouponRecordResponse> getMemberRecodes(Pageable pageable, Long userId);
 }

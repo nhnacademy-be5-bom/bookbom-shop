@@ -11,13 +11,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import shop.bookbom.shop.annotation.Login;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.domain.coupon.dto.request.AddBookCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCategoryCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.response.CouponInfoResponse;
+import shop.bookbom.shop.domain.coupon.dto.response.MyCouponInfoResponse;
+import shop.bookbom.shop.domain.coupon.dto.response.MyCouponRecordResponse;
 import shop.bookbom.shop.domain.coupon.service.CouponService;
 import shop.bookbom.shop.domain.membercoupon.dto.request.IssueCouponRequest;
+import shop.bookbom.shop.domain.users.dto.UserDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -77,5 +81,29 @@ public class CouponController {
     public CommonResponse<Void> issueWelcomeCoupon(@RequestParam String email){
         couponService.addWelcomeCoupon(email);
         return CommonResponse.success();
+    }
+
+    /**
+     * 내 쿠폰함에서 쿠폰 목록을 불러오는 메서드입니다.
+     *
+     * @param pageable 페이징 처리
+     * @param userDto 사용자 정보
+     * @return 사용자 보유 쿠폰 정보
+     */
+    @GetMapping("/shop/mycoupons")
+    public  CommonResponse<Page<MyCouponInfoResponse>> getMyCouponList(@PageableDefault Pageable pageable, @Login UserDto userDto){
+        return CommonResponse.successWithData(couponService.getMemberCouponInfo(pageable, userDto.getId())); //테스트
+    }
+
+    /**
+     * 내 쿠폰함에서 쿠폰 발급/사용/만료 기록을 불러오는 메서드입니다.
+     *
+     * @param pageable 페이징 처리
+     * //@param userDto 사용자 정보
+     * @return 사용자 쿠폰 기록 정보
+     */
+    @GetMapping("/shop/mycoupons/detail")
+    public CommonResponse<Page<MyCouponRecordResponse>> getMyCouponRecodes(@PageableDefault Pageable pageable, @Login UserDto userDto){
+        return CommonResponse.successWithData(couponService.getMemberRecodes(pageable, userDto.getId()));
     }
 }

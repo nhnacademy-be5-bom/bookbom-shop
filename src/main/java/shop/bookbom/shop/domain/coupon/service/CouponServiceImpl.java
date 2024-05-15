@@ -1,6 +1,10 @@
 package shop.bookbom.shop.domain.coupon.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,6 +20,8 @@ import shop.bookbom.shop.domain.coupon.dto.request.AddBookCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCategoryCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.request.AddCouponRequest;
 import shop.bookbom.shop.domain.coupon.dto.response.CouponInfoResponse;
+import shop.bookbom.shop.domain.coupon.dto.response.MyCouponInfoResponse;
+import shop.bookbom.shop.domain.coupon.dto.response.MyCouponRecordResponse;
 import shop.bookbom.shop.domain.coupon.entity.Coupon;
 import shop.bookbom.shop.domain.coupon.entity.CouponType;
 import shop.bookbom.shop.domain.coupon.exception.CouponNotFoundException;
@@ -36,6 +42,7 @@ import shop.bookbom.shop.domain.membercoupon.entity.MemberCoupon;
 import shop.bookbom.shop.domain.membercoupon.repository.MemberCouponRepository;
 import shop.bookbom.shop.domain.users.repository.UserRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CouponServiceImpl implements CouponService {
@@ -151,5 +158,41 @@ public class CouponServiceImpl implements CouponService {
                 .member(member)
                 .build();
         memberCouponRepository.save(memberCoupon);
+    }
+
+    @Override
+    public Page<MyCouponInfoResponse> getMemberCouponInfo(Pageable pageable, Long userId) {
+        return memberCouponRepository.getMyCouponInfo(pageable, userId);
+    }
+
+    @Override
+    public Page<MyCouponRecordResponse> getMemberRecodes(Pageable pageable, Long userId) {
+        List<MyCouponRecordResponse> records = new ArrayList<>();
+        final long[] total = {0};
+        memberCouponRepository.getMyCouponRecordList(userId).forEach(record -> {
+                if(record.getStatus().getValue().equals("사용 완료")){
+                    records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.NEW, record.getIssueDate()));
+                    records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.USED, record.getUseDate()));
+                    total[0] += 2;
+                } else if (record.getStatus().getValue().equals("만료")) {
+                    if(LocalDate.now().isAfter(record.getExpireDate())){
+                        //expireDate가 지나지 않았는데 상태가 expired인 경우 예외처리
+                        return;
+                    }
+                    records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.NEW, record.getIssueDate()));
+                    records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.EXPIRED, record.getExpireDate()));
+                    total[0] += 2;
+                } else{ //NEW
+                    records.add(MyCouponRecordResponse.of(record.getName(), CouponStatus.NEW, record.getIssueDate()));
+                    total[0]++;
+                }
+            }
+        );
+        //sorting
+        List<MyCouponRecordResponse> sortedRecords = records.stream()
+                .sorted(Comparator.comparing(MyCouponRecordResponse::getDate).reversed())
+                .collect(Collectors.toList());
+        //repository 다녀오기
+        return memberCouponRepository.getMyCouponRecordPage(pageable, sortedRecords, total[0]);
     }
 }

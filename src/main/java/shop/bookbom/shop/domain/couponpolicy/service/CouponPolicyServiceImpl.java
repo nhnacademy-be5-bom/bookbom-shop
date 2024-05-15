@@ -34,6 +34,8 @@ public class CouponPolicyServiceImpl implements CouponPolicyService {
     public void deleteCouponPolicy(CouponPolicyDeleteRequest request, Long userId) {
         CouponPolicy couponPolicy = couponPolicyRepository.findById(request.getCouponPolicyId())
                 .orElseThrow(CouponPolicyNotFoundException::new);
+        //couponPolicy를 정책으로 하는 쿠폰이 있는 경우 삭제 금지
+
         couponPolicyRepository.delete(couponPolicy);
     }
 

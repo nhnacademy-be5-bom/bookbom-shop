@@ -1,10 +1,23 @@
 package shop.bookbom.shop.domain.membercoupon.repository.impl;
 
+import static shop.bookbom.shop.domain.book.entity.QBook.book;
+import static shop.bookbom.shop.domain.category.entity.QCategory.category;
+
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import javax.persistence.EntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import shop.bookbom.shop.domain.coupon.dto.CouponDto;
+import shop.bookbom.shop.domain.coupon.dto.response.MyCouponInfoResponse;
+import shop.bookbom.shop.domain.coupon.dto.response.MyCouponRecordRepoDto;
+import shop.bookbom.shop.domain.coupon.dto.response.MyCouponRecordResponse;
 import shop.bookbom.shop.domain.coupon.entity.Coupon;
 import shop.bookbom.shop.domain.coupon.entity.QCoupon;
 import shop.bookbom.shop.domain.couponbook.dto.CouponBookDto;
@@ -23,8 +36,11 @@ import shop.bookbom.shop.domain.membercoupon.repository.MemberCouponRepositoryCu
 @Repository
 public class MemberCouponRepositoryCustomImpl extends QuerydslRepositorySupport
         implements MemberCouponRepositoryCustom {
-    public MemberCouponRepositoryCustomImpl() {
+    private final JPAQueryFactory queryFactory;
+
+    public MemberCouponRepositoryCustomImpl(EntityManager entityManager) {
         super(MemberCoupon.class);
+        this.queryFactory = new JPAQueryFactory(entityManager);
     }
 
     private static final QMemberCoupon memberCoupon = QMemberCoupon.memberCoupon;
@@ -84,8 +100,6 @@ public class MemberCouponRepositoryCustomImpl extends QuerydslRepositorySupport
             couponDto.updateCouponCategories(couponCategorys);
 
         }
-
-
         return memberCouponDtos;
     }
 
@@ -99,5 +113,68 @@ public class MemberCouponRepositoryCustomImpl extends QuerydslRepositorySupport
                         .and(member.eq(member1)))
                 .fetchOne();
 
+    }
+
+    @Override
+    public Page<MyCouponInfoResponse> getMyCouponInfo(Pageable pageable, Long userId) {
+        List<MyCouponInfoResponse> couponInfoList = queryFactory.select(
+                        Projections.fields(
+                                MyCouponInfoResponse.class,
+                                coupon.name,
+                                memberCoupon.status,
+                                memberCoupon.expireDate,
+                                couponPolicy.discountType,
+                                couponPolicy.discountCost,
+                                couponPolicy.minOrderCost,
+                                couponPolicy.maxDiscountCost,
+                                book.title,
+                                category.name.as("categoryName")
+                        )
+                )
+                .from(memberCoupon)
+                .leftJoin(coupon).on(coupon.id.eq(memberCoupon.coupon.id))
+                .leftJoin(couponPolicy).on(coupon.couponPolicy.id.eq(couponPolicy.id))
+                .leftJoin(couponBook).on(coupon.id.eq(couponBook.coupon.id))
+                .leftJoin(book).on(couponBook.book.id.eq(book.id))
+                .leftJoin(couponCategory).on(coupon.id.eq(couponCategory.coupon.id))
+                .leftJoin(category).on(couponCategory.category.id.eq(category.id))
+                .where(
+                        memberCoupon.member.id.eq(userId)
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory.select(memberCoupon.count())
+                .from(memberCoupon)
+                .where(memberCoupon.member.id.eq(userId));
+
+        return PageableExecutionUtils.getPage(couponInfoList, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public List<MyCouponRecordRepoDto> getMyCouponRecordList(Long userId) {
+        return queryFactory.select(
+                        Projections.fields(
+                                MyCouponRecordRepoDto.class,
+                                coupon.name,
+                                memberCoupon.status,
+                                memberCoupon.issueDate,
+                                memberCoupon.useDate,
+                                memberCoupon.expireDate
+                        )
+                )
+                .from(memberCoupon)
+                .leftJoin(coupon).on(coupon.id.eq(memberCoupon.coupon.id))
+                .where(
+                        memberCoupon.member.id.eq(userId)
+                )
+                .fetch();
+    }
+
+    @Override
+    public Page<MyCouponRecordResponse> getMyCouponRecordPage(Pageable pageable, List<MyCouponRecordResponse> recordList, Long total) {
+
+        return new PageImpl<>(recordList, pageable, total);
     }
 }
