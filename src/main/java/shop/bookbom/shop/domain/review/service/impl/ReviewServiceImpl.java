@@ -3,10 +3,14 @@ package shop.bookbom.shop.domain.review.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import shop.bookbom.shop.domain.book.entity.Book;
+import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
+import shop.bookbom.shop.domain.book.repository.BookRepository;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.exception.MemberNotFoundException;
 import shop.bookbom.shop.domain.member.repository.MemberRepository;
@@ -19,6 +23,7 @@ import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 import shop.bookbom.shop.domain.pointrate.exception.PointRateNotFoundException;
 import shop.bookbom.shop.domain.pointrate.repository.PointRateRepository;
 import shop.bookbom.shop.domain.review.dto.response.ReviewCheckResponse;
+import shop.bookbom.shop.domain.review.dto.response.ReviewResponse;
 import shop.bookbom.shop.domain.review.entity.Review;
 import shop.bookbom.shop.domain.review.exception.ReviewOrderBookNotFoundException;
 import shop.bookbom.shop.domain.review.repository.ReviewRepository;
@@ -30,6 +35,7 @@ import shop.bookbom.shop.domain.reviewimage.service.ReviewImageService;
 public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
+    private final BookRepository bookRepository;
     private final PointRateRepository pointRateRepository;
     private final OrderRepository orderRepository;
     private final ReviewImageService reviewImageService;
@@ -70,6 +76,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ReviewCheckResponse existsCheck(Long userId, Long bookId, Long orderId) {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(MemberNotFoundException::new);
@@ -85,5 +92,14 @@ public class ReviewServiceImpl implements ReviewService {
         Book book = orderBook.getBook();
         boolean exists = reviewRepository.existsByMemberAndBook(member, book);
         return new ReviewCheckResponse(exists);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReviewResponse> getReviews(Long bookId, Pageable pageable) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(BookNotFoundException::new);
+
+        return reviewRepository.getAllReviewsByBook(book, pageable);
     }
 }

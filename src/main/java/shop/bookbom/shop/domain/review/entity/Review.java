@@ -55,7 +55,7 @@ public class Review {
     private PointRate pointRate;
 
     @OneToMany(mappedBy = "review")
-    private final List<ReviewImage> reviewImage = new ArrayList<>();
+    private final List<ReviewImage> reviewImages = new ArrayList<>();
 
     @Builder
     public Review(
@@ -75,7 +75,7 @@ public class Review {
     }
 
     public void addReviewImage(ReviewImage reviewImage) {
-        this.reviewImage.add(reviewImage);
+        reviewImages.add(reviewImage);
         reviewImage.updateReview(this);
     }
 }

@@ -8,7 +8,7 @@ import shop.bookbom.shop.domain.book.entity.Book;
 import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.review.entity.Review;
 
-public interface ReviewRepository extends JpaRepository<Review, Long> {
+public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRepositoryCustom {
     Optional<Long> countByBookId(Long bookId);
 
     @Query("select avg(r.rate) from Review r where r.book.id = :bookId")

@@ -1,7 +1,6 @@
 package shop.bookbom.shop.domain.review.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import shop.bookbom.shop.annotation.Login;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.common.exception.InvalidParameterException;
-import shop.bookbom.shop.domain.review.dto.response.ReviewCheckResponse;
 import shop.bookbom.shop.domain.review.service.ReviewService;
 import shop.bookbom.shop.domain.users.dto.UserDto;
 
@@ -36,14 +34,5 @@ public class ReviewController {
         }
         reviewService.createReview(userDto.getId(), bookId, orderId, type, rating, content, image);
         return CommonResponse.success();
-    }
-
-    @GetMapping("/exists-check")
-    public CommonResponse<ReviewCheckResponse> existsCheck(
-            @Login UserDto userDto,
-            @RequestParam("bookId") Long bookId,
-            @RequestParam("orderId") Long orderId
-    ) {
-        return CommonResponse.successWithData(reviewService.existsCheck(userDto.getId(), bookId, orderId));
     }
 }
