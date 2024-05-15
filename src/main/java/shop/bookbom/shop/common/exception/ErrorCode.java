@@ -84,6 +84,9 @@ public enum ErrorCode {
     ADDRESS_ALREADY_EXIST(400, "이미 동일한 주소가 존재합니다."),
     ADDRESS_DEFAULT_DELETE(400, "기본 주소지는 삭제할 수 없습니다."),
     ADDRESS_MINIMUM_REQUIRED(400, "주소록에 최소 1개 이상의 주소가 있어야 합니다."),
+    // review
+    REVIEW_ORDER_BOOK_NOT_FOUND(400, "주문하지 않은 도서는 리뷰할 수 없습니다."),
+    REVIEW_NOT_FOUND(404, "해당 리뷰가 존재하지 않습니다."),
     ;
 
     private final int code;
