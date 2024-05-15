@@ -18,6 +18,7 @@ import shop.bookbom.shop.domain.pointrate.entity.ApplyPointType;
 import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 import shop.bookbom.shop.domain.pointrate.exception.PointRateNotFoundException;
 import shop.bookbom.shop.domain.pointrate.repository.PointRateRepository;
+import shop.bookbom.shop.domain.review.dto.response.ReviewCheckResponse;
 import shop.bookbom.shop.domain.review.entity.Review;
 import shop.bookbom.shop.domain.review.exception.ReviewOrderBookNotFoundException;
 import shop.bookbom.shop.domain.review.repository.ReviewRepository;
@@ -66,5 +67,23 @@ public class ReviewServiceImpl implements ReviewService {
             reviewImageService.saveReviewImage(image, review);
         }
         pointHistoryService.earnPointByReview(member, type);
+    }
+
+    @Override
+    public ReviewCheckResponse existsCheck(Long userId, Long bookId, Long orderId) {
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(MemberNotFoundException::new);
+        Order order = orderRepository.getOrderFetchOrderBooksById(orderId);
+        List<OrderBook> orderBooks = order.getOrderBooks();
+        OrderBook orderBook = orderBooks.stream()
+                .filter(ob -> ob.getBook().getId().equals(bookId))
+                .findFirst()
+                .orElseThrow(ReviewOrderBookNotFoundException::new);
+        if (orderBook == null) {
+            return new ReviewCheckResponse(false);
+        }
+        Book book = orderBook.getBook();
+        boolean exists = reviewRepository.existsByMemberAndBook(member, book);
+        return new ReviewCheckResponse(exists);
     }
 }
