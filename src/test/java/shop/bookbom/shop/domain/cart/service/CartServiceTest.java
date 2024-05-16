@@ -126,15 +126,19 @@ class CartServiceTest {
     @DisplayName("장바구니 목록 중 삭제")
     void delete() throws Exception {
         //given
+        Book book = getBook("title1", getPointRate(), getPublisher());
+        ReflectionTestUtils.setField(book, "id", 1L);
         CartItem cartItem = CartItem.builder()
                 .cart(getCart(getMember("test@email.com", getRole(), getRank(getPointRate()))))
-                .book(getBook("title1", getPointRate(), getPublisher()))
+                .book(book)
                 .build();
         ReflectionTestUtils.setField(cartItem, "id", 1L);
-        when(cartItemRepository.findById(1L)).thenReturn(Optional.of(cartItem));
+        Cart cart = getCart(getMember("test@email.com", getRole(), getRank(getPointRate())));
+        cart.addItem(cartItem);
+        when(cartFindService.getCart(any())).thenReturn(cart);
 
         //when
-        cartService.deleteItem(1L);
+        cartService.deleteItem(1L, 1L);
 
         //then
         verify(cartItemRepository).delete(cartItem);
@@ -144,10 +148,11 @@ class CartServiceTest {
     @DisplayName("장바구니 목록 중 삭제 예외")
     void deleteNotExistsCartItem() throws Exception {
         //given
-        when(cartItemRepository.findById(any())).thenReturn(Optional.empty());
+        when(cartFindService.getCart(any())).thenReturn(
+                getCart(getMember("test@email.com", getRole(), getRank(getPointRate()))));
 
         //when & then
-        assertThatThrownBy(() -> cartService.deleteItem(1L))
+        assertThatThrownBy(() -> cartService.deleteItem(1L, 1L))
                 .isInstanceOf(CartItemNotFoundException.class);
     }
 
@@ -156,15 +161,18 @@ class CartServiceTest {
     @DisplayName("장바구니 도서 수량 수정")
     void updateQuantity() throws Exception {
         //given
+        Book book = getBook("title1", getPointRate(), getPublisher());
+        ReflectionTestUtils.setField(book, "id", 1L);
         CartItem cartItem = CartItem.builder()
                 .cart(getCart(getMember("test@email.com", getRole(), getRank(getPointRate()))))
-                .book(getBook("title1", getPointRate(), getPublisher()))
+                .book(book)
                 .build();
         ReflectionTestUtils.setField(cartItem, "id", 1L);
-        when(cartItemRepository.findById(1L)).thenReturn(Optional.of(cartItem));
-
+        Cart cart = getCart(getMember("test@email.com", getRole(), getRank(getPointRate())));
+        cart.addItem(cartItem);
+        when(cartFindService.getCart(any())).thenReturn(cart);
         //when
-        CartUpdateResponse response = cartService.updateQuantity(1L, 20);
+        CartUpdateResponse response = cartService.updateQuantity(1L, 1L, 20);
 
         //then
         assertThat(response.getQuantity()).isEqualTo(20);
@@ -174,15 +182,19 @@ class CartServiceTest {
     @DisplayName("장바구니 도서 수량 수정 예외")
     void updateQuantityException() throws Exception {
         // given
+        Book book = getBook("title1", getPointRate(), getPublisher());
+        ReflectionTestUtils.setField(book, "id", 1L);
         CartItem cartItem = CartItem.builder()
                 .cart(getCart(getMember("test@email.com", getRole(), getRank(getPointRate()))))
-                .book(getBook("title1", getPointRate(), getPublisher()))
+                .book(book)
                 .build();
         ReflectionTestUtils.setField(cartItem, "id", 1L);
-        when(cartItemRepository.findById(1L)).thenReturn(Optional.of(cartItem));
+        Cart cart = getCart(getMember("test@email.com", getRole(), getRank(getPointRate())));
+        cart.addItem(cartItem);
+        when(cartFindService.getCart(any())).thenReturn(cart);
 
         // when & then
-        assertThatThrownBy(() -> cartService.updateQuantity(1L, 0))
+        assertThatThrownBy(() -> cartService.updateQuantity(1L, 1L, 0))
                 .isInstanceOf(CartItemInvalidQuantityException.class);
     }
 
