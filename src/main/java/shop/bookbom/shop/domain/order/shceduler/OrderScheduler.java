@@ -27,7 +27,7 @@ public class OrderScheduler {
 
     //@Scheduled(cron = "0 0 9 * * ")
     //매일 9시 실행
-    @Scheduled(cron = "0 0 9 * * ")
+    @Scheduled(cron = "0 0 9 * * ?")
     public void changeOrderStatusToDeliverying() {
         // 실행할 작업 내용
         log.info("하루마다 실행되는 주문 배송중으로 변경 작업을 수행합니다.");
@@ -42,7 +42,7 @@ public class OrderScheduler {
 
     //@Scheduled(cron = "0 0 9 * * ")
     //매일 9시 실행
-    @Scheduled(cron = "0 0 9 * * ")
+    @Scheduled(cron = "0 0 9 * * ?")
     public void changeOrderStatusToComplete() {
         // 실행할 작업 내용
         log.info("하루마다 실행되는 주문 완료로 변경 작업을 수행합니다.");
