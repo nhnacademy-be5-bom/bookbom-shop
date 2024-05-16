@@ -1,6 +1,7 @@
 package shop.bookbom.shop.domain.book.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -38,8 +39,8 @@ public class Book {
     @Column(name = "book_id", nullable = false)
     private Long id;
 
-    @Column(nullable = false, length = 255)
-    private String title;
+    @OneToMany(mappedBy = "book")
+    private final List<BookAuthor> authors = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
@@ -74,6 +75,10 @@ public class Book {
 
     @Column(nullable = false)
     private Integer stock;
+    @OneToMany(mappedBy = "book")
+    private final List<BookTag> tags = new ArrayList<>();
+    @OneToMany(mappedBy = "book")
+    private final List<BookCategory> categories = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id", nullable = false)
@@ -82,21 +87,16 @@ public class Book {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "point_rate_id", nullable = false)
     private PointRate pointRate;
-
     @OneToMany(mappedBy = "book")
-    private List<BookAuthor> authors = new ArrayList<>();
-
+    private final List<BookFile> bookFiles = new ArrayList<>();
     @OneToMany(mappedBy = "book")
-    private List<BookTag> tags = new ArrayList<>();
-
-    @OneToMany(mappedBy = "book")
-    private List<BookCategory> categories = new ArrayList<>();
-
-    @OneToMany(mappedBy = "book")
-    private List<BookFile> bookFiles = new ArrayList<>();
-
-    @OneToMany(mappedBy = "book")
-    private List<Review> reviews = new ArrayList<>();
+    private final List<Review> reviews = new ArrayList<>();
+    @Column(nullable = false)
+    private String title;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+    @Column(name = "last_modified_at", nullable = false)
+    private LocalDateTime lastModifiedAt;
 
     @Builder
     public Book(String title,
@@ -128,6 +128,8 @@ public class Book {
         this.stock = stock;
         this.publisher = publisher;
         this.pointRate = pointRate;
+        this.createdAt = LocalDateTime.now();
+        this.lastModifiedAt = LocalDateTime.now();
     }
 
     @Builder(builderMethodName = "updateBuilder")
@@ -161,6 +163,7 @@ public class Book {
         this.stock = stock;
         this.publisher = publisher;
         this.pointRate = pointRate;
+        this.lastModifiedAt = LocalDateTime.now();
     }
 
     public void update(BookUpdateRequest bookUpdateRequest) {
@@ -175,6 +178,7 @@ public class Book {
         this.packagable = bookUpdateRequest.getPackagable();
         this.status = bookUpdateRequest.getStatus();
         this.stock = bookUpdateRequest.getStock();
+        this.lastModifiedAt = LocalDateTime.now();
     }
 
     public void updatePublisher(Publisher publisher) {

@@ -80,6 +80,12 @@ public enum ErrorCode {
     JWT_NOT_VALIDATE(400, "유효하지 않은 상태입니다."),
     //rank
     RANK_NOT_FOUND(404, "해당 등급이 존재하지 않습니다."),
+    //address
+    ADDRESS_NOT_FOUND(404, "해당 주소가 존재하지 않습니다."),
+    ADDRESS_LIMIT_EXCEED(400, "주소록 최대 저장 갯수를 초과하였습니다."),
+    ADDRESS_ALREADY_EXIST(400, "이미 동일한 주소가 존재합니다."),
+    ADDRESS_DEFAULT_DELETE(400, "기본 주소지는 삭제할 수 없습니다."),
+    ADDRESS_MINIMUM_REQUIRED(400, "주소록에 최소 1개 이상의 주소가 있어야 합니다."),
     ;
 
     private final int code;
