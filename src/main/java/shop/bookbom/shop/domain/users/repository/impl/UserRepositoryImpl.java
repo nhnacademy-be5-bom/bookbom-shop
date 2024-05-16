@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.order.entity.Order;
 import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
@@ -56,12 +57,26 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     }
 
     @Override
-    public Long findIdByEmail(String email) {
-        QUser user = QUser.user;
-        return queryFactory.select(user.id)
-                .from(user)
-                .where(user.email.eq(email))
-                .fetchOne();
+    public MemberInfoResponse getMyPage(User findUser) {
+        List<Order> orders = queryFactory
+                .selectFrom(order)
+                .join(order.status, orderStatus).fetchJoin()
+                .where(
+                        order.user.eq(findUser),
+                        order.status.name.ne("결제전"))
+                .orderBy(order.orderDate.desc())
+                .limit(5)
+                .fetch();
+
+        List<OrderInfoResponse> lastOrders =
+                orders.stream()
+                        .map(OrderInfoResponse::of)
+                        .collect(Collectors.toList());
+
+        return MemberInfoResponse.builder()
+                .id(findUser.getId())
+                .lastOrders(lastOrders)
+                .build();
     }
 
     private BooleanExpression orderDateMax(LocalDate orderDateMax) {

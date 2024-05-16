@@ -14,4 +14,6 @@ public interface PointHistoryService {
     void earnPointByBook(Member member, Integer totalOrderCost);
 
     void earnPointByRank(Member member, Integer totalOrderCost);
+
+    void earnPointByReview(Member member, String type);
 }

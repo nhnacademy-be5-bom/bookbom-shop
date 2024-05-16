@@ -82,6 +82,27 @@ public class PointHistoryServiceImpl implements PointHistoryService {
         pointHistoryRepository.save(pointHistory);
     }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void earnPointByReview(Member member, String type) {
+        ApplyPointType applyPointType = ApplyPointType.REVIEW_TEXT;
+        if (type.equals("photo")) {
+            applyPointType = ApplyPointType.REVIEW_IMAGE;
+        }
+        PointRate pointRate = pointRateRepository.findByApplyType(applyPointType)
+                .orElseThrow(PointRateNotFoundException::new);
+        int earnPoint = pointRate.getEarnPoint();
+        PointHistory pointHistory = PointHistory.builder()
+                .changePoint(earnPoint)
+                .changeDate(LocalDateTime.now())
+                .detail(PointHistoryDetail.REVIEW)
+                .member(member)
+                .changeReason(ChangeReason.EARN)
+                .build();
+        pointHistoryRepository.save(pointHistory);
+        member.updatePoints(member.getPoint() + earnPoint);
+    }
+
     /**
      * 주문 책에 따른 포인트 적립
      *
@@ -112,6 +133,7 @@ public class PointHistoryServiceImpl implements PointHistoryService {
         }
 
         pointHistoryRepository.save(pointHistory);
-
     }
+
+
 }
