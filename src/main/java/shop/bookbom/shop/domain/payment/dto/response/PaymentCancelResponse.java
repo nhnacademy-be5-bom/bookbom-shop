@@ -9,6 +9,6 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @Setter
-public class PaymentCancelReponse {
+public class PaymentCancelResponse {
     private String status;
 }

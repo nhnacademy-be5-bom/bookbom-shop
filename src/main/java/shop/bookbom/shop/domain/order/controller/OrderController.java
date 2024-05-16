@@ -29,6 +29,7 @@ import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.exception.OrderInfoInvalidException;
 import shop.bookbom.shop.domain.order.service.OrderService;
+import shop.bookbom.shop.domain.payment.dto.response.PaymentCancelResponse;
 import shop.bookbom.shop.domain.users.dto.UserDto;
 
 /**
@@ -133,7 +134,9 @@ public class OrderController {
     }
 
     @DeleteMapping("/orders/{id}")
-    public void cancelOrder(@PathVariable("id") Long id, @RequestParam(name = "reason") String cancelReason) {
-        orderService.cancelOrder(id, cancelReason);
+    public CommonResponse<PaymentCancelResponse> cancelOrder(@PathVariable("id") Long id,
+                                                             @RequestParam(name = "reason") String cancelReason) {
+        PaymentCancelResponse paymentCancelResponse = orderService.cancelOrder(id, cancelReason);
+        return CommonResponse.successWithData(paymentCancelResponse);
     }
 }

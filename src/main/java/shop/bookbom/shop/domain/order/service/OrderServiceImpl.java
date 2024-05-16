@@ -66,7 +66,7 @@ import shop.bookbom.shop.domain.orderstatus.exception.OrderStatusNotFoundExcepti
 import shop.bookbom.shop.domain.orderstatus.repository.OrderStatusRepository;
 import shop.bookbom.shop.domain.payment.adapter.PaymentAdapter;
 import shop.bookbom.shop.domain.payment.dto.request.PaymentCancelRequest;
-import shop.bookbom.shop.domain.payment.dto.response.PaymentCancelReponse;
+import shop.bookbom.shop.domain.payment.dto.response.PaymentCancelResponse;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.role.repository.RoleRepository;
 import shop.bookbom.shop.domain.users.entity.User;
@@ -854,19 +854,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public void cancelOrder(Long orderId, String cancelReason) {
+    public PaymentCancelResponse cancelOrder(Long orderId, String cancelReason) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(OrderNotFoundException::new);
         String paymentKey = order.getPayment().getKey();
         PaymentCancelRequest paymentCancelRequest = new PaymentCancelRequest(cancelReason);
-        PaymentCancelReponse paymentCancelReponse = paymentAdapter.cancelPayment(paymentKey, paymentCancelRequest);
-        if (paymentCancelReponse.getStatus().equals("CANCELED")) {
+        PaymentCancelResponse paymentCancelResponse = paymentAdapter.cancelPayment(paymentKey, paymentCancelRequest);
+        if (paymentCancelResponse.getStatus().equals("CANCELED")) {
             OrderStatus orderStatus = orderStatusRepository.findByName("취소")
                     .orElseThrow(OrderStatusNotFoundException::new);
             order.updateStatus(orderStatus);
             orderRepository.save(order);
         }
-
+        return paymentCancelResponse;
     }
 }
 

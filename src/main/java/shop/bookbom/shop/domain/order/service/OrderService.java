@@ -15,6 +15,7 @@ import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.entity.Order;
+import shop.bookbom.shop.domain.payment.dto.response.PaymentCancelResponse;
 
 public interface OrderService {
     BeforeOrderResponse getOrderBookInfo(BeforeOrderRequestList beforeOrderRequestList);
@@ -64,5 +65,5 @@ public interface OrderService {
 
     void changeToComplete();
 
-    void cancelOrder(Long orderId, String cancelReason);
+    PaymentCancelResponse cancelOrder(Long orderId, String cancelReason);
 }

@@ -13,7 +13,7 @@ import shop.bookbom.shop.domain.payment.config.TossPayConfig;
 import shop.bookbom.shop.domain.payment.dto.request.PaymentCancelRequest;
 import shop.bookbom.shop.domain.payment.dto.request.PaymentRequest;
 import shop.bookbom.shop.domain.payment.dto.response.FailureDto;
-import shop.bookbom.shop.domain.payment.dto.response.PaymentCancelReponse;
+import shop.bookbom.shop.domain.payment.dto.response.PaymentCancelResponse;
 import shop.bookbom.shop.domain.payment.dto.response.PaymentResponse;
 import shop.bookbom.shop.domain.payment.exception.PaymentCancelFailedException;
 import shop.bookbom.shop.domain.payment.exception.PaymentFailException;
@@ -59,7 +59,7 @@ public class PaymentAdapterImpl implements PaymentAdapter {
     }
 
     @Override
-    public PaymentCancelReponse cancelPayment(String paymentKey, PaymentCancelRequest paymentCancelRequest) {
+    public PaymentCancelResponse cancelPayment(String paymentKey, PaymentCancelRequest paymentCancelRequest) {
         //secretkey를 가지고 authorization 만듬
         String secretKey = tossPayConfig.getSecretKey() + ":";
         String authorization = Base64.getEncoder().encodeToString(secretKey.getBytes());
@@ -70,13 +70,14 @@ public class PaymentAdapterImpl implements PaymentAdapter {
         headers.add("Authorization", "Basic " + authorization);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<PaymentRequest> requestEntity = new HttpEntity<>(headers);
+        HttpEntity<PaymentCancelRequest> requestEntity =
+                new HttpEntity<>(paymentCancelRequest, headers);
 
-        PaymentCancelReponse response =
+        PaymentCancelResponse response =
                 restTemplate.exchange("https://api.tosspayments.com/v1/payments/{paymentKey}/cancel",
                         HttpMethod.POST,
                         requestEntity,
-                        PaymentCancelReponse.class,
+                        PaymentCancelResponse.class,
                         paymentKey).getBody();
 
         if (response == null) {
