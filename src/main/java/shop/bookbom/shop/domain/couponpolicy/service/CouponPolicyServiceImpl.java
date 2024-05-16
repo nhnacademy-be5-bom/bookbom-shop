@@ -32,6 +32,7 @@ public class CouponPolicyServiceImpl implements CouponPolicyService {
     }
 
     @Override
+    @Transactional
     public void deleteCouponPolicy(CouponPolicyDeleteRequest request) {
         CouponPolicy couponPolicy = couponPolicyRepository.findById(request.getCouponPolicyId())
                 .orElseThrow(CouponPolicyNotFoundException::new);
@@ -41,6 +42,7 @@ public class CouponPolicyServiceImpl implements CouponPolicyService {
     }
 
     @Override
+    @Transactional
     public void updateCouponPolicy(CouponPolicyInfoDto request) {
         couponPolicyRepository.findById(request.getCouponPolicyId())
                 .orElseThrow(CouponPolicyNotFoundException::new);
