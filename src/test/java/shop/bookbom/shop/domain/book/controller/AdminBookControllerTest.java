@@ -4,16 +4,21 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static shop.bookbom.shop.domain.book.utils.BookTestUtils.getBookAddRequest;
+import static shop.bookbom.shop.domain.book.utils.BookTestUtils.getBookSearchResponse;
 import static shop.bookbom.shop.domain.book.utils.BookTestUtils.getBookUpdateRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +30,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,6 +41,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import shop.bookbom.shop.argumentresolver.LoginArgumentResolver;
 import shop.bookbom.shop.config.WebConfig;
+import shop.bookbom.shop.domain.book.dto.BookSearchResponse;
 import shop.bookbom.shop.domain.book.dto.request.BookAddRequest;
 import shop.bookbom.shop.domain.book.dto.request.BookUpdateRequest;
 import shop.bookbom.shop.domain.book.service.BookService;
@@ -145,4 +153,40 @@ class AdminBookControllerTest {
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
                 .andExpect(jsonPath("$.header.successful").value(true));
     }
+
+    @Test
+    @DisplayName("pageable 조회: 전체")
+    void getAllAsPageable() throws Exception {
+        List<BookSearchResponse> result = new ArrayList<>();
+
+        for (int i = 0; i < 20; i++) {
+            result.add(getBookSearchResponse());
+        }
+
+        PageRequest pageable = PageRequest.of(0, 20);
+        PageImpl<BookSearchResponse> pageResponse = new PageImpl<>(result, pageable, 3433);
+
+        when(bookService.getBookListByTitle("월간", pageable)).thenReturn(pageResponse);
+
+        ResultActions perform = mockMvc.perform(get("/shop/admin/books/all")
+                .param("page", "0")
+                .param("size", "20")
+                .param("searchCondition", "%EC%9B%94%EA%B0%84")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        verify(bookService, times(1)).getBookListByTitle("월간", pageable);
+
+        perform
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.header.resultCode").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
+                .andExpect(jsonPath("$.header.successful").value(true))
+                .andExpect(jsonPath("$.result.pageable").exists())
+                .andExpect(jsonPath("$.result.pageable.pageNumber").value(0))
+                .andExpect(jsonPath("$.result.pageable.pageSize").value(20))
+                .andExpect(jsonPath("$.result.numberOfElements").value(20))
+                .andExpect(jsonPath("$.result.totalElements").value(3433));
+    }
+
 }
