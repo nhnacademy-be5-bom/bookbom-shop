@@ -40,7 +40,6 @@ import shop.bookbom.shop.config.WebConfig;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.users.controller.UserController;
 import shop.bookbom.shop.domain.users.dto.UserDto;
-import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.entity.User;
 import shop.bookbom.shop.domain.users.exception.RoleNotFoundException;
@@ -114,33 +113,6 @@ class UserControllerTest {
 
         mockMvc.perform(post("/shop/open/users").content(objectMapper.writeValueAsString(userRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
-                .andExpect(jsonPath("$.header.successful").value(false));
-    }
-
-    @Test
-    @DisplayName("#2-1_1 UPDATE USER : reset password")
-    void resetPasswordTest() throws Exception {
-        ResetPasswordRequestDto resetPasswordRequestDto =
-                ResetPasswordRequestDto.builder().id(1L).password("123").build();
-
-        when(userService.save(any(UserRequestDto.class))).thenReturn(1L);
-
-        mockMvc.perform(
-                        patch("/shop/users/1/password").content(objectMapper.writeValueAsString(resetPasswordRequestDto))
-                                .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(200))
-                .andExpect(jsonPath("$.header.successful").value(true));
-    }
-
-    @Test
-    @DisplayName("#2-1_2 UPDATE USER : reset password with not exist user")
-    void resetPasswordWithNoUserTest() throws Exception {
-        ResetPasswordRequestDto resetPasswordRequestDto =
-                ResetPasswordRequestDto.builder().id(1L).password("123").build();
-        doThrow(new UserNotFoundException()).when(userService).resetPassword(any(ResetPasswordRequestDto.class));
-
-        mockMvc.perform(
-                        patch("/shop/users/1/password").content(objectMapper.writeValueAsString(resetPasswordRequestDto))
-                                .contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.header.resultCode").value(400))
                 .andExpect(jsonPath("$.header.successful").value(false));
     }
 

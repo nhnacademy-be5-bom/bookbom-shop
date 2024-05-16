@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static shop.bookbom.shop.common.TestUtils.getOrder;
@@ -33,7 +32,6 @@ import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.role.repository.RoleRepository;
 import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
-import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.entity.User;
 import shop.bookbom.shop.domain.users.exception.RoleNotFoundException;
@@ -126,47 +124,6 @@ class UserServiceTest {
         when(userRepository.existsUserByEmail(anyString())).thenReturn(true);
 
         assertEquals(false, userService.checkEmailCanUse("test@email.com"));
-    }
-
-    @Test
-    @DisplayName("reset password - success")
-    void resetPasswordSuccessTest() {
-
-        ResetPasswordRequestDto resetPasswordRequestDto = ResetPasswordRequestDto.builder()
-                .id(1L)
-                .password("1")
-                .build();
-
-        Role role = Role.builder()
-                .id(1L)
-                .name("ROLE_USER")
-                .build();
-
-        User user = User.builder()
-                .id(1L)
-                .email("test@email.com")
-                .password("password")
-                .role(role)
-                .registered(true)
-                .build();
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-        userService.resetPassword(resetPasswordRequestDto);
-
-        verify(userRepository, times(1)).save(user);
-    }
-
-    @Test
-    @DisplayName("reset password - user not found")
-    void resetPasswordUserNotFoundTest() {
-
-        ResetPasswordRequestDto resetPasswordRequestDto = ResetPasswordRequestDto.builder()
-                .id(1L)
-                .password("1")
-                .build();
-
-        when(userRepository.findById(any())).thenReturn(Optional.empty());
-
-        assertThrows(UserNotFoundException.class, () -> userService.resetPassword(resetPasswordRequestDto));
     }
 
     @Test
