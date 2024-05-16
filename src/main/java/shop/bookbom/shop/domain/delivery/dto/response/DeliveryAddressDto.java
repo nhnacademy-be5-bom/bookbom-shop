@@ -18,7 +18,7 @@ public class DeliveryAddressDto {
                 deliveryAddress.getId(),
                 deliveryAddress.getZipCode(),
                 deliveryAddress.getDeliveryAddress(),
-                deliveryAddress.getDeliveryAddress()
+                deliveryAddress.getAddressDetail()
         );
     }
 }
