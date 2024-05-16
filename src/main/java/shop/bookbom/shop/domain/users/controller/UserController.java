@@ -20,6 +20,7 @@ import shop.bookbom.shop.annotation.Login;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.common.exception.BaseException;
 import shop.bookbom.shop.common.exception.ErrorCode;
+import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
 import shop.bookbom.shop.domain.users.dto.UserDto;
@@ -148,5 +149,10 @@ public class UserController {
         CommonResponse<UserIdRole> userIdRoleCommonResponse =
                 CommonResponse.successWithData(userService.getIdRole(emailPasswordDto));
         return userIdRoleCommonResponse;
+    }
+
+    @GetMapping("/users/my-page")
+    public CommonResponse<MemberInfoResponse> getMyPage(@Login UserDto userDto) {
+        return CommonResponse.successWithData(userService.getMyPage(userDto.getId()));
     }
 }

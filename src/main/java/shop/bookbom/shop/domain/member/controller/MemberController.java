@@ -19,7 +19,7 @@ import shop.bookbom.shop.domain.users.dto.UserDto;
 public class MemberController {
     private final MemberService memberService;
 
-    @GetMapping("/users/my-page")
+    @GetMapping("/members/my-page")
     public CommonResponse<MemberInfoResponse> myPage(@Login UserDto userDto) {
         return CommonResponse.successWithData(memberService.getMemberInfo(userDto.getId()));
     }
