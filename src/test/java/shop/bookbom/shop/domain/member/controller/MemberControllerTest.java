@@ -57,7 +57,7 @@ class MemberControllerTest {
                 getMemberInfoResponse(rank, getMember("test@email.com", getRole(), rank)));
         when(resolver.resolveArgument(any(), any(), any(), any())).thenReturn(new UserDto(1L));
         //when
-        ResultActions perform = mockMvc.perform(get("/shop/users/my-page"));
+        ResultActions perform = mockMvc.perform(get("/shop/members/my-page"));
 
         //then
         perform
