@@ -2,6 +2,7 @@ package shop.bookbom.shop.domain.book.document;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +14,8 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "bom_dev-book")
+@Document(indexName = "bom-book")
 public class BookDocument {
-
     @Id
     @Field(name = "book_id", type = FieldType.Long)
     private Long bookId;
@@ -64,4 +64,7 @@ public class BookDocument {
 
     @Field(name = "extension", type = FieldType.Text)
     private String extension;
+
+    @Field(name = "last_modified_at", type = FieldType.Date)
+    private LocalDateTime lastModifiedAt;
 }

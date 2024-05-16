@@ -322,7 +322,8 @@ public class BookTestUtils {
                 0,
                 1L,
                 "thumbnail",
-                "jpg");
+                "jpg",
+                LocalDateTime.now());
     }
 
 

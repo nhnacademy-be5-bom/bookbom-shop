@@ -71,4 +71,14 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .wishCount((wishCount != null) ? wishCount : 0L)
                 .build();
     }
+
+    @Override
+    public Member findMemberByIdFetchRank(Long id){
+        return queryFactory
+                .select(member)
+                .from(member)
+                .leftJoin(member.rank, rank).fetchJoin()
+                .where(member.id.eq(id))
+                .fetchOne();
+    }
 }

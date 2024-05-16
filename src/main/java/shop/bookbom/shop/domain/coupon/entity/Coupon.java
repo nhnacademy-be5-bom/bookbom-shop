@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -54,9 +55,8 @@ public class Coupon {
     @OneToMany(mappedBy = "coupon")
     private List<CouponCategory> couponCategories;
 
-    @OneToMany(mappedBy = "coupon")
-    private List<OrderCoupon> orderCoupons = new ArrayList<>();
-
+    @OneToOne(mappedBy = "coupon")
+    private OrderCoupon orderCoupon;
 
     @Builder
     public Coupon(

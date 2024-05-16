@@ -11,13 +11,17 @@ import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
 
 public interface OrderRepositoryCustom {
     /**
-     * 주문 ID를 통해 상세조회를 하는 메서드입니다.
+     * 주문 ID를 통해 상세조회를 하여 DTO로 변환하여 반환해주는 메서드입니다.
      *
      * @param id 주문 ID
      * @return 조회된 주문 결과
      */
-    OrderDetailResponse getOrderById(Long id);
+    OrderDetailResponse getOrderDetailResponseById(Long id);
 
+    /**
+     * 주문 ID로 주문을 조회하는 메서드입니다.
+     */
+    Order getOrderFetchOrderBooksById(Long id);
     /**
      * 주문 관리를 위한 주문 내역을 불러오는 메서드입니다.
      *
@@ -38,4 +42,10 @@ public interface OrderRepositoryCustom {
      * @return 조회된 주문 리스트
      */
     List<Order> findAllOrdersById(List<Long> orderIds);
+
+    List<Order> getAllOrderBeforePayment();
+
+    List<Order> getAllOrderWaiting();
+
+    List<Order> getAllOrderDelivering();
 }

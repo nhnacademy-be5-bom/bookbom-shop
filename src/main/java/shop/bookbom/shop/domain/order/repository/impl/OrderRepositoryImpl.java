@@ -37,7 +37,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public OrderDetailResponse getOrderById(Long id) {
+    public OrderDetailResponse getOrderDetailResponseById(Long id) {
         Order orderResult = queryFactory.select(order)
                 .from(order)
                 .join(order.payment, payment).fetchJoin()
@@ -67,6 +67,22 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
 
         return OrderDetailResponse.of(orderResult, orderBooks);
+    }
+
+    @Override
+    public Order getOrderFetchOrderBooksById(Long id) {
+        Order result = queryFactory.select(order)
+                .from(order)
+                .join(order.orderBooks, orderBook).fetchJoin()
+                .join(orderBook.book, book).fetchJoin()
+                .join(order.payment, payment).fetchJoin()
+                .join(order.delivery, delivery).fetchJoin()
+                .where(order.id.eq(id))
+                .fetchOne();
+        if (result == null) {
+            throw new OrderNotFoundException();
+        }
+        return result;
     }
 
     @Override
@@ -142,5 +158,33 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
     private BooleanExpression orderDateMin(LocalDate orderDateMin) {
         return orderDateMin == null ? null : order.orderDate.goe(orderDateMin.atStartOfDay());
+    }
+
+    @Override
+    public List<Order> getAllOrderBeforePayment() {
+        return queryFactory.select(order)
+                .from(order)
+                //1L = "결제전"
+                .where(order.status.id.eq(1L))
+                .fetch();
+    }
+
+
+    @Override
+    public List<Order> getAllOrderWaiting() {
+        return queryFactory.select(order)
+                .from(order)
+                //2L = "대기"
+                .where(order.status.id.eq(2L))
+                .fetch();
+    }
+
+    @Override
+    public List<Order> getAllOrderDelivering() {
+        return queryFactory.select(order)
+                .from(order)
+                //3L = "배송중"
+                .where(order.status.id.eq(3L))
+                .fetch();
     }
 }

@@ -72,8 +72,11 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public CartUpdateResponse updateQuantity(Long id, int quantity) {
-        CartItem cartItem = cartItemRepository.findById(id)
+    public CartUpdateResponse updateQuantity(Long userId, Long bookId, int quantity) {
+        Cart cart = cartFindService.getCart(userId);
+        CartItem cartItem = cart.getCartItems().stream()
+                .filter(ci -> ci.getBook().getId().equals(bookId))
+                .findFirst()
                 .orElseThrow(CartItemNotFoundException::new);
         cartItem.updateQuantity(quantity);
         return CartUpdateResponse.builder()
@@ -83,8 +86,11 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void deleteItem(Long id) {
-        CartItem cartItem = cartItemRepository.findById(id)
+    public void deleteItem(Long userId, Long bookId) {
+        Cart cart = cartFindService.getCart(userId);
+        CartItem cartItem = cart.getCartItems().stream()
+                .filter(ci -> ci.getBook().getId().equals(bookId))
+                .findFirst()
                 .orElseThrow(CartItemNotFoundException::new);
         cartItemRepository.delete(cartItem);
     }

@@ -1,6 +1,7 @@
 package shop.bookbom.shop.common.exception;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import shop.bookbom.shop.common.CommonResponse;
@@ -20,5 +21,10 @@ public class GlobalExceptionHandler {
                 .getAllErrors()
                 .forEach(error -> sb.append(error.getDefaultMessage()).append(","));
         return CommonResponse.fail(ErrorCode.COMMON_INVALID_PARAMETER, sb.toString());
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public CommonResponse<Void> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        return CommonResponse.fail(ErrorCode.COMMON_INVALID_PARAMETER, e.getMessage());
     }
 }
