@@ -1,6 +1,8 @@
 package shop.bookbom.shop.domain.cart.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -115,7 +117,8 @@ class CartControllerTest {
     void updateQuantity() throws Exception {
         CartUpdateRequest request = getCartUpdateRequest();
         CartUpdateResponse response = getCartUpdateResponse();
-        when(cartService.updateQuantity(1L, 5)).thenReturn(response);
+        when(resolver.resolveArgument(any(), any(), any(), any())).thenReturn(new UserDto(1L));
+        when(cartService.updateQuantity(anyLong(), anyLong(), anyInt())).thenReturn(response);
         ResultActions perform = mockMvc.perform(put("/shop/carts/items/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
@@ -132,6 +135,7 @@ class CartControllerTest {
     @DisplayName("장바구니 상품 삭제")
     void deleteItem() throws Exception {
         ResultActions perform = mockMvc.perform(delete("/shop/carts/items/{id}", 1L));
+        when(resolver.resolveArgument(any(), any(), any(), any())).thenReturn(new UserDto(1L));
         perform
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
