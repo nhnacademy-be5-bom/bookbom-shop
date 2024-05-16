@@ -188,4 +188,5 @@ class AdminBookControllerTest {
                 .andExpect(jsonPath("$.result.numberOfElements").value(20))
                 .andExpect(jsonPath("$.result.totalElements").value(3433));
     }
+
 }
