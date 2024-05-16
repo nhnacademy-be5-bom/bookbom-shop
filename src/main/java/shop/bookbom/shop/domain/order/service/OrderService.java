@@ -59,4 +59,8 @@ public interface OrderService {
     Order getOrderByOrderNumber(String orderNumber);
 
     void recoverStock();
+
+    void changeToDeliverying();
+
+    void changeToComplete();
 }

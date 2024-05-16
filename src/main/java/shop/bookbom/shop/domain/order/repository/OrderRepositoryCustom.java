@@ -40,4 +40,8 @@ public interface OrderRepositoryCustom {
     List<Order> findAllOrdersById(List<Long> orderIds);
 
     List<Order> getAllOrderBeforePayment();
+
+    List<Order> getAllOrderWaiting();
+
+    List<Order> getAllOrderDelivering();
 }

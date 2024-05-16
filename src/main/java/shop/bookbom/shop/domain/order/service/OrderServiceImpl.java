@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -813,6 +814,38 @@ public class OrderServiceImpl implements OrderService {
                 orderRepository.delete(order);
             }
         }
+    }
+
+    @Transactional
+    @Override
+    public void changeToDeliverying() {
+        List<Order> orders = orderRepository.getAllOrderWaiting();
+        for (Order order : orders) {
+            if (ChronoUnit.DAYS.between(LocalDate.now(), order.getDelivery().getEstimatedDate()) <= 1) {
+                OrderStatus orderStatus = orderStatusRepository.findByName("배송중")
+                        .orElseThrow(OrderStatusNotFoundException::new);
+                order.updateStatus(orderStatus);
+                orderRepository.save(order);
+            }
+        }
+    }
+
+    @Transactional
+    @Override
+    public void changeToComplete() {
+        List<Order> orders = orderRepository.getAllOrderDelivering();
+        for (Order order : orders) {
+            Delivery delivery = order.getDelivery();
+            if (delivery.getEstimatedDate().equals(LocalDate.now())) {
+                OrderStatus orderStatus = orderStatusRepository.findByName("완료")
+                        .orElseThrow(OrderStatusNotFoundException::new);
+                order.updateStatus(orderStatus);
+                delivery.complete(LocalDate.now());
+                deliveryRepository.save(delivery);
+                orderRepository.save(order);
+            }
+        }
+
     }
 }
 

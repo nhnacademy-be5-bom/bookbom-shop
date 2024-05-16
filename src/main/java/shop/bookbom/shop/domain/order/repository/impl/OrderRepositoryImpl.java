@@ -148,7 +148,27 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     public List<Order> getAllOrderBeforePayment() {
         return queryFactory.select(order)
                 .from(order)
+                //1L = "결제전"
                 .where(order.status.id.eq(1L))
+                .fetch();
+    }
+
+
+    @Override
+    public List<Order> getAllOrderWaiting() {
+        return queryFactory.select(order)
+                .from(order)
+                //2L = "대기"
+                .where(order.status.id.eq(2L))
+                .fetch();
+    }
+
+    @Override
+    public List<Order> getAllOrderDelivering() {
+        return queryFactory.select(order)
+                .from(order)
+                //3L = "배송중"
+                .where(order.status.id.eq(3L))
                 .fetch();
     }
 }
