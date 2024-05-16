@@ -6,11 +6,11 @@ import shop.bookbom.shop.domain.couponpolicy.dto.request.CouponPolicyDeleteReque
 import shop.bookbom.shop.domain.couponpolicy.dto.CouponPolicyInfoDto;
 
 public interface CouponPolicyService {
-    void addCouponPolicy(CouponPolicyAddRequest request, Long userId);
+    void addCouponPolicy(CouponPolicyAddRequest request);
 
-    void deleteCouponPolicy(CouponPolicyDeleteRequest request, Long userId);
+    void deleteCouponPolicy(CouponPolicyDeleteRequest request);
 
-    void updateCouponPolicy(CouponPolicyInfoDto request, Long userId);
+    void updateCouponPolicy(CouponPolicyInfoDto request);
 
-    List<CouponPolicyInfoDto> getCouponPolicyInfo(Long userId);
+    List<CouponPolicyInfoDto> getCouponPolicyInfo();
 }

@@ -20,7 +20,7 @@ public class CouponPolicyServiceImpl implements CouponPolicyService {
     private final CouponPolicyRepository couponPolicyRepository;
 
     @Override
-    public void addCouponPolicy(CouponPolicyAddRequest request, Long userId) {
+    public void addCouponPolicy(CouponPolicyAddRequest request) {
         CouponPolicy couponPolicy = CouponPolicy.builder()
                 .discountType(request.getDiscountType())
                 .discountCost(request.getDiscountCost())
@@ -32,7 +32,7 @@ public class CouponPolicyServiceImpl implements CouponPolicyService {
     }
 
     @Override
-    public void deleteCouponPolicy(CouponPolicyDeleteRequest request, Long userId) {
+    public void deleteCouponPolicy(CouponPolicyDeleteRequest request) {
         CouponPolicy couponPolicy = couponPolicyRepository.findById(request.getCouponPolicyId())
                 .orElseThrow(CouponPolicyNotFoundException::new);
         //couponPolicy를 정책으로 하는 쿠폰이 있는 경우 삭제 금지
@@ -41,7 +41,7 @@ public class CouponPolicyServiceImpl implements CouponPolicyService {
     }
 
     @Override
-    public void updateCouponPolicy(CouponPolicyInfoDto request, Long userId) {
+    public void updateCouponPolicy(CouponPolicyInfoDto request) {
         couponPolicyRepository.findById(request.getCouponPolicyId())
                 .orElseThrow(CouponPolicyNotFoundException::new);
         couponPolicyRepository.updateCouponPolicyInfo(request);
@@ -49,7 +49,7 @@ public class CouponPolicyServiceImpl implements CouponPolicyService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CouponPolicyInfoDto> getCouponPolicyInfo(Long userId) {
+    public List<CouponPolicyInfoDto> getCouponPolicyInfo() {
         List<CouponPolicy> couponPolicyList = couponPolicyRepository.findAll();
         List<CouponPolicyInfoDto> policyInfoResponseList = new ArrayList<>();
         couponPolicyList.forEach(policy -> {
