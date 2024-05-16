@@ -69,10 +69,11 @@ public class CartController {
      */
     @PutMapping("/carts/items/{id}")
     public CommonResponse<CartUpdateResponse> updateQuantity(
+            @Login UserDto userDto,
             @PathVariable("id") Long id,
             @RequestBody @Valid CartUpdateRequest request
     ) {
-        return successWithData(cartService.updateQuantity(id, request.getQuantity()));
+        return successWithData(cartService.updateQuantity(userDto.getId(), id, request.getQuantity()));
     }
 
     /**
@@ -81,8 +82,8 @@ public class CartController {
      * @param id 장바구니 상품 ID
      */
     @DeleteMapping("/carts/items/{id}")
-    public CommonResponse<Void> deleteItem(@PathVariable("id") Long id) {
-        cartService.deleteItem(id);
+    public CommonResponse<Void> deleteItem(@Login UserDto userDto, @PathVariable("id") Long id) {
+        cartService.deleteItem(userDto.getId(), id);
         return success();
     }
 

@@ -27,16 +27,17 @@ public interface CartService {
     /**
      * 장바구니 상품 수량을 변경하는 메서드입니다.
      *
-     * @param id       장바구니 상품 ID
+     * @param userId   회원 ID
+     * @param bookId   장바구니 상품 ID
      * @param quantity 변경할 수량
      * @return 변경 완료된 수량
      */
-    CartUpdateResponse updateQuantity(Long id, int quantity);
+    CartUpdateResponse updateQuantity(Long userId, Long bookId, int quantity);
 
     /**
      * 장바구니 상품을 삭제하는 메서드입니다.
      *
-     * @param id 장바구니 상품 ID
+     * @param bookId 장바구니 상품 ID
      */
-    void deleteItem(Long id);
+    void deleteItem(Long userId, Long bookId);
 }

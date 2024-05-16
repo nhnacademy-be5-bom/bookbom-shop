@@ -20,11 +20,12 @@ import shop.bookbom.shop.annotation.Login;
 import shop.bookbom.shop.common.CommonResponse;
 import shop.bookbom.shop.common.exception.BaseException;
 import shop.bookbom.shop.common.exception.ErrorCode;
+import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
 import shop.bookbom.shop.domain.users.dto.UserDto;
 import shop.bookbom.shop.domain.users.dto.request.EmailPasswordDto;
-import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
+import shop.bookbom.shop.domain.users.dto.request.SetPasswordRequest;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.dto.response.UserIdRole;
 import shop.bookbom.shop.domain.users.service.UserService;
@@ -51,17 +52,6 @@ public class UserController {
         }
         Long userId = userService.save(userRequestDto);
         return CommonResponse.successWithData(userId);
-    }
-
-    /**
-     * UPDATE USER - 비밀번호 변경
-     *
-     * @param resetPasswordRequestDto : Long id, String password
-     */
-    @PatchMapping("/users/{id}/password")
-    public CommonResponse resetPassword(@RequestBody ResetPasswordRequestDto resetPasswordRequestDto) {
-        userService.resetPassword(resetPasswordRequestDto);
-        return CommonResponse.success();
     }
 
     /**
@@ -138,6 +128,15 @@ public class UserController {
         return CommonResponse.successWithData(userService.confirm(emailPasswordDto));
     }
 
+
+    @PostMapping("/open/users/edit/pw")
+    public CommonResponse editPassword(@Login UserDto userDto,
+                                       @RequestBody SetPasswordRequest setPasswordRequest) {
+        log.info(setPasswordRequest.toString());
+        userService.editPw(userDto.getId(), setPasswordRequest);
+        return CommonResponse.success();
+    }
+
     @PostMapping("/open/users/detail")
     public CommonResponse<UserIdRole> getIdRole(@RequestBody EmailPasswordDto emailPasswordDto,
                                                 BindingResult bindingResult) {
@@ -148,5 +147,10 @@ public class UserController {
         CommonResponse<UserIdRole> userIdRoleCommonResponse =
                 CommonResponse.successWithData(userService.getIdRole(emailPasswordDto));
         return userIdRoleCommonResponse;
+    }
+
+    @GetMapping("/users/my-page")
+    public CommonResponse<MemberInfoResponse> getMyPage(@Login UserDto userDto) {
+        return CommonResponse.successWithData(userService.getMyPage(userDto.getId()));
     }
 }

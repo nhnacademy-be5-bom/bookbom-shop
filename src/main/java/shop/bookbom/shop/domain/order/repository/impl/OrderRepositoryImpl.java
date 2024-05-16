@@ -37,7 +37,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public OrderDetailResponse getOrderById(Long id) {
+    public OrderDetailResponse getOrderDetailResponseById(Long id) {
         Order orderResult = queryFactory.select(order)
                 .from(order)
                 .join(order.payment, payment).fetchJoin()
@@ -67,6 +67,22 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
 
         return OrderDetailResponse.of(orderResult, orderBooks);
+    }
+
+    @Override
+    public Order getOrderFetchOrderBooksById(Long id) {
+        Order result = queryFactory.select(order)
+                .from(order)
+                .join(order.orderBooks, orderBook).fetchJoin()
+                .join(orderBook.book, book).fetchJoin()
+                .join(order.payment, payment).fetchJoin()
+                .join(order.delivery, delivery).fetchJoin()
+                .where(order.id.eq(id))
+                .fetchOne();
+        if (result == null) {
+            throw new OrderNotFoundException();
+        }
+        return result;
     }
 
     @Override

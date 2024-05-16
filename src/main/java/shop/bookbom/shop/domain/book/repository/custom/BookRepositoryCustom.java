@@ -92,4 +92,6 @@ public interface BookRepositoryCustom {
                                                                     Pageable pageable);
 
     Page<BookSearchResponse> getPageableListBookMediumInfosOrderByDate(Pageable pageable);
+
+    Page<BookSearchResponse> getPageableListBookSearchInfosByTitle(String keyword, Pageable pageable);
 }
