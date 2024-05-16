@@ -40,4 +40,8 @@ public class ReviewImage {
         this.review = review;
         this.file = file;
     }
+
+    public void updateReview(Review review) {
+        this.review = review;
+    }
 }
