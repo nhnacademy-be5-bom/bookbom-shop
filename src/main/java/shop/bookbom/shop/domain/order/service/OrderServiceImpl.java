@@ -783,5 +783,33 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(OrderNotFoundException::new);
         return order;
     }
+
+    @Override
+    @Transactional
+    public void recoverStock() {
+        List<Order> orders = orderRepository.getAllOrderBeforePayment();
+        if (orders.isEmpty()) {
+            return;
+        }
+        for (Order order : orders) {
+            if (LocalDateTime.now().minusMinutes(10).isAfter(order.getOrderDate())) {
+                List<OrderBook> orderBooks = order.getOrderBooks();
+                for (OrderBook orderBook : orderBooks) {
+                    Book book = bookRepository.findById(orderBook.getBook().getId())
+                            .orElseThrow(BookNotFoundException::new);
+                    book.updateStock(book.getStock() + orderBook.getQuantity());
+                    if (book.getStatus().equals(BookStatus.SOLD_OUT)) {
+                        book.updateStatus(BookStatus.FOR_SALE);
+                    }
+                    bookRepository.save(book);
+                }
+//                Delivery delivery = order.getDelivery();
+//                DeliveryAddress deliveryAddress = delivery.getDeliveryAddress();
+//                deliveryAddressRepository.delete(deliveryAddress);
+//                deliveryRepository.delete(delivery);
+                orderRepository.delete(order);
+            }
+        }
+    }
 }
 
