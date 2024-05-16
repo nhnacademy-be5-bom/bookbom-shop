@@ -58,7 +58,6 @@ public class Coupon {
     @OneToOne(mappedBy = "coupon")
     private OrderCoupon orderCoupon;
 
-
     @Builder
     public Coupon(
             String name,

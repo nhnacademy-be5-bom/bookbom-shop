@@ -17,6 +17,7 @@ import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.order.entity.Order;
 import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
+import shop.bookbom.shop.domain.users.entity.QUser;
 import shop.bookbom.shop.domain.users.entity.User;
 import shop.bookbom.shop.domain.users.repository.UserRepositoryCustom;
 
