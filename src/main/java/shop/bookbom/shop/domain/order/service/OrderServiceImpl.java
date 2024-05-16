@@ -9,8 +9,8 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,18 +21,31 @@ import shop.bookbom.shop.domain.book.entity.BookStatus;
 import shop.bookbom.shop.domain.book.exception.BookNotForSaleException;
 import shop.bookbom.shop.domain.book.exception.BookNotFoundException;
 import shop.bookbom.shop.domain.book.repository.BookRepository;
+import shop.bookbom.shop.domain.bookcategory.repository.BookCategoryRepository;
 import shop.bookbom.shop.domain.bookfile.repository.BookFileRepository;
+import shop.bookbom.shop.domain.coupon.entity.Coupon;
+import shop.bookbom.shop.domain.coupon.entity.CouponType;
+import shop.bookbom.shop.domain.coupon.exception.CouponNotFoundException;
+import shop.bookbom.shop.domain.coupon.repository.CouponRepository;
 import shop.bookbom.shop.domain.delivery.entity.Delivery;
 import shop.bookbom.shop.domain.delivery.repository.DeliveryRepository;
 import shop.bookbom.shop.domain.deliveryaddress.entity.DeliveryAddress;
 import shop.bookbom.shop.domain.deliveryaddress.repository.DeliveryAddressRepository;
+import shop.bookbom.shop.domain.member.entity.Member;
+import shop.bookbom.shop.domain.member.exception.MemberNotFoundException;
+import shop.bookbom.shop.domain.member.repository.MemberRepository;
+import shop.bookbom.shop.domain.membercoupon.dto.MemberCouponDto;
+import shop.bookbom.shop.domain.membercoupon.exception.MemberCouponNotFoundException;
+import shop.bookbom.shop.domain.membercoupon.repository.MemberCouponRepository;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequest;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
 import shop.bookbom.shop.domain.order.dto.request.OpenOrderRequest;
+import shop.bookbom.shop.domain.order.dto.request.OrderRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectBookRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderBookResponse;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OpenWrapperSelectResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderDetailResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
 import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
@@ -45,6 +58,8 @@ import shop.bookbom.shop.domain.order.repository.OrderRepository;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBookStatus;
 import shop.bookbom.shop.domain.orderbook.repository.OrderBookRepository;
+import shop.bookbom.shop.domain.ordercoupon.entity.OrderCoupon;
+import shop.bookbom.shop.domain.ordercoupon.repository.OrderCouponRepository;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
 import shop.bookbom.shop.domain.orderstatus.exception.OrderStatusNotFoundException;
 import shop.bookbom.shop.domain.orderstatus.repository.OrderStatusRepository;
@@ -52,6 +67,7 @@ import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.role.repository.RoleRepository;
 import shop.bookbom.shop.domain.users.entity.User;
 import shop.bookbom.shop.domain.users.exception.RoleNotFoundException;
+import shop.bookbom.shop.domain.users.exception.UserNotFoundException;
 import shop.bookbom.shop.domain.users.repository.UserRepository;
 import shop.bookbom.shop.domain.wrapper.dto.WrapperDto;
 import shop.bookbom.shop.domain.wrapper.entity.Wrapper;
@@ -71,7 +87,11 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final DeliveryRepository deliveryRepository;
     private final OrderBookRepository orderBookRepository;
-    private final EntityManager em;
+    private final MemberRepository memberRepository;
+    private final MemberCouponRepository memberCouponRepository;
+    private final BookCategoryRepository bookCategoryRepository;
+    private final OrderCouponRepository orderCouponRepository;
+    private final CouponRepository couponRepository;
 
     /**
      * 주문 전에 bookId로 책 정보를 불러오고 포장지 전체 List를 받아오는 메소드
@@ -119,11 +139,11 @@ public class OrderServiceImpl implements OrderService {
      *
      * @param
      * @param wrapperSelectRequest(책정보와 선택한 포장지 의 List와 전체 주문 갯수)
-     * @return 포장지 선택 request 와 userId를 내보냄
+     * @return 포장지 선택 request
      */
     @Override
     @Transactional
-    public WrapperSelectResponse selectWrapper(WrapperSelectRequest wrapperSelectRequest) {
+    public OpenWrapperSelectResponse selectWrapper(WrapperSelectRequest wrapperSelectRequest) {
         int totalOrderCount = 0;
         int wrapCost = 0;
         //request을 가져와서 총 주문 갯수와 포장지 선택 리스트를 받아옴
@@ -152,13 +172,138 @@ public class OrderServiceImpl implements OrderService {
         //배송 예정일 리스트 생성
         List<String> estimatedDateList = createEstimatedDateList();
 
-        return WrapperSelectResponse.builder()
+        return OpenWrapperSelectResponse.builder()
                 .totalOrderCount(totalOrderCount)
                 .wrapperSelectResponseList(wrapperSelectBookResponseList)
                 .estimatedDateList(estimatedDateList)
                 .deliveryCost(5000)
                 .wrapCost(wrapCost)
                 .build();
+    }
+
+    /**
+     * 포장지 선택 정보를 처리하는 메소드 - 회원
+     *
+     * @param wrapperSelectRequest
+     * @return 주문서에 필요한 데이터들을 넘겨줌
+     */
+    @Override
+    @Transactional
+    public WrapperSelectResponse selectWrapperForMember(WrapperSelectRequest wrapperSelectRequest, Long userId) {
+        int totalOrderCount = 0;
+        int wrapCost = 0;
+        int totalBookCost = 0;
+
+        //request을 가져와서 총 주문 갯수와 포장지 선택 리스트를 받아옴
+        //포장지 셀렉 응답 리스트를 만듬
+        List<WrapperSelectBookResponse> wrapperSelectBookResponseList = new ArrayList<>();
+        for (WrapperSelectBookRequest selectBookRequest : wrapperSelectRequest.getWrapperSelectBookRequestList()) {
+            BeforeOrderBookResponse bookDetailInfo =
+                    getBookDetailInfo(selectBookRequest.getBookId(), selectBookRequest.getQuantity());
+            WrapperSelectBookResponse wrapperSelectBookResponse =
+                    WrapperSelectBookResponse.builder()
+                            .bookId(bookDetailInfo.getBookId())
+                            .bookTitle(bookDetailInfo.getTitle())
+                            .cost(bookDetailInfo.getCost())
+                            .discountCost(bookDetailInfo.getDiscountCost())
+                            .imgUrl(bookDetailInfo.getImageUrl())
+                            .quantity(bookDetailInfo.getQuantity())
+                            .wrapperName(selectBookRequest.getWrapperName())
+                            .build();
+
+            wrapperSelectBookResponseList.add(wrapperSelectBookResponse);
+            totalOrderCount += bookDetailInfo.getQuantity();
+            Integer costByName = wrapperRepository.getCostByName(selectBookRequest.getWrapperName());
+            wrapCost += costByName * bookDetailInfo.getQuantity();
+            totalBookCost += bookDetailInfo.getDiscountCost() * bookDetailInfo.getQuantity();
+
+        }
+        //배송 예정일 리스트 생성
+        List<String> estimatedDateList = createEstimatedDateList();
+        //회원 포인트 가져옴
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(MemberNotFoundException::new);
+        int point = member.getPoint();
+        //회원이 가진 쿠폰 가지고옴
+        List<MemberCouponDto> memberCoupons = memberCouponRepository.getAllMemberCoupons(member.getId());
+
+
+        //회원이 사용할 수 있는 쿠폰리스트, 사용할 수 없는 쿠폰리스트를 나눔
+        List<MemberCouponDto> availableMemberCoupons = new ArrayList<>();
+        List<MemberCouponDto> unavailableMemberCoupons = new ArrayList<>();
+        for (MemberCouponDto memberCouponDto : memberCoupons) {
+            //쿠폰이 제너럴 타입일 때
+            if (memberCouponDto.getCouponDto().getType().equals(CouponType.GENERAL)) {
+                if (totalBookCost > memberCouponDto.getCouponDto().getMinOrderCost()) {
+                    availableMemberCoupons.add(memberCouponDto);
+                } else {
+                    unavailableMemberCoupons.add(memberCouponDto);
+                }
+            }
+            //쿠폰이 책타입일 때
+            else if (memberCouponDto.getCouponDto().getType().equals(CouponType.BOOK)) {
+                boolean isSameBookId = false;
+                for (WrapperSelectBookRequest selectBookRequest : wrapperSelectRequest.getWrapperSelectBookRequestList()) {
+                    for (int i = 0; i < memberCouponDto.getCouponDto().getCouponBooks().size(); i++) {
+                        if (Objects.equals(selectBookRequest.getBookId(),
+                                memberCouponDto.getCouponDto().getCouponBooks().get(i).getBookId())) {
+                            isSameBookId = true;
+                            break;
+                        }
+                    }
+                    if (isSameBookId) {
+                        break;
+                    }
+                }
+                if (isSameBookId) {
+                    availableMemberCoupons.add(memberCouponDto);
+                } else {
+                    unavailableMemberCoupons.add(memberCouponDto);
+                }
+            }
+            //쿠폰이 카테고리타입일 때
+            else if (memberCouponDto.getCouponDto().getType().equals(CouponType.CATEGORY)) {
+                boolean isSameCategoryId = false;
+                for (WrapperSelectBookRequest selectBookRequest : wrapperSelectRequest.getWrapperSelectBookRequestList()) {
+                    List<Long> categoryIdByBookIdList =
+                            bookCategoryRepository.getCategoryIdByBookId(selectBookRequest.getBookId());
+                    for (Long categoryIdByBookId : categoryIdByBookIdList) {
+                        for (int i = 0; i < memberCouponDto.getCouponDto().getCouponCategories().size(); i++) {
+                            Long categoryId =
+                                    memberCouponDto.getCouponDto().getCouponCategories().get(i).getCategoryId();
+                            if (Objects.equals(categoryIdByBookId, categoryId)) {
+                                availableMemberCoupons.add(memberCouponDto);
+                                isSameCategoryId = true;
+                                break;
+                            }
+                        }
+                        if (isSameCategoryId) {
+                            break;
+                        }
+                    }
+                    if (isSameCategoryId) {
+                        break;
+                    }
+                }
+                // 모든 카테고리를 확인한 후에도 isSameCategoryId가 false이면 쿠폰을 사용 불가능한 목록에 추가합니다.
+                if (!isSameCategoryId) {
+                    unavailableMemberCoupons.add(memberCouponDto);
+                }
+            } else {
+                throw new MemberCouponNotFoundException();
+            }
+        }
+
+
+        return WrapperSelectResponse.builder().totalOrderCount(totalOrderCount)
+                .wrapperSelectResponseList(wrapperSelectBookResponseList)
+                .estimatedDateList(estimatedDateList)
+                .wrapCost(wrapCost)
+                .point(point)
+                .availableMemberCoupons(availableMemberCoupons)
+                .unavailableMemberCoupons(unavailableMemberCoupons)
+                .build();
+
     }
 
     /**
@@ -173,11 +318,11 @@ public class OrderServiceImpl implements OrderService {
         //비회원 주문자 정보 저장
         User user = saveUserInfo(openOrderRequest);
         //주문 정보 저장
-        Order order = saveOrder(openOrderRequest, user);
+        Order order = saveOpenOrder(openOrderRequest, user);
         //배송 관련 정보 저장
-        saveDeliveryInfo(openOrderRequest, order);
+        saveOpenDeliveryInfo(openOrderRequest, order);
         //주문 책 정보 저장
-        saveOrderBookInfo(openOrderRequest, order);
+        saveOrderBookInfo(openOrderRequest.getWrapperSelectRequestList(), order);
         //재고체크 후 재고 감소
         for (WrapperSelectBookRequest bookRequest : openOrderRequest.getWrapperSelectRequestList()) {
             checkStock(bookRequest.getBookId(), bookRequest.getQuantity());
@@ -190,6 +335,39 @@ public class OrderServiceImpl implements OrderService {
                 .amount(order.getTotalCost())
                 .build();
     }
+
+    /**
+     * 회원 주문 처리 메소드(주문, 주문책, 주문쿠폰, 배송 정보저장)
+     *
+     * @param orderRequest
+     * @param userId
+     * @return
+     */
+    @Override
+    public OrderResponse processOrder(OrderRequest orderRequest, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+        Order order = saveOrder(orderRequest, user);
+        saveDeliveryInfo(orderRequest, order);
+        saveOrderBookInfo(orderRequest.getWrapperSelectRequestList(), order);
+        if (orderRequest.getCouponId() != 0) {
+            saveOrderCouponInfo(order, orderRequest.getCouponId());
+        }
+        //재고체크 후 재고 감소
+        for (WrapperSelectBookRequest bookRequest : orderRequest.getWrapperSelectRequestList()) {
+            checkStock(bookRequest.getBookId(), bookRequest.getQuantity());
+            decreaseStock(bookRequest.getBookId(), bookRequest.getQuantity());
+        }
+        //결제금액이 0원일 경우
+        if (orderRequest.getTotalCost() == 0) {
+
+        }
+        return OrderResponse.builder().orderId(order.getOrderNumber())
+                .orderName(order.getOrderInfo())
+                .amount(order.getTotalCost())
+                .build();
+    }
+
 
     /**
      * 영어 요일을 한글로 바꿔주는 메소드 ex) monday -> 월
@@ -298,7 +476,7 @@ public class OrderServiceImpl implements OrderService {
      * @param openOrderRequest
      * @param order
      */
-    private void saveDeliveryInfo(OpenOrderRequest openOrderRequest, Order order) {
+    private void saveOpenDeliveryInfo(OpenOrderRequest openOrderRequest, Order order) {
         //delivery address 빌더
         DeliveryAddress deliveryAddress = DeliveryAddress.builder().zipCode(openOrderRequest.getZipCode())
                 .deliveryAddress(openOrderRequest.getDeliveryAddress())
@@ -309,15 +487,22 @@ public class OrderServiceImpl implements OrderService {
 
         //string의 배송예정일을 localdate로 변환
         String estimatedDateToString = openOrderRequest.getEstimatedDateTostring();
-        String[] parts = estimatedDateToString.split("[()]");
-        String[] dateParts = parts[1].split("/");
+        LocalDate estimatedDate;
+        //선택안함일 때
+        if (estimatedDateToString.equals("none")) {
+            estimatedDate = LocalDate.now().plusDays(1);
+        } else {
+            String[] parts = estimatedDateToString.split("[()]");
+            String[] dateParts = parts[1].split("/");
 
-        // 월과 일 추출
-        int month = Integer.parseInt(dateParts[0]);
-        int day = Integer.parseInt(dateParts[1]);
+            // 월과 일 추출
+            int month = Integer.parseInt(dateParts[0]);
+            int day = Integer.parseInt(dateParts[1]);
 
-        // LocalDate 생성
-        LocalDate estimatedDate = LocalDate.of(LocalDate.now().getYear(), Month.of(month), day);
+            // LocalDate 생성
+            estimatedDate = LocalDate.of(LocalDate.now().getYear(), Month.of(month), day);
+        }
+
         //delivery 빌더
         Delivery delivery = Delivery.builder().order(order)
                 .name(openOrderRequest.getName())
@@ -331,13 +516,59 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * 회원 배송 정보 저장
+     *
+     * @param orderRequest
+     * @param order
+     */
+    private void saveDeliveryInfo(OrderRequest orderRequest, Order order) {
+        //delivery address 빌더
+        DeliveryAddress deliveryAddress = DeliveryAddress.builder().zipCode(orderRequest.getZipCode())
+                .deliveryAddress(orderRequest.getDeliveryAddress())
+                .addressDetail(orderRequest.getAddressDetail())
+                .build();
+        // 저장
+        deliveryAddressRepository.save(deliveryAddress);
+
+        //string의 배송예정일을 localdate로 변환
+        String estimatedDateToString = orderRequest.getEstimatedDateTostring();
+        LocalDate estimatedDate;
+        //선택안함일 때
+        if (estimatedDateToString.equals("none")) {
+            estimatedDate = LocalDate.now().plusDays(1);
+        } else {
+            String[] parts = estimatedDateToString.split("[()]");
+            String[] dateParts = parts[1].split("/");
+
+            // 월과 일 추출
+            int month = Integer.parseInt(dateParts[0]);
+            int day = Integer.parseInt(dateParts[1]);
+
+            // LocalDate 생성
+            estimatedDate = LocalDate.of(LocalDate.now().getYear(), Month.of(month), day);
+        }
+
+        //delivery 빌더
+        Delivery delivery = Delivery.builder().order(order)
+                .name(orderRequest.getName())
+                .phoneNumber(orderRequest.getPhoneNumber())
+                .cost(orderRequest.getDeliveryCost())
+                .estimatedDate(estimatedDate)
+                .deliveryAddress(deliveryAddress)
+                .build();
+        //저장
+        deliveryRepository.save(delivery);
+    }
+
+
+    /**
      * 주문 정보 저장
      *
      * @param openOrderRequest
      * @param user
      * @return order
      */
-    private Order saveOrder(OpenOrderRequest openOrderRequest, User user) {
+    private Order saveOpenOrder(OpenOrderRequest openOrderRequest, User user) {
         //uuid로 랜덤 32자리 주문 번호 생성
         UUID uuid = UUID.randomUUID();
         String orderNumber = uuid.toString().replaceAll("-", "");
@@ -357,7 +588,7 @@ public class OrderServiceImpl implements OrderService {
         OrderStatus orderStatus = orderStatusRepository.findByName("결제전")
                 .orElseThrow(OrderStatusNotFoundException::new);
         //order 빌더
-        Order order = Order.builder().orderNumber(orderNumber)
+        return Order.builder().orderNumber(orderNumber)
                 .orderInfo(orderInfo)
                 .orderDate(LocalDateTime.now())
                 .senderName(openOrderRequest.getName())
@@ -365,6 +596,49 @@ public class OrderServiceImpl implements OrderService {
                 .totalCost(openOrderRequest.getTotalCost())
                 .discountCost(openOrderRequest.getDiscountCost())
                 .usedPoint(0)
+                .usedCouponCost(0)
+                .user(user)
+                .status(orderStatus)
+                .build();
+
+    }
+
+    /**
+     * 회원 주문 저장
+     *
+     * @param orderRequest
+     * @param user
+     * @return
+     */
+    private Order saveOrder(OrderRequest orderRequest, User user) {
+        //uuid로 랜덤 32자리 주문 번호 생성
+        UUID uuid = UUID.randomUUID();
+        String orderNumber = uuid.toString().replaceAll("-", "");
+
+        int totalOrderCount = 0;
+        for (WrapperSelectBookRequest bookrequest : orderRequest.getWrapperSelectRequestList()) {
+            totalOrderCount += bookrequest.getQuantity();
+        }
+        //request의 bookid로 책 찾음
+        Book book = bookRepository.findById(orderRequest.getWrapperSelectRequestList().get(0).getBookId())
+                .orElseThrow(BookNotFoundException::new);
+        //주문 이름 생성
+        String orderInfo =
+                book.getTitle() + " 외 " + String.valueOf(orderRequest.getWrapperSelectRequestList().size() - 1) +
+                        "건";
+        //주문상태 = "결제전"
+        OrderStatus orderStatus = orderStatusRepository.findByName("결제전")
+                .orElseThrow(OrderStatusNotFoundException::new);
+        //order 빌더
+        Order order = Order.builder().orderNumber(orderNumber)
+                .orderInfo(orderInfo)
+                .orderDate(LocalDateTime.now())
+                .senderName(orderRequest.getName())
+                .senderPhoneNumber(orderRequest.getPhoneNumber())
+                .totalCost(orderRequest.getTotalCost())
+                .discountCost(orderRequest.getDiscountCost())
+                .usedPoint(orderRequest.getUsedPoint())
+                .usedCouponCost(orderRequest.getUsedCouponCost())
                 .user(user)
                 .status(orderStatus)
                 .build();
@@ -379,7 +653,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     private User saveUserInfo(OpenOrderRequest openOrderRequest) {
-        Role role = roleRepository.findByName("비회원")
+        Role role = roleRepository.findById(1L)
                 .orElseThrow(RoleNotFoundException::new);
         //user 빌더
         User user = User.builder().email(openOrderRequest.getEmail())
@@ -394,12 +668,12 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 주문책 저장
      *
-     * @param openOrderRequest
+     * @param
      * @param order
      */
-    private void saveOrderBookInfo(OpenOrderRequest openOrderRequest, Order order) {
+    private void saveOrderBookInfo(List<WrapperSelectBookRequest> bookRequests, Order order) {
 
-        for (WrapperSelectBookRequest bookRequest : openOrderRequest.getWrapperSelectRequestList()) {
+        for (WrapperSelectBookRequest bookRequest : bookRequests) {
             Book book = bookRepository.findById(bookRequest.getBookId())
                     .orElseThrow(BookNotFoundException::new);
             Wrapper wrapper = wrapperRepository.findByName(bookRequest.getWrapperName())
@@ -423,6 +697,7 @@ public class OrderServiceImpl implements OrderService {
 
         }
     }
+
 
     /**
      * 재고 감소 메소드
@@ -448,6 +723,22 @@ public class OrderServiceImpl implements OrderService {
         book.updateStock(NowStock);
 
         bookRepository.save(book);
+    }
+
+    /**
+     * 주문 쿠폰 테이블 저장
+     *
+     * @param order
+     * @param couponId
+     */
+    private void saveOrderCouponInfo(Order order, Long couponId) {
+
+        Coupon coupon = couponRepository.findById(couponId)
+                .orElseThrow(CouponNotFoundException::new);
+        OrderCoupon orderCoupon = OrderCoupon.builder().order(order)
+                .coupon(coupon)
+                .build();
+        orderCouponRepository.save(orderCoupon);
     }
 
     @Override
@@ -480,6 +771,20 @@ public class OrderServiceImpl implements OrderService {
                 o.getDelivery().complete(LocalDate.now());
             }
         });
+    }
+
+    /**
+     * 주문 넘버로 주문 조회
+     *
+     * @param orderNumber
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Order getOrderByOrderNumber(String orderNumber) {
+        Order order = orderRepository.findByOrderNumber(orderNumber)
+                .orElseThrow(OrderNotFoundException::new);
+        return order;
     }
 }
 

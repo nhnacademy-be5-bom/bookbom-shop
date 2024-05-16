@@ -1,15 +1,25 @@
 package shop.bookbom.shop.domain.member.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.address.entity.Address;
 import shop.bookbom.shop.domain.address.repository.AddressRepository;
 import shop.bookbom.shop.domain.member.dto.request.SignUpRequest;
+import shop.bookbom.shop.domain.deletereason.entity.DeleteReason;
+import shop.bookbom.shop.domain.deletereason.repository.DeleteReasonRepository;
+import shop.bookbom.shop.domain.deletereasoncategory.entity.DeleteReasonCategory;
+import shop.bookbom.shop.domain.deletereasoncategory.repository.DeleteReasonCategoryRepository;
+import shop.bookbom.shop.domain.member.dto.request.WithDrawDTO;
 import shop.bookbom.shop.domain.member.dto.response.MemberInfoResponse;
 import shop.bookbom.shop.domain.member.entity.Member;
+import shop.bookbom.shop.domain.member.exception.MemberNotFoundException;
+import shop.bookbom.shop.domain.member.entity.Member;
 import shop.bookbom.shop.domain.member.entity.MemberStatus;
+import shop.bookbom.shop.domain.member.exception.MemberNotFoundException;
 import shop.bookbom.shop.domain.member.repository.MemberRepository;
 import shop.bookbom.shop.domain.member.service.MemberService;
 import shop.bookbom.shop.domain.pointhistory.entity.ChangeReason;
@@ -37,10 +47,19 @@ public class MemberServiceImpl implements MemberService {
     private final RankRepository rankRepository;
     private final PointHistoryRepository pointHistoryRepository;
     private final PointRateRepository pointRateRepository;
+    private final DeleteReasonCategoryRepository deleteReasonCategoryRepository;
+    private final DeleteReasonRepository deleteReasonRepository;
 
     @Transactional(readOnly = true)
     public MemberInfoResponse getMemberInfo(Long id) {
         return memberRepository.findMemberInfo(id);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Member getMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
     }
 
     @Override
@@ -84,6 +103,27 @@ public class MemberServiceImpl implements MemberService {
                 .build();
         addressRepository.save(address);
     }
+
+    @Transactional
+    @Override
+    public void deleteMember(Long memberId, WithDrawDTO withDrawDTO) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+        List<DeleteReasonCategory> memberIds = new ArrayList<>();
+        for(int i = 0; i < withDrawDTO.getReasons().size(); i++){
+            memberIds.add(deleteReasonCategoryRepository.findByName(withDrawDTO.getReasons().get(i)));
+        }
+        for (DeleteReasonCategory id : memberIds) {
+            DeleteReason deleteReason = DeleteReason.builder()
+                    .member(member)
+                    .deleteReasonCategory(id)
+                    .build();
+            deleteReasonRepository.save(deleteReason);
+        }
+        member.setStatus(MemberStatus.DELETED);
+        memberRepository.save(member);
+    }
+
 
     @Override
     @Transactional(readOnly = true)
