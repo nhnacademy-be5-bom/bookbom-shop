@@ -1,6 +1,8 @@
 package shop.bookbom.shop.domain.rank.repository;
 
+import com.querydsl.core.Tuple;
 import java.util.List;
+import shop.bookbom.shop.domain.rank.dto.response.RankResponse;
 import shop.bookbom.shop.domain.rank.entity.Rank;
 
 public interface RankRepositoryCustom {
@@ -17,5 +19,5 @@ public interface RankRepositoryCustom {
      *
      * @return Rank 엔티티 리스트
      */
-    List<Rank> getAllRankFetchPointRate();
+    List<RankResponse> getAllRankFetchPointRate();
 }

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.bookbom.shop.domain.address.entity.Address;
@@ -30,12 +31,14 @@ import shop.bookbom.shop.domain.pointhistory.repository.PointHistoryRepository;
 import shop.bookbom.shop.domain.pointrate.entity.PointRate;
 import shop.bookbom.shop.domain.pointrate.exception.PointRateNotFoundException;
 import shop.bookbom.shop.domain.pointrate.repository.PointRateRepository;
+import shop.bookbom.shop.domain.rank.dto.response.RankResponse;
 import shop.bookbom.shop.domain.rank.entity.Rank;
 import shop.bookbom.shop.domain.rank.exception.RankNotFoundException;
 import shop.bookbom.shop.domain.rank.repository.RankRepository;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.role.repository.RoleRepository;
 import shop.bookbom.shop.domain.users.exception.RoleNotFoundException;
+import shop.bookbom.shop.domain.users.exception.UserNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -136,12 +139,14 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional(readOnly = true)
     public MemberRankResponse getUserRank(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
-        Rank userRank = rankRepository.findById(member.getRank().getId()).orElseThrow(RankNotFoundException::new);
-        List<Rank> ranks = rankRepository.getAllRankFetchPointRate();
+        Member member = memberRepository.findMemberByIdFetchRank(id);
+        if(member == null){
+            throw new UserNotFoundException();
+        }
+        List<RankResponse> ranks = rankRepository.getAllRankFetchPointRate();
         return MemberRankResponse.builder()
                 .nickname(member.getNickname())
-                .userrank(userRank.getName())
+                .userrank(member.getRank().getName())
                 .ranks(ranks)
                 .build();
     }
