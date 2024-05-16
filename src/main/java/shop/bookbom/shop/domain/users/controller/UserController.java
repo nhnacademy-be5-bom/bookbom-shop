@@ -24,7 +24,7 @@ import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
 import shop.bookbom.shop.domain.users.dto.UserDto;
 import shop.bookbom.shop.domain.users.dto.request.EmailPasswordDto;
-import shop.bookbom.shop.domain.users.dto.request.ResetPasswordRequestDto;
+import shop.bookbom.shop.domain.users.dto.request.SetPasswordRequest;
 import shop.bookbom.shop.domain.users.dto.request.UserRequestDto;
 import shop.bookbom.shop.domain.users.dto.response.UserIdRole;
 import shop.bookbom.shop.domain.users.service.UserService;
@@ -51,17 +51,6 @@ public class UserController {
         }
         Long userId = userService.save(userRequestDto);
         return CommonResponse.successWithData(userId);
-    }
-
-    /**
-     * UPDATE USER - 비밀번호 변경
-     *
-     * @param resetPasswordRequestDto : Long id, String password
-     */
-    @PatchMapping("/users/{id}/password")
-    public CommonResponse resetPassword(@RequestBody ResetPasswordRequestDto resetPasswordRequestDto) {
-        userService.resetPassword(resetPasswordRequestDto);
-        return CommonResponse.success();
     }
 
     /**
@@ -136,6 +125,15 @@ public class UserController {
             throw new BaseException(ErrorCode.COMMON_INVALID_PARAMETER);
         }
         return CommonResponse.successWithData(userService.confirm(emailPasswordDto));
+    }
+
+
+    @PostMapping("/open/users/edit/pw")
+    public CommonResponse editPassword(@Login UserDto userDto,
+                                       @RequestBody SetPasswordRequest setPasswordRequest) {
+        log.info(setPasswordRequest.toString());
+        userService.editPw(userDto.getId(), setPasswordRequest);
+        return CommonResponse.success();
     }
 
     @PostMapping("/open/users/detail")
