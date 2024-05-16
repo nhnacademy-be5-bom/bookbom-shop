@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -126,8 +125,7 @@ public class CouponServiceImpl implements CouponService {
         Coupon coupon = couponRepository.findById(issueCouponRequest.getCouponId())
                 .orElseThrow(CouponNotFoundException::new);
         issueCouponRequest.getUserEmailList().forEach(email -> {
-            Long userId = userRepository.findIdByEmail(email);
-            Member member = memberRepository.findById(userId)
+            Member member = memberRepository.findByEmail(email)
                     .orElseThrow(MemberNotFoundException::new);
             //같은 쿠폰을 가지고 있을 때 예외처리?
             MemberCoupon memberCoupon = MemberCoupon.builder()
@@ -146,8 +144,7 @@ public class CouponServiceImpl implements CouponService {
         //welcom coupon id 2로 가정
         Coupon welcomCoupon = couponRepository.findById(2L)
                 .orElseThrow(CouponNotFoundException::new);
-        Long userId = userRepository.findIdByEmail(email);
-        Member member = memberRepository.findById(userId)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
         MemberCoupon memberCoupon = MemberCoupon.builder()
                 .status(CouponStatus.NEW)
