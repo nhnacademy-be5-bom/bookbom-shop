@@ -8,9 +8,11 @@ import static shop.bookbom.shop.domain.bookfiletype.entity.QBookFileType.bookFil
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +35,7 @@ import shop.bookbom.shop.domain.bookfile.entity.QBookFile;
 import shop.bookbom.shop.domain.bookfiletype.entity.QBookFileType;
 import shop.bookbom.shop.domain.booktag.entity.QBookTag;
 import shop.bookbom.shop.domain.category.entity.QCategory;
+import shop.bookbom.shop.domain.category.entity.Status;
 import shop.bookbom.shop.domain.file.entity.QFile;
 import shop.bookbom.shop.domain.publisher.entity.QPublisher;
 import shop.bookbom.shop.domain.review.dto.BookReviewStatisticsInformation;
@@ -231,41 +234,65 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
     private List<BookSearchResponse> getListBookMediumInfosByCategoryId(Long categoryId,
                                                                         String sortCondition,
                                                                         Pageable pageable) {
-        List<Book> entityList;
+        List<Long> categoryIdList = new ArrayList<>();
+        categoryIdList.add(categoryId);
 
-        JPQLQuery<Book> query = from(category).rightJoin(bookCategory).on(category.id.eq(bookCategory.category.id))
-                .leftJoin(bookCategory.book)
-                .where(category.id.eq(categoryId).and(bookCategory.book.status.ne(BookStatus.DEL)))
-                .offset(pageable.getOffset())   // 페이지 번호
-                .limit(pageable.getPageSize())  // 페이지 사이즈
-                .groupBy(bookCategory.book.id)
-                .select(bookCategory.book);
+        categoryIdList = from(category)
+                .where(category.parent.id.eq(categoryId).and(category.status.ne(Status.DEL)))
+                .select(category.id)
+                .fetch();
+
+        List<Book> bookList = new ArrayList<>();
+
+        for (Long targetAndChildId : categoryIdList) {
+            bookList.addAll(
+                    from(category)
+                            .rightJoin(bookCategory).on(category.id.eq(bookCategory.category.id))
+                            .leftJoin(bookCategory.book)
+                            .where(category.id.eq(targetAndChildId).and(bookCategory.book.status.ne(BookStatus.DEL)))
+                            .offset(pageable.getOffset())   // 페이지 번호
+                            .limit(pageable.getPageSize())  // 페이지 사이즈
+                            .groupBy(bookCategory.book.id)
+                            .select(bookCategory.book).fetch()
+            );
+        }
 
         switch (sortCondition) {
             case "POPULAR":
-                entityList = query.orderBy(bookCategory.book.views.desc()).fetch();
+                bookList = bookList.stream()
+                        .sorted(Comparator.comparing(Book::getViews).reversed())
+                        .collect(Collectors.toList());
                 break;
             case "LATEST":
-                entityList = query.orderBy(bookCategory.book.pubDate.desc()).fetch();
+                bookList = bookList.stream()
+                        .sorted(Comparator.comparing(Book::getPubDate).reversed())
+                        .collect(Collectors.toList());
                 break;
             case "LOWEST_PRICE":
-                entityList = query.orderBy(bookCategory.book.discountCost.asc()).fetch();
+                bookList = bookList.stream()
+                        .sorted(Comparator.comparing(Book::getDiscountCost))
+                        .collect(Collectors.toList());
                 break;
             case "HIGHEST_PRICE":
-                entityList = query.orderBy(bookCategory.book.discountCost.desc()).fetch();
+                bookList = bookList.stream()
+                        .sorted(Comparator.comparing(Book::getDiscountCost).reversed())
+                        .collect(Collectors.toList());
                 break;
             case "OLDEST":
-                entityList = query.orderBy(bookCategory.book.pubDate.asc()).fetch();
+                bookList = bookList.stream()
+                        .sorted(Comparator.comparing(Book::getPubDate))
+                        .collect(Collectors.toList());
                 break;
             case "NONE":
-                entityList = query.orderBy(bookCategory.book.title.asc()).fetch();
+                bookList = bookList.stream()
+                        .sorted(Comparator.comparing(Book::getTitle))
+                        .collect(Collectors.toList());
                 break;
             default:
-                entityList = query.fetch();
+                //bookList = query.fetch();
                 break;
         }
-
-        return convertBookToSearch(entityList);
+        return convertBookToSearch(bookList);
     }
 
     private long getTotalCount() {
