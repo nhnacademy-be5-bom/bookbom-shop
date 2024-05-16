@@ -24,10 +24,8 @@ public class PaymentProcessService {
     @Transactional
     public Long proceesPayment(PaymentRequest paymentRequest) {
         Order order = paymentService.getPaymnetConfirm(paymentRequest);
-        //트랜잭션 분리
-        Member member = memberService.getMemberById(order.getUser().getId());
-        //비회원이 아니면
-        if (member.getRole().getId() != 1L) {
+        if (order.getUser().getRole().getId() != 1L) {
+            Member member = memberService.getMemberById(order.getUser().getId());
             if (order.getUsedCouponCost() != 0) {
                 //쿠폰 사용
                 memberCouponService.useCoupon(order, member);

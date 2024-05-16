@@ -96,8 +96,11 @@ public interface BookRepositoryCustom {
 
     Page<BookSearchResponse> getPageableListBookMediumInfosOrderByDate(Pageable pageable);
 
+    Page<BookSearchResponse> getPageableListBookSearchInfosByTitle(String keyword, Pageable pageable);
+
     /**
      * 최근 수정된 도서 목록을 가져오는 메서드입니다.
+     *
      * @param recentTime 최근 수정된 도서를 가져올 시간
      * @return 최근 수정된 도서 목록
      */

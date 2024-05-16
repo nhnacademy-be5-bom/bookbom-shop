@@ -10,6 +10,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -231,7 +232,7 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
 
     private List<BookSearchResponse> getAllBookMediumInfos(Pageable pageable) {
         List<Book> entityList = from(book)
-                .where(book.status.ne(BookStatus.DEL))
+                .orderBy(book.title.asc())
                 .offset(pageable.getOffset())   // 페이지 번호
                 .limit(pageable.getPageSize())  // 페이지 사이즈
                 .select(book)
@@ -332,5 +333,27 @@ public class BookRepositoryImpl extends QuerydslRepositorySupport implements Boo
         }
 
         return responseList;
+    }
+
+    @Override
+    public Page<BookSearchResponse> getPageableListBookSearchInfosByTitle(String keyword, Pageable pageable) {
+        List<Book> entityList;
+        long count;
+
+        JPQLQuery<Book> query = from(book)
+                .orderBy(book.title.asc())
+                .offset(pageable.getOffset())   // 페이지 번호
+                .limit(pageable.getPageSize())  // 페이지 사이즈
+                .select(book);
+
+        if (Objects.equals(keyword, "NONE")) {
+            entityList = query.fetch();
+            count = getTotalCount();
+        } else {
+            entityList = query.where(book.title.contains(keyword)).fetch();
+            count = entityList.size();
+        }
+
+        return new PageImpl<>(convertBookToSearch(entityList), pageable, count);
     }
 }
