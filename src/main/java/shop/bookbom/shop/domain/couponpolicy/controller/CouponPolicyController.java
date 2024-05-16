@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,30 +23,27 @@ import shop.bookbom.shop.domain.couponpolicy.service.CouponPolicyService;
 public class CouponPolicyController {
     private final CouponPolicyService couponPolicyService;
 
-    @PostMapping("/couponPolicy/{id}")
-    public CommonResponse<Void> addCouponPolicy(@PathVariable("id") Long userId,
-                                                @RequestBody CouponPolicyAddRequest request) {
-        couponPolicyService.addCouponPolicy(request, userId);
+    @PostMapping("/couponPolicy")
+    public CommonResponse<Void> addCouponPolicy(@RequestBody CouponPolicyAddRequest request) {
+        couponPolicyService.addCouponPolicy(request);
         return CommonResponse.success();
     }
 
     @DeleteMapping("/couponPolicy/{id}")
-    public CommonResponse<Void> deleteCouponPolicy(@PathVariable("id") Long userId,
-                                                   @RequestBody CouponPolicyDeleteRequest request) {
-        couponPolicyService.deleteCouponPolicy(request, userId);
+    public CommonResponse<Void> deleteCouponPolicy(@RequestBody CouponPolicyDeleteRequest request) {
+        couponPolicyService.deleteCouponPolicy(request);
         return CommonResponse.success();
     }
 
     @PutMapping("/couponPolicy/{id}")
-    public CommonResponse<Void> updateCouponPolicy(@PathVariable("id") Long userId,
-                                                   @RequestBody CouponPolicyInfoDto request) {
-        couponPolicyService.updateCouponPolicy(request, userId);
+    public CommonResponse<Void> updateCouponPolicy(@RequestBody CouponPolicyInfoDto request) {
+        couponPolicyService.updateCouponPolicy(request);
         return CommonResponse.success();
     }
 
     @GetMapping("/couponPolicy/{id}")
-    public CommonListResponse<CouponPolicyInfoDto> getCouponPolicyList(@PathVariable("id") Long userId) {
-        return CommonListResponse.successWithList(couponPolicyService.getCouponPolicyInfo(userId));
+    public CommonListResponse<CouponPolicyInfoDto> getCouponPolicyList() {
+        return CommonListResponse.successWithList(couponPolicyService.getCouponPolicyInfo());
     }
 
 }
