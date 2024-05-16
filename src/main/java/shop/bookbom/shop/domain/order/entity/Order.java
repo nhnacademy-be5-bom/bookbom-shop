@@ -3,6 +3,7 @@ package shop.bookbom.shop.domain.order.entity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.shop.domain.delivery.entity.Delivery;
 import shop.bookbom.shop.domain.orderbook.entity.OrderBook;
+import shop.bookbom.shop.domain.ordercoupon.entity.OrderCoupon;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
 import shop.bookbom.shop.domain.payment.entity.Payment;
 import shop.bookbom.shop.domain.users.entity.User;
@@ -69,20 +71,24 @@ public class Order {
     @JoinColumn(name = "order_status_id", nullable = false)
     private OrderStatus status;
 
-    @OneToOne(mappedBy = "order")
+    @OneToOne(mappedBy = "order", cascade = CascadeType.REMOVE)
     private Delivery delivery;
 
     @OneToOne(mappedBy = "order")
     private Payment payment;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
     private List<OrderBook> orderBooks = new ArrayList<>();
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.REMOVE)
+    private OrderCoupon orderCoupon;
 
     @Builder
     public Order(String orderNumber, String orderInfo, LocalDateTime orderDate, String senderName,
                  String senderPhoneNumber,
                  Integer totalCost, Integer discountCost, int usedPoint, int usedCouponCost, User user,
                  OrderStatus status) {
+
         this.orderNumber = orderNumber;
         this.orderInfo = orderInfo;
         this.orderDate = orderDate;
