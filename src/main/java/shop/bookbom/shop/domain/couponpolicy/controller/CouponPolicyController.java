@@ -29,19 +29,19 @@ public class CouponPolicyController {
         return CommonResponse.success();
     }
 
-    @DeleteMapping("/couponPolicy/{id}")
+    @DeleteMapping("/couponPolicy")
     public CommonResponse<Void> deleteCouponPolicy(@RequestBody CouponPolicyDeleteRequest request) {
         couponPolicyService.deleteCouponPolicy(request);
         return CommonResponse.success();
     }
 
-    @PutMapping("/couponPolicy/{id}")
+    @PutMapping("/couponPolicy")
     public CommonResponse<Void> updateCouponPolicy(@RequestBody CouponPolicyInfoDto request) {
         couponPolicyService.updateCouponPolicy(request);
         return CommonResponse.success();
     }
 
-    @GetMapping("/couponPolicy/{id}")
+    @GetMapping("/couponPolicy")
     public CommonListResponse<CouponPolicyInfoDto> getCouponPolicyList() {
         return CommonListResponse.successWithList(couponPolicyService.getCouponPolicyInfo());
     }
