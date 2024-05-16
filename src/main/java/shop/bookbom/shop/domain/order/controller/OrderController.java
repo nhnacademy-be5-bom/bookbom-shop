@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -129,5 +130,10 @@ public class OrderController {
     public CommonResponse<OrderDetailResponse> getOrderDetail(@PathVariable("id") Long id) {
         OrderDetailResponse orderDetailResponse = orderService.getOrderDetail(id);
         return CommonResponse.successWithData(orderDetailResponse);
+    }
+
+    @DeleteMapping("/orders/{id}")
+    public void cancelOrder(@PathVariable("id") Long id, @RequestParam(name = "reason") String cancelReason) {
+        orderService.cancelOrder(id, cancelReason);
     }
 }

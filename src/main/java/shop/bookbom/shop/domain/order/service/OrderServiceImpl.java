@@ -64,6 +64,9 @@ import shop.bookbom.shop.domain.ordercoupon.repository.OrderCouponRepository;
 import shop.bookbom.shop.domain.orderstatus.entity.OrderStatus;
 import shop.bookbom.shop.domain.orderstatus.exception.OrderStatusNotFoundException;
 import shop.bookbom.shop.domain.orderstatus.repository.OrderStatusRepository;
+import shop.bookbom.shop.domain.payment.adapter.PaymentAdapter;
+import shop.bookbom.shop.domain.payment.dto.request.PaymentCancelRequest;
+import shop.bookbom.shop.domain.payment.dto.response.PaymentCancelReponse;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.role.repository.RoleRepository;
 import shop.bookbom.shop.domain.users.entity.User;
@@ -93,6 +96,7 @@ public class OrderServiceImpl implements OrderService {
     private final BookCategoryRepository bookCategoryRepository;
     private final OrderCouponRepository orderCouponRepository;
     private final CouponRepository couponRepository;
+    private final PaymentAdapter paymentAdapter;
 
     /**
      * 주문 전에 bookId로 책 정보를 불러오고 포장지 전체 List를 받아오는 메소드
@@ -844,6 +848,23 @@ public class OrderServiceImpl implements OrderService {
                 deliveryRepository.save(delivery);
                 orderRepository.save(order);
             }
+        }
+
+    }
+
+    @Transactional
+    @Override
+    public void cancelOrder(Long orderId, String cancelReason) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(OrderNotFoundException::new);
+        String paymentKey = order.getPayment().getKey();
+        PaymentCancelRequest paymentCancelRequest = new PaymentCancelRequest(cancelReason);
+        PaymentCancelReponse paymentCancelReponse = paymentAdapter.cancelPayment(paymentKey, paymentCancelRequest);
+        if (paymentCancelReponse.getStatus().equals("CANCELED")) {
+            OrderStatus orderStatus = orderStatusRepository.findByName("취소")
+                    .orElseThrow(OrderStatusNotFoundException::new);
+            order.updateStatus(orderStatus);
+            orderRepository.save(order);
         }
 
     }

@@ -10,9 +10,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import shop.bookbom.shop.common.exception.ErrorCode;
 import shop.bookbom.shop.domain.payment.config.TossPayConfig;
+import shop.bookbom.shop.domain.payment.dto.request.PaymentCancelRequest;
 import shop.bookbom.shop.domain.payment.dto.request.PaymentRequest;
 import shop.bookbom.shop.domain.payment.dto.response.FailureDto;
+import shop.bookbom.shop.domain.payment.dto.response.PaymentCancelReponse;
 import shop.bookbom.shop.domain.payment.dto.response.PaymentResponse;
+import shop.bookbom.shop.domain.payment.exception.PaymentCancelFailedException;
 import shop.bookbom.shop.domain.payment.exception.PaymentFailException;
 
 @Component
@@ -51,6 +54,33 @@ public class PaymentAdapterImpl implements PaymentAdapter {
             if (failure != null) {
                 throw new PaymentFailException(ErrorCode.PAYMENT_FAILED, failure.getMessage());
             }
+        }
+        return response;
+    }
+
+    @Override
+    public PaymentCancelReponse cancelPayment(String paymentKey, PaymentCancelRequest paymentCancelRequest) {
+        //secretkey를 가지고 authorization 만듬
+        String secretKey = tossPayConfig.getSecretKey() + ":";
+        String authorization = Base64.getEncoder().encodeToString(secretKey.getBytes());
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        //header에 authorization 넣음
+        headers.add("Authorization", "Basic " + authorization);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<PaymentRequest> requestEntity = new HttpEntity<>(headers);
+
+        PaymentCancelReponse response =
+                restTemplate.exchange("https://api.tosspayments.com/v1/payments/{paymentKey}/cancel",
+                        HttpMethod.POST,
+                        requestEntity,
+                        PaymentCancelReponse.class,
+                        paymentKey).getBody();
+
+        if (response == null) {
+            throw new PaymentCancelFailedException();
         }
         return response;
     }

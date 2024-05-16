@@ -63,4 +63,6 @@ public interface OrderService {
     void changeToDeliverying();
 
     void changeToComplete();
+
+    void cancelOrder(Long orderId, String cancelReason);
 }
