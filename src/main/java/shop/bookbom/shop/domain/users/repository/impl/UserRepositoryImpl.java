@@ -16,6 +16,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import shop.bookbom.shop.domain.order.dto.response.OrderInfoResponse;
 import shop.bookbom.shop.domain.order.entity.Order;
 import shop.bookbom.shop.domain.users.dto.OrderDateCondition;
+import shop.bookbom.shop.domain.users.entity.QUser;
 import shop.bookbom.shop.domain.users.entity.User;
 import shop.bookbom.shop.domain.users.repository.UserRepositoryCustom;
 
@@ -52,6 +53,15 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Long findIdByEmail(String email) {
+        QUser user = QUser.user;
+        return queryFactory.select(user.id)
+                .from(user)
+                .where(user.email.eq(email))
+                .fetchOne();
     }
 
     private BooleanExpression orderDateMax(LocalDate orderDateMax) {

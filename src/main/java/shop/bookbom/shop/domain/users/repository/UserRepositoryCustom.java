@@ -15,4 +15,6 @@ public interface UserRepositoryCustom {
      * @return Page<OrderInfoResponse> 주문 내역
      */
     Page<OrderInfoResponse> getOrders(User user, Pageable pageable, OrderDateCondition condition);
+
+    Long findIdByEmail(String email);
 }
