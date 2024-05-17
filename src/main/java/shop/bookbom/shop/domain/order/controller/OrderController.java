@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
 import shop.bookbom.shop.domain.order.exception.OrderInfoInvalidException;
 import shop.bookbom.shop.domain.order.service.OrderService;
+import shop.bookbom.shop.domain.payment.dto.response.PaymentCancelResponse;
 import shop.bookbom.shop.domain.users.dto.UserDto;
 
 /**
@@ -129,5 +131,12 @@ public class OrderController {
     public CommonResponse<OrderDetailResponse> getOrderDetail(@PathVariable("id") Long id) {
         OrderDetailResponse orderDetailResponse = orderService.getOrderDetail(id);
         return CommonResponse.successWithData(orderDetailResponse);
+    }
+
+    @DeleteMapping("/orders/{id}")
+    public CommonResponse<PaymentCancelResponse> cancelOrder(@PathVariable("id") Long id,
+                                                             @RequestParam(name = "reason") String cancelReason) {
+        PaymentCancelResponse paymentCancelResponse = orderService.cancelOrder(id, cancelReason);
+        return CommonResponse.successWithData(paymentCancelResponse);
     }
 }

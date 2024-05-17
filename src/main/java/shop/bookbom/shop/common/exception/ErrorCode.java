@@ -50,6 +50,7 @@ public enum ErrorCode {
     PAYMENT_NOT_ALLOWED(400, "결제가 허용되지 않습니다. 다시 시도해 주세요."),
     PAYMENT_FAILED(400, "결제가 실패했습니다. 다시 시도해 주세요."),
     PAYMENT_NOT_FOUND(404, "존재하지 않는 결제 정보입니다."),
+    PAYMENT_CANCEL_FAILED(400, "결제 취소가 실패했습니다. 다시 시도해주세요"),
     //paymentMethod
     PAYMENTMETHOD_NOT_FOUND(400, "해당 결제 수단이 존재하지 않습니다."),
     //orderStatus
