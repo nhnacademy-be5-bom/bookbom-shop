@@ -381,17 +381,8 @@ public class BookService {
             bookFileRepository.delete(getThumbnailBookFileFrom(book.getBookFiles()));
             handleThumbnail(newThumbnail, book);
 
-        } else if (newThumbnail == null) {
-            bookFileRepository.delete(getThumbnailBookFileFrom(book.getBookFiles()));
+        } else if (newThumbnail != null) {
 
-            BookFile bookFile = BookFile.builder()
-                    .book(book)
-                    .bookFileType(bookFileTypeRepository.getReferenceById(1L))//= "img"
-                    .file(fileRepository.getReferenceById(1L))//="NONE"
-                    .build();
-            bookFileRepository.save(bookFile);
-
-        } else {
             int index = url.indexOf(CONTAINER_NAME) + CONTAINER_NAME.length() + 1;
             String objectName = url.substring(index);
 
