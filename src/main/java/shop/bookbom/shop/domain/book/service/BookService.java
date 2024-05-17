@@ -381,7 +381,8 @@ public class BookService {
             bookFileRepository.delete(getThumbnailBookFileFrom(book.getBookFiles()));
             handleThumbnail(newThumbnail, book);
 
-        } else {
+        } else if (newThumbnail != null) {
+
             int index = url.indexOf(CONTAINER_NAME) + CONTAINER_NAME.length() + 1;
             String objectName = url.substring(index);
 
