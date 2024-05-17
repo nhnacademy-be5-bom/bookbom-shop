@@ -109,5 +109,4 @@ public class BookSearchRepositoryImpl implements BookSearchRepository {
                 .boost(field.equals(firstValue) ? firstBoost : defaultBoost)
         );
     }
-
 }
