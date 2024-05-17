@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,8 +33,7 @@ public class WishController {
      * @return 성공 응답
      */
     @PostMapping("/wish")
-    public CommonResponse<Void> addWish(@Login UserDto userDto,
-                                        @RequestBody List<Long> books) {
+    public CommonResponse<Void> addWish(@Login UserDto userDto, @RequestBody List<Long> books) {
         if (!isValidRequest(books)) {
             throw new WishInvalidRequestException();
         }
@@ -45,16 +45,16 @@ public class WishController {
      * 찜 목록에 있는 도서를 삭제합니다
      *
      * @param userDto 유저 정보
-     * @param books 도서 id 리스트
+     * @param wishId 찜 Id
      * @return 성공 응답
      */
-    @DeleteMapping("/wish")
+    @DeleteMapping("/wish/{wishId}")
     public CommonResponse<Void> deleteWish(@Login UserDto userDto,
-                                           @RequestBody List<Long> books) {
-        if (!isValidRequest(books)) {
+                                           @PathVariable Long wishId) {
+        if (wishId == null || wishId < 1) {
             throw new WishInvalidRequestException();
         }
-        wishService.deleteWish(books, userDto.getId());
+        wishService.deleteWish(wishId, userDto.getId());
         return CommonResponse.success();
     }
 
@@ -73,7 +73,7 @@ public class WishController {
     /**
      * 추가, 삭제 request 유효성 검사
      *
-     * @param books 도서 ID 리스트
+     * @param books 도서 찜 ID 리스트
      * @return 유효성 검사 결과
      */
     private boolean isValidRequest(List<Long> books) {

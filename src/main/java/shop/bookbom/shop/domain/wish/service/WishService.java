@@ -7,6 +7,6 @@ import shop.bookbom.shop.domain.wish.dto.response.WishInfoResponse;
 
 public interface WishService {
     void addWish(List<Long> items, Long userId);
-    void deleteWish(List<Long> items, Long userId);
+    void deleteWish(Long wishId, Long userId);
     Page<WishInfoResponse> getWishInfo(Long userId, Pageable pageable);
 }

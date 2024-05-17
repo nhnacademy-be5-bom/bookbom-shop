@@ -59,22 +59,19 @@ public class WishServiceImpl implements WishService {
     /**
      * 찜 목록에 있는 도서를 삭제합니다
      *
-     * @param books 삭제할 도서 리스트
+     * @param wishId 삭제할 도서 wish ID
      * @param userId 회원 ID
      */
     @Override
     @Transactional
-    public void deleteWish(List<Long> books, Long userId) {
-        books.forEach(bookId -> {
-                    boolean isExistWish = wishRepository.existsByBookIdAndMemberId(bookId, userId);
-                    if(!isExistWish){
-                        throw new WishNotFoundException();
-                    } else{
-                        Wish wish = wishRepository.findByBookIdAndMemberId(bookId, userId);
-                        wishRepository.delete(wish);
-                    }
-                }
-        );
+    public void deleteWish(Long wishId, Long userId) {
+        boolean isExistWish = wishRepository.existsByBookIdAndMemberId(wishId, userId);
+        if(!isExistWish){
+            throw new WishNotFoundException();
+        } else{
+            Wish wish = wishRepository.findByBookIdAndMemberId(wishId, userId);
+            wishRepository.delete(wish);
+        }
     }
 
     /**
