@@ -1,8 +1,10 @@
 package shop.bookbom.shop.domain.wish.controller;
 
 import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,12 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import shop.bookbom.shop.common.CommonListResponse;
+import shop.bookbom.shop.annotation.Login;
 import shop.bookbom.shop.common.CommonResponse;
-import shop.bookbom.shop.domain.cart.dto.request.CartAddRequest;
-import shop.bookbom.shop.domain.wish.dto.request.WishAddDeleteRequest;
+import shop.bookbom.shop.domain.users.dto.UserDto;
 import shop.bookbom.shop.domain.wish.dto.response.WishInfoResponse;
-import shop.bookbom.shop.domain.wish.dto.response.WishTotalCountResponse;
 import shop.bookbom.shop.domain.wish.exception.WishInvalidRequestException;
 import shop.bookbom.shop.domain.wish.service.WishService;
 
@@ -28,68 +28,57 @@ public class WishController {
     /**
      * 찜 목록에 도서를 추가합니다
      *
-     * @param userId
-     * @param request
-     * @return
+     * @param userDto 유저 정보
+     * @param books 도서 id 리스트
+     * @return 성공 응답
      */
-    @PostMapping("/wish/{id}")
-    public CommonResponse<Void> addWish(@PathVariable("id") @Valid Long userId,
-                                        @RequestBody List<WishAddDeleteRequest> request) {
-        if (!isValidRequest(request)) {
+    @PostMapping("/wish")
+    public CommonResponse<Void> addWish(@Login UserDto userDto, @RequestBody List<Long> books) {
+        if (!isValidRequest(books)) {
             throw new WishInvalidRequestException();
         }
-        wishService.addWish(request, userId);
+        wishService.addWish(books, userDto.getId());
         return CommonResponse.success();
     }
 
     /**
      * 찜 목록에 있는 도서를 삭제합니다
      *
-     * @param userId
-     * @param request
-     * @return
+     * @param userDto 유저 정보
+     * @param wishId 찜 Id
+     * @return 성공 응답
      */
-    @DeleteMapping("/wish/{id}")
-    public CommonResponse<Void> deleteWish(@PathVariable("id") Long userId,
-                                           @RequestBody List<WishAddDeleteRequest> request) {
-        if (!isValidRequest(request)) {
+    @DeleteMapping("/wish/{wishId}")
+    public CommonResponse<Void> deleteWish(@Login UserDto userDto,
+                                           @PathVariable Long wishId) {
+        if (wishId == null || wishId < 1) {
             throw new WishInvalidRequestException();
         }
-        wishService.deleteWish(request, userId);
+        wishService.deleteWish(wishId, userDto.getId());
         return CommonResponse.success();
     }
 
     /**
-     * 회원의 찜 목록을 조회합니다
+     * 회원의 찜 목록을 조회합니다.
      *
-     * @param userId
-     * @return
+     * @param userDto 유저 정보
+     * @param pageable 페이징 처리
+     * @return 회원의 찜 목록
      */
-    @GetMapping("/wish/{id}")
-    public CommonListResponse<WishInfoResponse> getWish(@PathVariable("id") Long userId) {
-        return CommonListResponse.successWithList(wishService.getWishInfo(userId));
+    @GetMapping("/wish")
+    public CommonResponse<Page<WishInfoResponse>> getWish(@Login UserDto userDto, @PageableDefault Pageable pageable) {
+        return CommonResponse.successWithData(wishService.getWishInfo(userDto.getId(), pageable));
     }
 
     /**
-     * 회원의 모든 찜 개수를 조회합니다
+     * 추가, 삭제 request 유효성 검사
      *
-     * @param userId
-     * @return
+     * @param books 도서 찜 ID 리스트
+     * @return 유효성 검사 결과
      */
-    @GetMapping("/wish/count/{id}")
-    public CommonResponse<WishTotalCountResponse> getWishCount(@PathVariable("id") Long userId) {
-        return CommonResponse.successWithData(wishService.getWishTotalCount(userId));
-    }
-
-    /**
-     * request 유효성 검사
-     *
-     * @param requests
-     * @return
-     */
-    private boolean isValidRequest(List<WishAddDeleteRequest> requests) {
-        return requests.stream()
-                .allMatch(request -> request.getBookId() != null
-                        && request.getBookId() >= 1);
+    private boolean isValidRequest(List<Long> books) {
+        return books.stream()
+                .allMatch(bookId -> bookId != null
+                        && bookId >= 1);
     }
 }
