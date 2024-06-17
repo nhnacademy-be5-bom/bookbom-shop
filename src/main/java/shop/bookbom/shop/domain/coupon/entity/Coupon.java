@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,12 +13,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.shop.domain.couponbook.entity.CouponBook;
+import shop.bookbom.shop.domain.couponcategory.entity.CouponCategory;
 import shop.bookbom.shop.domain.couponpolicy.entity.CouponPolicy;
 import shop.bookbom.shop.domain.membercoupon.entity.MemberCoupon;
 import shop.bookbom.shop.domain.ordercoupon.entity.OrderCoupon;
@@ -34,6 +38,10 @@ public class Coupon {
     @Column(nullable = false, length = 50)
     private String name;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CouponType type;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_policy_id", nullable = false)
     private CouponPolicy couponPolicy;
@@ -42,19 +50,24 @@ public class Coupon {
     private List<MemberCoupon> memberCoupons = new ArrayList<>();
 
     @OneToMany(mappedBy = "coupon")
-    private List<CouponBook> couponBooks = new ArrayList<>();
+    private List<CouponBook> couponBooks;
 
     @OneToMany(mappedBy = "coupon")
-    private List<OrderCoupon> orderCoupons = new ArrayList<>();
+    private List<CouponCategory> couponCategories;
+
+    @OneToOne(mappedBy = "coupon")
+    private OrderCoupon orderCoupon;
 
     @Builder
     public Coupon(
             String name,
+            CouponType type,
             CouponPolicy couponPolicy,
             List<MemberCoupon> memberCoupons,
             List<CouponBook> couponBooks
     ) {
         this.name = name;
+        this.type = type;
         this.couponPolicy = couponPolicy;
         this.memberCoupons = memberCoupons;
         this.couponBooks = couponBooks;

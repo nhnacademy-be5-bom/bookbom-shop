@@ -1,26 +1,69 @@
 package shop.bookbom.shop.domain.order.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.bookbom.shop.domain.order.dto.request.BeforeOrderRequestList;
+import shop.bookbom.shop.domain.order.dto.request.OpenOrderRequest;
+import shop.bookbom.shop.domain.order.dto.request.OrderRequest;
 import shop.bookbom.shop.domain.order.dto.request.WrapperSelectRequest;
 import shop.bookbom.shop.domain.order.dto.response.BeforeOrderResponse;
+import shop.bookbom.shop.domain.order.dto.response.OpenWrapperSelectResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderDetailResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderManagementResponse;
+import shop.bookbom.shop.domain.order.dto.response.OrderResponse;
 import shop.bookbom.shop.domain.order.dto.response.WrapperSelectResponse;
+import shop.bookbom.shop.domain.order.entity.Order;
+import shop.bookbom.shop.domain.payment.dto.response.PaymentCancelResponse;
 
 public interface OrderService {
-
-    /**
-     * 주문 전에 bookId로 책 정보를 불러오고 포장지 전체 List를 받아오는 메소드
-     *
-     * @param beforeOrderRequestList(bookId,quantity)
-     * @return 책 제목, 책 이미지, 수량, 가격 그리고 전체 주문 갯수, 포장지 전체 List
-     */
     BeforeOrderResponse getOrderBookInfo(BeforeOrderRequestList beforeOrderRequestList);
 
+    OpenWrapperSelectResponse selectWrapper(WrapperSelectRequest wrapperSelectRequest);
+
+    WrapperSelectResponse selectWrapperForMember(WrapperSelectRequest wrapperSelectRequest, Long userId);
+
+    OrderResponse processOpenOrder(OpenOrderRequest openOrderRequest);
+
+    OrderResponse processOrder(OrderRequest orderRequest, Long userId);
+
     /**
-     * 포장지 선택 정보를 처리하는 메소드
+     * 주문 상태 관리를 위한 주문 내역을 불러오는 메서드입니다.
      *
-     * @param userId
-     * @param wrapperSelectRequest(책정보와 선택한 포장지 의 List와 전체 주문 갯수)
-     * @return 포장지 선택 request 와 userId를 내보냄
+     * @param pageable       페이지 정보
+     * @param dateFrom       시작 날짜
+     * @param dateTo         끝 날짜
+     * @param sort           정렬 기준
+     * @param deliveryStatus 주문 상태
+     * @return 주문 내역
      */
-    WrapperSelectResponse selectWrapper(Long userId, WrapperSelectRequest wrapperSelectRequest);
+    Page<OrderManagementResponse> getOrderManagements(Pageable pageable, LocalDate dateFrom, LocalDate dateTo,
+                                                      String sort, String deliveryStatus);
+
+    /**
+     * 주문 상태를 변경하는 메서드입니다.
+     *
+     * @param orderIds 주문 id 리스트
+     * @param status   변경할 주문 상태
+     */
+    void updateOrderStatus(List<Long> orderIds, String status);
+
+    /**
+     * 주문 상세 정보를 불러오는 메서드입니다.
+     *
+     * @param id 주문 id
+     * @return 주문 상세 정보
+     */
+    OrderDetailResponse getOrderDetail(Long id);
+
+    Order getOrderByOrderNumber(String orderNumber);
+
+    void recoverStock();
+
+    void changeToDeliverying();
+
+    void changeToComplete();
+
+    PaymentCancelResponse cancelOrder(Long orderId, String cancelReason);
 }

@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.bookbom.shop.domain.coupon.entity.Coupon;
+import shop.bookbom.shop.domain.member.entity.Member;
 
 @Entity
 @Table(name = "member_coupon")
@@ -45,18 +46,32 @@ public class MemberCoupon {
     @JoinColumn(name = "coupon_id", nullable = false)
     private Coupon coupon;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Member member;
+
     @Builder
     public MemberCoupon(
             CouponStatus status,
             LocalDate issueDate,
             LocalDate expireDate,
             LocalDate useDate,
-            Coupon coupon
+            Coupon coupon,
+            Member member
     ) {
         this.status = status;
         this.issueDate = issueDate;
         this.expireDate = expireDate;
         this.useDate = useDate;
         this.coupon = coupon;
+        this.member = member;
+    }
+
+    public void updateUseDate(LocalDate useDate) {
+        this.useDate = useDate;
+    }
+
+    public void updateCouponStatus(CouponStatus status) {
+        this.status = status;
     }
 }

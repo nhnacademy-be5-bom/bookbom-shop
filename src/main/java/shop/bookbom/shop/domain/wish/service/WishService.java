@@ -1,13 +1,12 @@
 package shop.bookbom.shop.domain.wish.service;
 
 import java.util.List;
-import shop.bookbom.shop.domain.wish.dto.request.WishAddDeleteRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import shop.bookbom.shop.domain.wish.dto.response.WishInfoResponse;
-import shop.bookbom.shop.domain.wish.dto.response.WishTotalCountResponse;
 
 public interface WishService {
-    void addWish(List<WishAddDeleteRequest> items, Long userId);
-    void deleteWish(List<WishAddDeleteRequest> items, Long userId);
-    List<WishInfoResponse> getWishInfo(Long userId);
-    WishTotalCountResponse getWishTotalCount(Long userId);
+    void addWish(List<Long> items, Long userId);
+    void deleteWish(Long wishId, Long userId);
+    Page<WishInfoResponse> getWishInfo(Long userId, Pageable pageable);
 }

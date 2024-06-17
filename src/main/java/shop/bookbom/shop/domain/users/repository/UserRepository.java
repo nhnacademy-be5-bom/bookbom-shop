@@ -7,8 +7,9 @@ import shop.bookbom.shop.domain.users.entity.User;
 
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findById(Long userId);
+public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
+    Optional<User> findByEmail(String email);
 
     boolean existsUserByEmail(String email);
+
 }

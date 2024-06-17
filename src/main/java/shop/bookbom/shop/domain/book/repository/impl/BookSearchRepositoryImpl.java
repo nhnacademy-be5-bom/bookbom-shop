@@ -22,6 +22,8 @@ import shop.bookbom.shop.domain.book.repository.BookSearchRepository;
 @Repository
 @RequiredArgsConstructor
 public class BookSearchRepositoryImpl implements BookSearchRepository {
+    private static final String NORI_FIELD = ".nori";
+    private static final String NGRAM_FIELD = ".ngram";
     private final ElasticsearchOperations operations;
 
     /**
@@ -84,18 +86,6 @@ public class BookSearchRepositoryImpl implements BookSearchRepository {
         return Sort.by(condition.getDirection(), condition.getFieldName());
     }
 
-    private static co.elastic.clients.elasticsearch._types.query_dsl.Query buildMatchQuery(
-            String keyword,
-            String field,
-            float boost
-    ) {
-        return QueryBuilders.match(m -> m
-                .query(keyword)
-                .field(field)
-                .boost(boost)
-        );
-    }
-
     /**
      * 필드에 해당 키워드가 일치하는 결과가 있는지 검색하는 쿼리를 만들어주는 메서드입니다.
      *
@@ -113,11 +103,10 @@ public class BookSearchRepositoryImpl implements BookSearchRepository {
             float firstBoost,
             float defaultBoost
     ) {
-        return QueryBuilders.match(m -> m
+        return QueryBuilders.multiMatch(m -> m
                 .query(keyword)
-                .field(field)
+                .fields(field, field + NORI_FIELD, field + NGRAM_FIELD)
                 .boost(field.equals(firstValue) ? firstBoost : defaultBoost)
         );
     }
-
 }

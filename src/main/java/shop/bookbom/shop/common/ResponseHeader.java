@@ -5,13 +5,13 @@ import lombok.Data;
 
 @Data
 public class ResponseHeader {
-    private boolean isSuccessful;
+    private boolean successful;
     private int resultCode;
     private String resultMessage;
 
     @Builder
-    public ResponseHeader(boolean isSuccessful, int resultCode, String resultMessage) {
-        this.isSuccessful = isSuccessful;
+    public ResponseHeader(boolean successful, int resultCode, String resultMessage) {
+        this.successful = successful;
         this.resultCode = resultCode;
         this.resultMessage = resultMessage;
     }

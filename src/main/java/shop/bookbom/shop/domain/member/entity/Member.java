@@ -12,9 +12,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import shop.bookbom.shop.domain.membercoupon.entity.MemberCoupon;
 import shop.bookbom.shop.domain.rank.entity.Rank;
 import shop.bookbom.shop.domain.role.entity.Role;
 import shop.bookbom.shop.domain.users.entity.User;
@@ -42,9 +45,11 @@ public class Member extends User {
     @Column(nullable = false)
     private int point;
 
+    @Setter
+    @Builder.Default
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private MemberStatus status;
+    private MemberStatus status = MemberStatus.ACTIVE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rank_id", nullable = false)
@@ -52,6 +57,9 @@ public class Member extends User {
 
     @OneToMany(mappedBy = "member")
     private List<Wish> wishList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<MemberCoupon> memberCoupons;
 
     public Member(
             String email,
@@ -82,4 +90,9 @@ public class Member extends User {
     public void deleteWish(Wish wish) {
         wishList.remove(wish);
     }
+
+    public void updatePoints(int point) {
+        this.point = point;
+    }
+
 }

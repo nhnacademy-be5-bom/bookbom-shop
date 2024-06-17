@@ -13,16 +13,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Collections;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import shop.bookbom.shop.argumentresolver.LoginArgumentResolver;
+import shop.bookbom.shop.config.WebConfig;
 import shop.bookbom.shop.domain.booktag.dto.response.BookTagInfoResponse;
 import shop.bookbom.shop.domain.booktag.service.BookTagService;
 import shop.bookbom.shop.domain.category.entity.Status;
 
-@WebMvcTest(BookTagController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@ExtendWith(MockitoExtension.class)
+@WebMvcTest(value = BookTagController.class,
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                classes = {WebConfig.class, LoginArgumentResolver.class}))
 class BookTagControllerTest {
 
     @Autowired
@@ -44,7 +55,7 @@ class BookTagControllerTest {
         when(bookTagService.getBookTagInformation(bookId)).thenReturn(Collections.singletonList(response));
 
         // When & Then
-        mockMvc.perform(get("/shop/book/tag/{id}", bookId))
+        mockMvc.perform(get("/shop/books/tag/{id}", bookId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
@@ -62,7 +73,7 @@ class BookTagControllerTest {
         long bookId = 2L;
 
         // When
-        mockMvc.perform(post("/shop/book/tag")
+        mockMvc.perform(post("/shop/books/tag")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"tagId\":1,\"bookId\":2}"))
                 .andExpect(status().isOk());
@@ -78,7 +89,7 @@ class BookTagControllerTest {
         doNothing().when(bookTagService).deleteBookTagService(bookTagId);
 
         // When & Then
-        mockMvc.perform(delete("/shop/book/tag/{id}", bookTagId))
+        mockMvc.perform(delete("/shop/books/tag/{id}", bookTagId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.header.resultCode").value(200))
                 .andExpect(jsonPath("$.header.resultMessage").value("SUCCESS"))
@@ -91,7 +102,7 @@ class BookTagControllerTest {
         // Given
         String requestBody = "{\"tagId\":0,\"bookId\":0}"; // 유효하지 않은 값
         // When & Then
-        mockMvc.perform(post("/shop/book/tag")
+        mockMvc.perform(post("/shop/books/tag")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(jsonPath("$.header.successful").value(false))
